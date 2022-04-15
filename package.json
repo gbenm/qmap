@@ -1,0 +1,12 @@
+{
+  "name": "qmapjs",
+  "packageManager": "yarn@3.2.0",
+  "scripts": {
+    "prebuild": "antlr4 -Dlanguage=JavaScript -o ./src/syntax ./antlr4/qmap.g4",
+    "build": ""
+  },
+  "devDependencies": {
+    "@types/antlr4": "^4.7.2",
+    "antlr4": "^4.10.0"
+  }
+}

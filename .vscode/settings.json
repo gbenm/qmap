@@ -1,0 +1,10 @@
+{
+    "antlr4.generation": {
+        "additionalParameters": "-Dlanguage=JavaScript",
+        "alternativeJar": "./antlr-4.10.jar",
+        "mode": "external",
+        "outputDir": "../src/syntax",
+        "listeners": false
+    },
+    "antlr4.referencesCodeLens.enabled": false,
+}
