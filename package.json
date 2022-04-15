@@ -4,7 +4,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": ""
+    "lint": "eslint . --ext .ts",
+    "test": "echo test",
+    "prebuild": "yarn lint && yarn test",
+    "build": "yarn lint && yarn prebuild && tsc"
   },
   "devDependencies": {
     "@types/antlr4": "^4.7.2",
