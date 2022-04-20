@@ -5,10 +5,14 @@ import * as astn from "../compiler"
 }
 
 start returns [json]
-    : id? { $json = (new astn.Root($id.text, null)).generate() } (LEFT_BRACKET
-        (query_list { $json = (new astn.Root($id.text, $query_list.node)).generate() })?
+    : optional_id { $json = (new astn.Root($optional_id.text, null)).generate() } (LEFT_BRACKET
+        (query_list { $json = (new astn.Root($optional_id.text, $query_list.node)).generate() })?
     RIGHT_BRACKET)?
 ;
+
+optional_id returns [text]
+    : (id {$text = $id.text})?
+    ;
 
 id returns [text]
     : ID { $text = $ID.text }
