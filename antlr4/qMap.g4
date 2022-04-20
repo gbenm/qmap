@@ -26,10 +26,23 @@ stm returns [node]
     | client_function
 ;
 exclude returns [node]
-    : EX_MARK id
+    : EX_MARK id { $node = new astn.Exclude($id.text) }
 ;
-destructuring returns [node]
-    : TRIPLE_DOT (id (DOT id)* )?
+
+global_spread returns [node]
+    : { const nodes = [] }
+    TRIPLE_DOT AMPERSAND { nodes.push(astn.rootScope) }
+    id { nodes.push($id.text) } (DOT id { nodes.push($id.text) })*
+    { $node = new astn.Spread(nodes) }
+;
+scoped_spread returns [node]
+    : { const nodes = [] }
+    TRIPLE_DOT (id { nodes.push($id.text) } (DOT id { nodes.push($id.text) })* )?
+    { $node = new astn.Spread(nodes) }
+;
+spread returns [node]
+    : global_spread { $node = $global_spread.node }
+    | scoped_spread { $node = $scoped_spread.node }
 ;
 
 params: (stm (COMMA stm)* COMMA?);
@@ -37,7 +50,7 @@ params: (stm (COMMA stm)* COMMA?);
 query returns [node]
     : stm {$node = $stm.node}
     | exclude {$node = $exclude.node}
-    | destructuring {$node = $destructuring.node}
+    | spread {$node = $spread.node}
 ;
 query_list returns [node]
     : {
@@ -76,6 +89,7 @@ TRIPLE_DOT: '...';
 DOT: '.';
 LEFT_PAREN: '(';
 RIHT_PAREN: ')';
+AMPERSAND: '&';
 STRING: (SINGLE_QUOTE SINGLE_QUOTE_STR_CHAR*? SINGLE_QUOTE)
  | (DOUBLE_QUOTE DLOUBE_QUOTE_STR_CHAR*? DOUBLE_QUOTE);
 

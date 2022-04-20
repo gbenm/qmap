@@ -10,7 +10,7 @@ export class ObjRef extends ASTNodeEntry {
     this.id = this.ids.shift()!
   }
 
-  get body(): ASTNode {
+  body(): ASTNode {
     return new JsonNode(wrapQmapCtx(this.ids.length > 0 ? {
       $qmap_keys: this.ids
     } : {}))

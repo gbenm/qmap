@@ -1,9 +1,11 @@
-import { ASTNode, Json } from ".."
+import { ASTNode, Json, SymbolTable } from ".."
+import { mergeQmapJsonWithCtx } from "../utils"
 
 export class QueryList implements ASTNode {
   constructor (public nodes: ASTNode[]) { }
 
-  generate(): Json {
-    return this.nodes.reduce((json, node) => ({...json, ...node.generate()}), {})
+  generate(parentTable: SymbolTable): Json {
+    const jsons = this.nodes.map(node => node.generate(parentTable))
+    return mergeQmapJsonWithCtx(...jsons)
   }
 }

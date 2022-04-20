@@ -1,12 +1,16 @@
 import { ASTNode, Json } from ".."
-import { wrapQmapJsonCtx } from "../utils"
+import { wrapQmapCtx } from "../utils"
 
 export class Exclude implements ASTNode {
-  constructor (public node: ASTNode) { }
+  constructor (public name: string) { }
 
   generate (): Json {
-    return wrapQmapJsonCtx(this.node.generate(), {
-      $qmap_exclude: true,
-    })
+    const json = {
+      [this.name]: wrapQmapCtx({
+        $qmap_exclude: true,
+      })
+    }
+
+    return json
   }
 }

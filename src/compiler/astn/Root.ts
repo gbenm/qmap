@@ -1,10 +1,11 @@
-import { ASTNode } from ".."
+import { ASTNode, SymbolTableImpl } from ".."
 
 export class Root implements ASTNode {
   constructor (public id: string, public children: ASTNode) { }
 
   generate (): { [key: string]: unknown } {
-    const json = this.children ? this.children.generate() : {}
+    const rootTable = SymbolTableImpl.create()
+    const json = this.children ? this.children.generate(rootTable) : {}
 
     if (this.id) {
       return {

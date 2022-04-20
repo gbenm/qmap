@@ -3,6 +3,7 @@ import qMapParser from "../syntax/qMapParser"
 import antlr from "antlr4"
 
 export * from "./ASTNode"
+export * from "./SymbolTable"
 export * from "./astn"
 
 export function compile (query: string) {
