@@ -452,10 +452,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"antlr4@npm:~4.8.0":
-  version: 4.8.0
-  resolution: "antlr4@npm:4.8.0"
-  checksum: 429b243f1084a9a3f77339cf21f1af7bf2e76d2befcc1447f69cee072576182794b82c2051d9491e4f523c504d759e663f3017c902004c636372df278ca495a7
+"antlr4@npm:~4.9.3":
+  version: 4.9.3
+  resolution: "antlr4@npm:4.9.3"
+  checksum: 2e3b7bcf3b79686311182dac71a4d320abbb7e7bca5fb0e47585771130f4f07489fb4012339bb9a45c1bb0e724d4e185b7a6995111b3b86abfbdfc89b4f92bb1
   languageName: node
   linkType: hard
 
@@ -2650,7 +2650,7 @@ __metadata:
     "@types/node": ^17.0.24
     "@typescript-eslint/eslint-plugin": ^5.19.0
     "@typescript-eslint/parser": ^5.19.0
-    antlr4: ~4.8.0
+    antlr4: ~4.9.3
     chai: ^4.3.6
     eslint: ^8.13.0
     lodash: ^4.17.21
