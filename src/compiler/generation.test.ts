@@ -2,6 +2,7 @@ import { expect, use } from "chai"
 import deepEqualInAnyOrder from "deep-equal-in-any-order"
 
 import { compile } from "."
+import { getQmapCtx, qmapCtxWrap } from "./utils"
 
 use(deepEqualInAnyOrder)
 
@@ -67,6 +68,31 @@ describe("root query", () => {
 })
 
 describe("fields", () => {
+  it("access", () => {
+    const json = compile("{ transaction.product.name }")
+
+    expect(json).to.deep.equalInAnyOrder(jsonWithRoot({
+      transaction: {
+        ...qmapCtxWrap({
+          $qmap_keys: ["product", "name"]
+        })
+      }
+    }))
+  })
+
+  it("access with query", () => {
+    const json = compile("{ transaction.product { name } }")
+
+    expect(json).to.deep.equalInAnyOrder(jsonWithRoot({
+      transaction: {
+        ...qmapCtxWrap({
+          $qmap_keys: ["product"]
+        }),
+        name: {}
+      }
+    }))
+  })
+
   it("nested", () => {
     const json = compile("{ transaction { product {id, name} } }")
 
