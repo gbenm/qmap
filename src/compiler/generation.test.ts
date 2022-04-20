@@ -6,19 +6,6 @@ import { getQmapCtx, qmapCtxWrap } from "./utils"
 
 use(deepEqualInAnyOrder)
 
-const jsonWithRoot = (body: unknown, name?: string) => {
-  if (name) {
-    return {
-      [name]: body,
-      named: true
-    }
-  }
-  return {
-    "root": body,
-    named: false
-  }
-}
-
 describe("root query", () => {
   it("empty query", () => {
     const queries = ["", " ", "\t", "\n", "\n\r\n"]
@@ -68,41 +55,75 @@ describe("root query", () => {
 })
 
 describe("fields", () => {
-  it("access", () => {
-    const json = compile("{ transaction.product.name }")
+  it("simple", () => {
+    const root = compile("{ product }").root
+    expect(root).to.deep.equal({
+      product: {}
+    })
+  })
 
-    expect(json).to.deep.equalInAnyOrder(jsonWithRoot({
-      transaction: {
-        ...qmapCtxWrap({
-          $qmap_keys: ["product", "name"]
-        })
-      }
-    }))
+  it("multiple", () => {
+    const root = compile("{ first_name, last_name, age, image }").root
+    expect(root).to.deep.equal({
+      first_name: {},
+      last_name: {},
+      age: {},
+      image: {}
+    })
+  })
+
+  it("access", () => {
+    const { transaction } = compile("{ transaction.product.name }").root
+
+    const expected = {
+      ...qmapCtxWrap({
+        $qmap_keys: ["product", "name"]
+      })
+    }
+
+    expect(transaction).to.deep.equalInAnyOrder(expected)
+    expect(getQmapCtx(transaction)).to.deep.equalInAnyOrder({
+      $qmap_keys: ["product", "name"]
+    })
   })
 
   it("access with query", () => {
-    const json = compile("{ transaction.product { name } }")
+    const { transaction } = compile("{ transaction.product { name } }").root
 
-    expect(json).to.deep.equalInAnyOrder(jsonWithRoot({
-      transaction: {
-        ...qmapCtxWrap({
-          $qmap_keys: ["product"]
-        }),
-        name: {}
-      }
-    }))
+    const expected = {
+      ...qmapCtxWrap({
+        $qmap_keys: ["product"]
+      }),
+      name: {}
+    }
+
+    expect(transaction).to.deep.equalInAnyOrder(expected)
+    expect(getQmapCtx(transaction)).to.deep.equalInAnyOrder({
+      $qmap_keys: ["product"]
+    })
   })
 
   it("nested", () => {
-    const json = compile("{ transaction { product {id, name} } }")
-
-    expect(json).to.deep.equalInAnyOrder(jsonWithRoot({
-      transaction: {
-        product: {
-          id: {},
-          name: {}
-        }
+    const { transaction } = compile("{ transaction { product {id, name} } }").root
+    const expected = {
+      product: {
+        id: {},
+        name: {}
       }
-    }))
+    }
+
+    expect(transaction).to.deep.equalInAnyOrder(expected)
+    expect(transaction.product).to.deep.equalInAnyOrder(expected.product)
+  })
+})
+
+describe("exclude", () => {
+  it("simple", () => {
+    const { name } = compile("{ !name }").root
+    const ctx = qmapCtxWrap({
+      $qmap_exclude: true
+    })
+
+    expect(name).to.deep.equalInAnyOrder(ctx)
   })
 })
