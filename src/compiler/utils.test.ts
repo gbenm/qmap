@@ -22,6 +22,25 @@ describe("Utils", () => {
     expect(json[qmapCTXKey]).to.deep.equal(ctx)
   })
 
+  it("wrap json and ctx", () => {
+    const json = {
+      name: {},
+      age: {},
+    }
+    const expected = {
+      name: {},
+      age: {},
+      [qmapCTXKey]: {
+        $qmap_test: "test"
+      }
+    }
+
+    const result = wrapQmapJsonCtx(json, ctx)
+
+    expect(result).to.deep.equal(expected)
+    expect(getQmapCtx(result)).to.deep.equal(ctx)
+  })
+
   it("get ctx", () => {
     const ctxFromJson = getQmapCtx(json)
 
