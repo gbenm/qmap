@@ -5,12 +5,12 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'src/**/*.ts'",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'src/**/*.test.ts'",
     "prebuild": "yarn lint && yarn test",
-    "build": "yarn lint && yarn prebuild && tsc"
+    "build": "tsc && yarn postbuild",
+    "postbuild": "tscpaths -p tsconfig.json -s ./src -o ./dist"
   },
   "devDependencies": {
-    "@types/antlr4": "^4.7.2",
     "@types/chai": "^4.3.1",
     "@types/eslint": "^8.4.1",
     "@types/lodash": "^4.14.181",
@@ -22,10 +22,11 @@
     "eslint": "^8.13.0",
     "mocha": "^9.2.2",
     "ts-node": "^10.7.0",
+    "tscpaths": "^0.0.9",
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "antlr4": "^4.10.0",
+    "antlr4": "~4.9.3",
     "lodash": "^4.17.21"
   }
 }
