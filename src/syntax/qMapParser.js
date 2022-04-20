@@ -191,7 +191,7 @@ export default class qMapParser extends antlr4.Parser {
 	            this.enterOuterAlt(localctx, 2);
 	            this.state = 41;
 	            localctx._STRING = this.match(qMapParser.STRING);
-	             localctx.text = JSON.parse((localctx._STRING===null ? null : localctx._STRING.text)) 
+	             localctx.text = eval((localctx._STRING===null ? null : localctx._STRING.text)) 
 	            break;
 	        default:
 	            throw new antlr4.error.NoViableAltException(this);

@@ -12,7 +12,7 @@ start returns [json]
 
 id returns [text]
     : ID { $text = $ID.text }
-    | STRING { $text = JSON.parse($STRING.text) }
+    | STRING { $text = eval($STRING.text) }
 ;
 
 stm returns [node]
