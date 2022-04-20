@@ -1,4 +1,4 @@
-import { ASTNode } from "compiler"
+import { ASTNode } from ".."
 
 export class Identifier implements ASTNode {
   constructor (public id: string, public child: ASTNode) { }

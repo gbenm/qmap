@@ -1,4 +1,4 @@
-import { ASTNode } from "compiler"
+import { ASTNode } from ".."
 
 export class Root implements ASTNode {
   constructor (public id: string, public children: ASTNode) { }

@@ -169,6 +169,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/deep-equal-in-any-order@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@types/deep-equal-in-any-order@npm:1.0.1"
+  checksum: 09a76203438bc2ed9e3ac3f22b6fd43f3561ac4ae5403cf62b4e69359f3016680fbd6ce31f80704e310c3616f4d134e3252ba70e963fc4ca4dd261719c6eb4fd
+  languageName: node
+  linkType: hard
+
 "@types/eslint@npm:^8.4.1":
   version: 8.4.1
   resolution: "@types/eslint@npm:8.4.1"
@@ -940,6 +947,16 @@ __metadata:
   dependencies:
     type-detect: ^4.0.0
   checksum: 4f4c9fb79eb994fb6e81d4aa8b063adc40c00f831588aa65e20857d5d52f15fb23034a6576ecf886f7ff6222d5ae42e71e9b7d57113e0715b1df7ea1e812b125
+  languageName: node
+  linkType: hard
+
+"deep-equal-in-any-order@npm:^1.1.17":
+  version: 1.1.17
+  resolution: "deep-equal-in-any-order@npm:1.1.17"
+  dependencies:
+    lodash.mapvalues: ^4.6.0
+    sort-any: ^2.0.0
+  checksum: 59a662b4bc922e66eee350b338139bd6941ed4cf25d2d4cdfb1519fb857fcff912c183603292272b6815bf6b15d8e629986d60d6b8776a8683082c048eabf1c1
   languageName: node
   linkType: hard
 
@@ -2045,6 +2062,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.mapvalues@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.mapvalues@npm:4.6.0"
+  checksum: 0ff1b252fda318fc36e47c296984925e98fbb0fc5a2ecc4ef458f3c739a9476d47e40c95ac653e8314d132aa59c746d4276527b99d6e271940555c6e12d2babd
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
@@ -2644,6 +2668,7 @@ __metadata:
   resolution: "qmapjs@workspace:."
   dependencies:
     "@types/chai": ^4.3.1
+    "@types/deep-equal-in-any-order": ^1.0.1
     "@types/eslint": ^8.4.1
     "@types/lodash": ^4.14.181
     "@types/mocha": ^9.1.0
@@ -2652,6 +2677,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.19.0
     antlr4: ~4.9.3
     chai: ^4.3.6
+    deep-equal-in-any-order: ^1.1.17
     eslint: ^8.13.0
     lodash: ^4.17.21
     mocha: ^9.2.2
@@ -2950,6 +2976,15 @@ __metadata:
     ip: ^1.1.5
     smart-buffer: ^4.2.0
   checksum: dd9194293059d737759d5c69273850ad4149f448426249325c4bea0e340d1cf3d266c3b022694b0dcf5d31f759de23657244c481fc1e8322add80b7985c36b5e
+  languageName: node
+  linkType: hard
+
+"sort-any@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "sort-any@npm:2.0.0"
+  dependencies:
+    lodash: ^4.17.21
+  checksum: d2dc6cc4f56298ce50b13ce6aafd8bf16010a8f8d0ae75345e8424118ac2cc017a8ffea0eedd136dd67751c09e7b0edb09c959d052ed7ed02afcfbab63c68277
   languageName: node
   linkType: hard
 

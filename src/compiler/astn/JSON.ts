@@ -1,4 +1,4 @@
-import { ASTNode, Json } from "compiler"
+import { ASTNode, Json } from ".."
 
 export class JsonNode implements ASTNode {
   constructor (public json: Json) { }

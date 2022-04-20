@@ -13,5 +13,5 @@ export function compile (query: string): unknown {
   const parser = new qMapParser(tokens) as any
   parser.buildParseTrees = true
   const tree = parser.start()
-  return tree
+  return tree.json
 }

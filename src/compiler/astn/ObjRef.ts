@@ -1,4 +1,4 @@
-import { ASTNodeEntry, ASTNode, JsonNode } from "compiler"
+import { ASTNodeEntry, ASTNode, JsonNode } from ".."
 
 export class ObjRef extends ASTNodeEntry {
   public id: string
