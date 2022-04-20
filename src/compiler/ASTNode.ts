@@ -1,4 +1,4 @@
-export type Json = { [key: string]: unknown }
+export type Json = { [key: string | symbol]: unknown }
 
 export interface ASTNode {
   generate (): Json
