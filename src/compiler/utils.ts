@@ -2,16 +2,18 @@ import { Json } from "./ASTNode"
 
 export const qmapCTXKey = Symbol("$qmap_ctx")
 
-export const qmapCtxWrap = (json: Json) => ({
+export const wrapQmapCtx = (json: Json) => ({
   [qmapCTXKey]: json
 })
+
+export const wrapQmapJsonCtx = (json: Json, ctx: Json) => mergeQmapJsonWithCtx(json, wrapQmapCtx(ctx))
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getQmapCtx = (json?: Json): any => json ? json[qmapCTXKey] ?? {} : {}
 
 export const mergeQmapCtx = (json?: Json, ...jsons: Json[]) => json === undefined ?
   {} :
-  qmapCtxWrap({
+  wrapQmapCtx({
     ...getQmapCtx(json),
     ...getQmapCtx(mergeQmapCtx(...jsons))
   })

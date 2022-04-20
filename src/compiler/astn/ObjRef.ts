@@ -1,5 +1,5 @@
 import { ASTNodeEntry, ASTNode, JsonNode } from ".."
-import { qmapCtxWrap } from "../utils"
+import { wrapQmapCtx } from "../utils"
 
 export class ObjRef extends ASTNodeEntry {
   public id: string
@@ -11,7 +11,7 @@ export class ObjRef extends ASTNodeEntry {
   }
 
   get body(): ASTNode {
-    return new JsonNode(qmapCtxWrap(this.ids.length > 0 ? {
+    return new JsonNode(wrapQmapCtx(this.ids.length > 0 ? {
       $qmap_keys: this.ids
     } : {}))
   }

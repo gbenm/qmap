@@ -2,7 +2,7 @@
 import { expect, use } from "chai"
 import deepEqualInAnyOrder from "deep-equal-in-any-order"
 
-import { getQmapCtx, mergeQmapCtx, mergeQmapJsonWithCtx, qmapCTXKey, qmapCtxWrap } from "./utils"
+import { getQmapCtx, mergeQmapCtx, mergeQmapJsonWithCtx, qmapCTXKey, wrapQmapCtx, wrapQmapJsonCtx } from "./utils"
 
 use(deepEqualInAnyOrder)
 
@@ -10,13 +10,13 @@ describe("Utils", () => {
   const ctx = {
     $qmap_test: "test"
   }
-  const json = qmapCtxWrap(ctx)
+  const json = wrapQmapCtx(ctx)
 
   const ctx2 = {
     $qmap_test2: "test2"
   }
 
-  const json2 = qmapCtxWrap(ctx2)
+  const json2 = wrapQmapCtx(ctx2)
 
   it("wrap ctx", () => {
     expect(json[qmapCTXKey]).to.deep.equal(ctx)
@@ -29,7 +29,7 @@ describe("Utils", () => {
   })
 
   it("merge ctx", () => {
-    const expected = qmapCtxWrap({
+    const expected = wrapQmapCtx({
       ...ctx,
       ...ctx2
     })
@@ -52,7 +52,7 @@ describe("Utils", () => {
       last_name: {}
     }
 
-    const merged_ctx = qmapCtxWrap({
+    const merged_ctx = wrapQmapCtx({
       ...ctx,
       ...ctx2
     })

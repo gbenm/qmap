@@ -2,7 +2,7 @@ import { expect, use } from "chai"
 import deepEqualInAnyOrder from "deep-equal-in-any-order"
 
 import { compile } from "."
-import { getQmapCtx, qmapCtxWrap } from "./utils"
+import { getQmapCtx, wrapQmapCtx } from "./utils"
 
 use(deepEqualInAnyOrder)
 
@@ -76,7 +76,7 @@ describe("fields", () => {
     const { transaction } = compile("{ transaction.product.name }").root
 
     const expected = {
-      ...qmapCtxWrap({
+      ...wrapQmapCtx({
         $qmap_keys: ["product", "name"]
       })
     }
@@ -91,7 +91,7 @@ describe("fields", () => {
     const { transaction } = compile("{ transaction.product { name } }").root
 
     const expected = {
-      ...qmapCtxWrap({
+      ...wrapQmapCtx({
         $qmap_keys: ["product"]
       }),
       name: {}
@@ -120,7 +120,7 @@ describe("fields", () => {
 describe("exclude", () => {
   it("simple", () => {
     const { name } = compile("{ !name }").root
-    const ctx = qmapCtxWrap({
+    const ctx = wrapQmapCtx({
       $qmap_exclude: true
     })
 
