@@ -1,10 +1,11 @@
-
-import { expect, use } from "chai"
-import deepEqualInAnyOrder from "deep-equal-in-any-order"
-
-import { getQmapCtx, mergeQmapCtx, mergeQmapJsonWithCtx, qmapCTXKey, wrapQmapCtx, wrapQmapJsonCtx } from "./utils"
-
-use(deepEqualInAnyOrder)
+import {
+  getQmapCtx,
+  mergeQmapCtx,
+  mergeQmapJsonWithCtx,
+  qmapCTXKey,
+  wrapQmapCtx,
+  wrapQmapJsonCtx
+} from "./utils"
 
 describe("Utils", () => {
   const ctx = {
@@ -19,7 +20,7 @@ describe("Utils", () => {
   const json2 = wrapQmapCtx(ctx2)
 
   it("wrap ctx", () => {
-    expect(json[qmapCTXKey]).to.deep.equal(ctx)
+    expect(json[qmapCTXKey]).toMatchObject(ctx)
   })
 
   it("wrap json and ctx", () => {
@@ -37,14 +38,14 @@ describe("Utils", () => {
 
     const result = wrapQmapJsonCtx(json, ctx)
 
-    expect(result).to.deep.equal(expected)
-    expect(getQmapCtx(result)).to.deep.equal(ctx)
+    expect(result).toMatchObject(expected)
+    expect(getQmapCtx(result)).toMatchObject(ctx)
   })
 
   it("get ctx", () => {
     const ctxFromJson = getQmapCtx(json)
 
-    expect(ctxFromJson).to.deep.equal(ctx)
+    expect(ctxFromJson).toMatchObject(ctx)
   })
 
   it("merge ctx", () => {
@@ -55,7 +56,7 @@ describe("Utils", () => {
 
     const merged = mergeQmapCtx(json, json2)
 
-    expect(getQmapCtx(expected)).to.deep.equal(getQmapCtx(merged))
+    expect(getQmapCtx(expected)).toMatchObject(getQmapCtx(merged))
   })
 
   it("merge json with ctx", () => {
@@ -84,11 +85,40 @@ describe("Utils", () => {
       ...merged_ctx
     }
 
-    expect(result).to.deep.equalInAnyOrder(expected)
-    expect(getQmapCtx(result)).to.deep.equalInAnyOrder({
+    expect(result).toMatchObject(expected)
+    expect(getQmapCtx(result)).toMatchObject({
       ...ctx,
       ...ctx2
     })
   })
 })
 
+describe("Jest", () => {
+  describe("objects", () => {
+    it("simple", () => {
+      expect({ name: "John", age: 40 }).toMatchObject({ name: "John", age: 40 })
+    })
+
+    it("order", () => {
+      expect({ age: 40, name: "John" }).toMatchObject({ name: "John", age: 40 })
+    })
+
+    it("complex", () => {
+      expect({
+        name: { first: "John", last: "Doe" },
+        friends: [
+          { name: "Jane", age: 30 },
+          { name: "Bob", age: 20 },
+          { name: "Alice", age: 25 }
+        ]
+      }).toMatchObject({
+        name: { first: "John", last: "Doe" },
+        friends: [
+          { name: "Jane", age: 30 },
+          { name: "Bob", age: 20 },
+          { name: "Alice", age: 25 }
+        ]
+      })
+    })
+  })
+})

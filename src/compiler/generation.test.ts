@@ -1,10 +1,5 @@
-import { expect, use } from "chai"
-import deepEqualInAnyOrder from "deep-equal-in-any-order"
-
 import { compile } from "."
 import { getQmapCtx, wrapQmapCtx } from "./utils"
-
-use(deepEqualInAnyOrder)
 
 describe("JSON Gen", () => {
   describe("root query", () => {
@@ -14,7 +9,7 @@ describe("JSON Gen", () => {
       queries.forEach((query) => {
         const json = compile(query)
 
-        expect(json).to.deep.equalInAnyOrder({
+        expect(json).toMatchObject({
           root: {},
           named: false
         })
@@ -27,7 +22,7 @@ describe("JSON Gen", () => {
       queries.forEach((query) => {
         const json = compile(query)
 
-        expect(json).to.deep.equalInAnyOrder({
+        expect(json).toMatchObject({
           root: {},
           named: false
         })
@@ -47,7 +42,7 @@ describe("JSON Gen", () => {
       cases.forEach(({query, name}) => {
         const json = compile(query)
 
-        expect(json).to.deep.equalInAnyOrder({
+        expect(json).toMatchObject({
           [name]: {},
           named: true
         })
@@ -58,14 +53,14 @@ describe("JSON Gen", () => {
   describe("fields", () => {
     it("simple", () => {
       const root = compile("{ product }").root
-      expect(root).to.deep.equal({
+      expect(root).toMatchObject({
         product: {}
       })
     })
 
     it("multiple", () => {
       const root = compile("{ first_name, last_name, age, image }").root
-      expect(root).to.deep.equal({
+      expect(root).toMatchObject({
         first_name: {},
         last_name: {},
         age: {},
@@ -82,8 +77,8 @@ describe("JSON Gen", () => {
         })
       }
 
-      expect(transaction).to.deep.equalInAnyOrder(expected)
-      expect(getQmapCtx(transaction)).to.deep.equalInAnyOrder({
+      expect(transaction).toMatchObject(expected)
+      expect(getQmapCtx(transaction)).toMatchObject({
         $qmap_keys: ["product", "name"]
       })
     })
@@ -98,8 +93,8 @@ describe("JSON Gen", () => {
         name: {}
       }
 
-      expect(transaction).to.deep.equalInAnyOrder(expected)
-      expect(getQmapCtx(transaction)).to.deep.equalInAnyOrder({
+      expect(transaction).toMatchObject(expected)
+      expect(getQmapCtx(transaction)).toMatchObject({
         $qmap_keys: ["product"]
       })
     })
@@ -113,8 +108,8 @@ describe("JSON Gen", () => {
         }
       }
 
-      expect(transaction).to.deep.equalInAnyOrder(expected)
-      expect(transaction.product).to.deep.equalInAnyOrder(expected.product)
+      expect(transaction).toMatchObject(expected)
+      expect(transaction.product).toMatchObject(expected.product)
     })
   })
 
@@ -125,8 +120,8 @@ describe("JSON Gen", () => {
         $qmap_exclude: true
       })
 
-      expect(name).to.deep.equalInAnyOrder(ctx)
-      expect(getQmapCtx(name).$qmap_exclude).to.equal(true)
+      expect(name).toMatchObject(ctx)
+      expect(getQmapCtx(name).$qmap_exclude).toBe(true)
     })
 
     it("multiple", () => {
@@ -135,10 +130,10 @@ describe("JSON Gen", () => {
         $qmap_exclude: true
       })
 
-      expect(name).to.deep.equalInAnyOrder(ctx)
-      expect(getQmapCtx(name).$qmap_exclude).to.equal(true)
-      expect(id).to.deep.equalInAnyOrder(ctx)
-      expect(getQmapCtx(id).$qmap_exclude).to.equal(true)
+      expect(name).toMatchObject(ctx)
+      expect(getQmapCtx(name).$qmap_exclude).toBe(true)
+      expect(id).toMatchObject(ctx)
+      expect(getQmapCtx(id).$qmap_exclude).toBe(true)
     })
   })
 
@@ -146,7 +141,7 @@ describe("JSON Gen", () => {
     it("Include all", () => {
       const { root } = compile("{ ... }")
 
-      expect(getQmapCtx(root)).to.deep.equalInAnyOrder({
+      expect(getQmapCtx(root)).toMatchObject({
         $qmap_all: true
       })
     })
@@ -156,12 +151,12 @@ describe("JSON Gen", () => {
       const checkName = (name: any) => {
         const { first: pfirst, last: plast } = name
 
-        expect(pfirst).to.deep.equalInAnyOrder({})
-        expect(plast).to.deep.equalInAnyOrder({})
-        expect(getQmapCtx(plast)).to.deep.equalInAnyOrder({
+        expect(pfirst).toMatchObject({})
+        expect(plast).toMatchObject({})
+        expect(getQmapCtx(plast)).toMatchObject({
           $qmap_exclude: true
         })
-        expect(getQmapCtx(result.public.name)).to.deep.equalInAnyOrder({
+        expect(getQmapCtx(result.public.name)).toMatchObject({
           $qmap_all: true
         })
       }
@@ -174,8 +169,8 @@ describe("JSON Gen", () => {
       const checkUser = (user: any) => {
         checkPublic(user)
         const { age } = user
-        expect(age).to.deep.equalInAnyOrder({})
-        expect(getQmapCtx(user)).to.deep.equalInAnyOrder({
+        expect(age).toMatchObject({})
+        expect(getQmapCtx(user)).toMatchObject({
           $qmap_all: true,
         })
       }
@@ -184,10 +179,10 @@ describe("JSON Gen", () => {
       const checkAdmin = (admin: any) => {
         checkUser(admin)
         const { phone, contact } = admin
-        expect(phone).to.deep.equalInAnyOrder({})
+        expect(phone).toMatchObject({})
         const { user, email } = contact
-        expect(user).to.deep.equalInAnyOrder({})
-        expect(email).to.deep.equalInAnyOrder({})
+        expect(user).toMatchObject({})
+        expect(email).toMatchObject({})
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -237,7 +232,7 @@ describe("JSON Gen", () => {
         }
       }`).root.pub
 
-      expect(person.name).to.deep.equalInAnyOrder({})
+      expect(person.name).toMatchObject({})
     })
 
     it("Scope", () => {
@@ -253,7 +248,7 @@ describe("JSON Gen", () => {
         }
       }`).root.pub
 
-      expect(person.age).to.deep.equalInAnyOrder({})
+      expect(person.age).toMatchObject({})
     })
   })
 })
