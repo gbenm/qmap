@@ -21,9 +21,7 @@ id returns [text]
 
 stm returns [node]
     : field {$node = $field.node}
-    | field_rename
     | fn
-    | client_function
 ;
 exclude returns [node]
     : EX_MARK id { $node = new astn.Exclude($id.text) }
@@ -51,6 +49,8 @@ query returns [node]
     : stm {$node = $stm.node}
     | exclude {$node = $exclude.node}
     | spread {$node = $spread.node}
+    | field_rename
+    | client_function
 ;
 query_list returns [node]
     : {
