@@ -1,4 +1,3 @@
-export * from "./identifier"
 export * from "./Root"
 export * from "./JSON"
 export * from "./ObjRef"

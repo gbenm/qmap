@@ -69,33 +69,29 @@ describe("JSON Gen", () => {
     })
 
     it("access", () => {
-      const { transaction } = compile("{ transaction.product.name }").root
+      const root = compile("{ transaction.product.name }").root
+      console.log("root", root)
+      const { accessed } = getQmapCtx(root)
+      const [key] = accessed
 
-      const expected = {
-        ...wrapQmapCtx({
-          $qmap_keys: ["product", "name"]
-        })
-      }
-
-      expect(transaction).toMatchObject(expected)
-      expect(getQmapCtx(transaction)).toMatchObject({
-        $qmap_keys: ["product", "name"]
+      expect(key).not.toBeFalsy()
+      expect(getQmapCtx(root[key])).toMatchObject({
+        keys: ["transaction", "product", "name"],
+        name: "transaction_product_name"
       })
     })
 
     it("access with query", () => {
-      const { transaction } = compile("{ transaction.product { name } }").root
+      const root = compile("{ transaction.product { name } }").root
+      const { accessed } = getQmapCtx(root)
+      const [key] = accessed
 
-      const expected = {
-        ...wrapQmapCtx({
-          $qmap_keys: ["product"]
-        }),
-        name: {}
-      }
+      expect(key).not.toBeFalsy()
 
-      expect(transaction).toMatchObject(expected)
-      expect(getQmapCtx(transaction)).toMatchObject({
-        $qmap_keys: ["product"]
+      expect(root[key]).toMatchObject({})
+      expect(getQmapCtx(root[key])).toMatchObject({
+        keys: ["transaction", "product"],
+        name: "transaction_product"
       })
     })
 
@@ -115,25 +111,30 @@ describe("JSON Gen", () => {
 
   describe("exclude", () => {
     it("simple", () => {
-      const { name } = compile("{ !name }").root
+      const root = compile("{ !name }").root
       const ctx = wrapQmapCtx({
-        $qmap_exclude: true
+        exclude: ["name"]
       })
 
-      expect(name).toMatchObject(ctx)
-      expect(getQmapCtx(name).$qmap_exclude).toBe(true)
+      expect(getQmapCtx(root)).toMatchObject(ctx)
     })
 
     it("multiple", () => {
-      const { name, id } = compile("{ !name, !id }").root
+      const root = compile("{ !name, !id }").root
       const ctx = wrapQmapCtx({
-        $qmap_exclude: true
+        exclude: ["name", "id"]
       })
 
-      expect(name).toMatchObject(ctx)
-      expect(getQmapCtx(name).$qmap_exclude).toBe(true)
-      expect(id).toMatchObject(ctx)
-      expect(getQmapCtx(id).$qmap_exclude).toBe(true)
+      expect(getQmapCtx(root)).toMatchObject(ctx)
+    })
+
+    it ("nested", () => {
+      const { transaction } = compile("{ transaction { !product, !provider } }").root
+      const ctx = wrapQmapCtx({
+        exclude: ["product", "provider"]
+      })
+
+      expect(getQmapCtx(transaction)).toMatchObject(ctx)
     })
   })
 
@@ -142,7 +143,7 @@ describe("JSON Gen", () => {
       const { root } = compile("{ ... }")
 
       expect(getQmapCtx(root)).toMatchObject({
-        $qmap_all: true
+        all: true
       })
     })
 
@@ -151,13 +152,13 @@ describe("JSON Gen", () => {
       const checkName = (name: any) => {
         const { first: pfirst, last: plast } = name
 
+        console.log(name)
         expect(pfirst).toMatchObject({})
-        expect(plast).toMatchObject({})
-        expect(getQmapCtx(plast)).toMatchObject({
-          $qmap_exclude: true
+        expect(getQmapCtx(name)).toMatchObject({
+          exclude: ["last"]
         })
         expect(getQmapCtx(result.public.name)).toMatchObject({
-          $qmap_all: true
+          all: true
         })
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -171,7 +172,7 @@ describe("JSON Gen", () => {
         const { age } = user
         expect(age).toMatchObject({})
         expect(getQmapCtx(user)).toMatchObject({
-          $qmap_all: true,
+          all: true,
         })
       }
 

@@ -7,6 +7,8 @@ export class Root implements ASTNode {
     const rootTable = SymbolTableImpl.create()
     const json = this.children ? this.children.generate(rootTable) : {}
 
+    console.log(rootTable.generateQueries())
+
     if (this.id) {
       return {
         [this.id]: json,

@@ -1,5 +1,6 @@
 import {
   getQmapCtx,
+  mergeObjects,
   mergeQmapCtx,
   mergeQmapJsonWithCtx,
   qmapCTXKey,
@@ -89,6 +90,45 @@ describe("Utils", () => {
     expect(getQmapCtx(result)).toMatchObject({
       ...ctx,
       ...ctx2
+    })
+  })
+
+  it("merge objects", () => {
+    const merged = mergeObjects(
+      {
+        person: {
+          name: "John",
+          father: {
+            name: "Pete"
+          }
+        }
+      },
+      {
+        person: {
+          age: 20,
+          father: {
+            age: 40
+          }
+        }
+      }
+    )
+
+    expect(merged).toMatchObject({
+      person: {
+        name: "John",
+        age: 20,
+        father: {
+          name: "Pete",
+          age: 40
+        }
+      }
+    })
+
+    expect(mergeObjects([1,2], [3,4])).toMatchObject([1,2,3,4])
+    expect(mergeObjects({}, 3)).toMatchObject({})
+    expect(mergeObjects(3, {})).toBe(3)
+    expect(mergeObjects({ array: [1,2] }, { array: [3,4] })).toMatchObject({
+      array: [1,2,3,4]
     })
   })
 })

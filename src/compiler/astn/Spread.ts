@@ -1,23 +1,12 @@
 import { ASTNode, Json, SymbolTable, rootScope } from ".."
-import { wrapQmapCtx } from "../utils"
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getValue(obj: any, keys: string[]): Json {
-  let value = obj
-  for (const key of keys) {
-    value = value[key]
-  }
-
-  return value
-}
-
+import { wrapQmapCtx, getValue } from "../utils"
 export class Spread implements ASTNode {
   constructor (public ids: (string | symbol)[]) {}
 
   generate (parentTable: SymbolTable): Json {
     if(!this.ids || this.ids.length === 0) {
       return wrapQmapCtx({
-        $qmap_all: true
+        all: true
       })
     }
 
