@@ -1,6 +1,7 @@
 import { SymbolTable } from "./SymbolTable"
 
-export type Json = { [key: string | symbol]: unknown }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Json = { [key: string | symbol]: any }
 
 export interface ASTNode {
   generate (parentTable: SymbolTable): Json

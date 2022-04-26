@@ -1,5 +1,5 @@
 import { Json } from "./ASTNode"
-import { getQmapCtx, getValue, mergeObjectsWithCtx, wrapQmapCtx } from "./utils"
+import { getQmapCtx, getValue, mergeObjectsWithCtx } from "./utils"
 
 export const rootScope = Symbol("__root__")
 export const allQuery = Symbol("__all__")
@@ -8,7 +8,8 @@ export const excludeQuery = Symbol("__exclude__")
 
 export interface SymbolTable {
   createScope(name?: symbol): SymbolTable
-  lookup(name: string, scope?: symbol): Json | undefined
+  lookup(name: string, scope?: symbol): [Json | undefined, string[]] | []
+  copyQueryFrom(...path: string[]): void
   add(name: string | null, value: Json): void
   addQuery(special: symbol): void
   addQuery(query: string, ...queries: string[]): void
@@ -16,7 +17,7 @@ export interface SymbolTable {
   generateQueries(): Json
 }
 
-export type Scope = { name: symbol, table: Json }
+export type Scope = { name: symbol, table: Json, path: string[] }
 
 let globalScopeId = 0
 
@@ -29,12 +30,36 @@ export class SymbolTableImpl implements SymbolTable {
     return this.stack[0]
   }
 
+  private get lastKeyInPath(): string {
+    return this.currentPath[this.currentPath.length - 1]
+  }
+
+  private get prevObjPath(): string[] {
+    return this.currentPath.slice(0, -1)
+  }
+
   private constructor (
     private stack: Scope[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private queryDescriptor: any,
     private currentPath: string[]
-  ) { }
+  ) {
+    this.currentScope.path = this.currentPath
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _addQueriestoPrevObj(obj: any): void {
+    const prevObj = getValue(this.queryDescriptor, this.prevObjPath)
+    prevObj[this.lastKeyInPath] = mergeObjectsWithCtx(prevObj[this.lastKeyInPath], obj)
+  }
+
+  copyQueryFrom(...path: string[]): void {
+    if (!path || path.length === 0) {
+      return
+    }
+
+    this._addQueriestoPrevObj(getValue(this.queryDescriptor, path))
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _addQuery(obj: any, name: string, ...rest: string[]) {
@@ -63,14 +88,15 @@ export class SymbolTableImpl implements SymbolTable {
     if (typeof name === "symbol") {
       if (name === allQuery) {
         getQmapCtx(currentObj).all = true
-      }
-      if (name === excludeQuery) {
-        const prevObj = getValue(this.queryDescriptor, this.currentPath.slice(0, -1))
+      } else if (name === excludeQuery) {
+        const prevObj = getValue(this.queryDescriptor, this.prevObjPath)
+        const [prevKey] = this.currentPath.slice(-1)
+        delete prevObj[prevKey]
         const context = getQmapCtx(prevObj)
         if (!context.exclude) {
           context.exclude = []
         }
-        context.exclude.push(this.currentPath[this.currentPath.length - 1])
+        context.exclude.push(this.lastKeyInPath)
       }
       return
     }
@@ -85,38 +111,13 @@ export class SymbolTableImpl implements SymbolTable {
 
   generateQueries(): Json {
     return this.queryDescriptor
-    const queries = {}
-
-    this.queryDescriptor.forEach((path) => {
-      path.forEach((key, i) => {
-        if (typeof key === "symbol") {
-          if (key === allQuery) {
-            const prevKey = path[i - 1]
-            const currentObj = queries[prevKey]
-            queries[prevKey] = mergeObjectsWithCtx(currentObj, wrapQmapCtx({
-              all: true
-            }))
-          }
-          if (key === excludeQuery) {
-            const prevKey = path[i - 1]
-            const currentObj = queries[prevKey]
-            queries[path[i - 2]] = mergeObjectsWithCtx(currentObj, wrapQmapCtx({
-              exclude: [prevKey]
-            }))
-          }
-          return
-        }
-        queries[key] = {}
-      })
-    })
-
-    return queries
   }
 
   public static create(): SymbolTable {
     const scopes = [{
       name: rootScope,
-      table: {}
+      table: {},
+      path: []
     }]
     return new SymbolTableImpl(scopes, {}, [])
   }
@@ -125,33 +126,41 @@ export class SymbolTableImpl implements SymbolTable {
     const scopeName = name || generateScopeUniqueId()
     const scope = {
       name: scopeName,
-      table: {}
+      table: {},
+      path: this.currentPath
     }
     const stack = [scope, ...this.stack]
 
     return new SymbolTableImpl(stack, this.queryDescriptor, this.currentPath)
   }
 
-  lookup(name: string, scope?: symbol): Json | undefined {
+  private _lookup(name: string, scope?: symbol): Scope | undefined {
     if (scope) {
       const scopeIndex = this.stack.findIndex(s => s.name === scope)
       if (scopeIndex === -1) {
-        return undefined
+        return
       }
-      const scopeTable = this.stack[scopeIndex].table
-
-      return scopeTable[name] as (Json | undefined)
+      return this.stack[scopeIndex]
     }
 
     for (const scope of this.stack) {
       const table = scope.table
       const value = table[name]
       if (value !== undefined) {
-        return value as (Json | undefined)
+        return scope
       }
     }
 
-    return undefined
+    return
+  }
+
+  lookup(name: string, scopeName?: symbol): [Json | undefined, string[]] | [] {
+    const scope = this._lookup(name, scopeName)
+    if (!scope) {
+      return []
+    }
+
+    return [scope.table[name] as (Json | undefined), scope.path]
   }
 
   add(name: string | null, value: Json) {
