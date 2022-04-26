@@ -11,8 +11,9 @@ describe("JSON Gen", () => {
 
         expect(json).toMatchObject({
           root: {},
-          named: false
         })
+
+        expect(json.query).toBeFalsy()
       })
     })
 
@@ -24,8 +25,8 @@ describe("JSON Gen", () => {
 
         expect(json).toMatchObject({
           root: {},
-          named: false
         })
+        expect(json.query).toBeFalsy()
       })
     })
 
@@ -43,8 +44,8 @@ describe("JSON Gen", () => {
         const json = compile(query)
 
         expect(json).toMatchObject({
-          [name]: {},
-          named: true
+          root: {},
+          query: name
         })
       })
     })
@@ -70,7 +71,6 @@ describe("JSON Gen", () => {
 
     it("access", () => {
       const root = compile("{ transaction.product.name }").root
-      console.log("root", root)
       const { accessed } = getQmapCtx(root)
       const [key] = accessed
 
@@ -150,9 +150,8 @@ describe("JSON Gen", () => {
     it("Implicit root", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const checkName = (name: any) => {
-        const { first: pfirst, last: plast } = name
+        const { first: pfirst } = name
 
-        console.log(name)
         expect(pfirst).toMatchObject({})
         expect(getQmapCtx(name)).toMatchObject({
           exclude: ["last"]
