@@ -104,49 +104,115 @@ describe("JSON Gen", () => {
       expect(queries).toMatchObject(expected)
     })
 
-    it("access", () => {
-      const { root, queries } = compile("{ transaction.product.name }")
-      const { index } = getQmapCtx(root)
-      const [key] = index
+    describe("access", () => {
+      it("simple", () => {
+        const { root, queries } = compile("{ transaction.product.name }")
+        const { index } = getQmapCtx(root)
+        const [key] = index
 
-      expect(key).not.toBeFalsy()
-      expect(getQmapCtx(root[key])).toMatchObject({
-        keys: ["transaction", "product", "name"],
-        name: "transaction_product_name",
-        type: QueryType.ACCESS
-      })
-      expect(queries).toMatchObject({
-        transaction: {
-          product: {
-            name: {}
+        expect(key).not.toBeFalsy()
+        expect(getQmapCtx(root[key])).toMatchObject({
+          keys: ["transaction", "product", "name"],
+          name: "transaction_product_name",
+          type: QueryType.ACCESS
+        })
+        expect(queries).toMatchObject({
+          transaction: {
+            product: {
+              name: {}
+            }
           }
-        }
+        })
       })
-    })
 
-    it("access with query", () => {
-      const { root, queries } = compile("{ transaction.product { name } }")
-      const { index } = getQmapCtx(root)
-      const [key] = index
+      it("with query", () => {
+        const { root, queries } = compile("{ transaction.product { name } }")
+        const { index } = getQmapCtx(root)
+        const [key] = index
 
-      expect(key).not.toBeFalsy()
+        expect(key).not.toBeFalsy()
 
-      expect(getQmapCtx(root).index.length).toBe(1)
-      expect(root[key]).toMatchObject({
-        name: {}
-      })
-      expect(getQmapCtx(root[key])).toMatchObject({
-        keys: ["transaction", "product"],
-        name: "transaction_product",
-        type: QueryType.ACCESS,
-        index: ["name"]
-      })
-      expect(queries).toMatchObject({
-        transaction: {
-          product: {
-            name: {}
+        expect(getQmapCtx(root).index.length).toBe(1)
+        expect(root[key]).toMatchObject({
+          name: {}
+        })
+        expect(getQmapCtx(root[key])).toMatchObject({
+          keys: ["transaction", "product"],
+          name: "transaction_product",
+          type: QueryType.ACCESS,
+          index: ["name"]
+        })
+        expect(queries).toMatchObject({
+          transaction: {
+            product: {
+              name: {}
+            }
           }
-        }
+        })
+      })
+
+      it("multiple", () => {
+        const query = `cartitem {
+          id,
+          transaction.product { id, name },
+          transaction {
+            id
+          },
+          user.account { email }
+        }`
+        const { root, queries } = compile(query)
+
+        const rootIndex = getQmapCtx(root).index
+        const idField = root[rootIndex[0]]
+        const transactionAccessField = root[rootIndex[1]]
+        const transactionField = root[rootIndex[2]]
+        const userAccessField = root[rootIndex[3]]
+
+        expect(Object.keys(idField).length).toBe(0)
+        expect(getQmapCtx(idField)).toMatchObject({
+          index: [],
+          type: QueryType.FIELD
+        })
+        expect(transactionAccessField).toMatchObject({
+          id: {},
+          name: {}
+        })
+        expect(getQmapCtx(transactionAccessField)).toMatchObject({
+          index: ["id", "name"],
+          keys: ["transaction", "product"],
+          type: QueryType.ACCESS
+        })
+        expect(transactionField).toMatchObject({
+          id: {}
+        })
+        expect(getQmapCtx(transactionField)).toMatchObject({
+          index: ["id"],
+          type: QueryType.FIELD
+        })
+        expect(userAccessField).toMatchObject({
+          email: {}
+        })
+        expect(getQmapCtx(userAccessField)).toMatchObject({
+          index: ["email"],
+          keys: ["user", "account"],
+          type: QueryType.ACCESS,
+        })
+
+        expect(queries).toMatchObject({
+          id: {},
+          transaction: {
+            id: {},
+            product: {
+              id: {},
+              name: {}
+            }
+          },
+          user: {
+            account: {
+              email: {}
+            }
+          }
+        })
       })
     })
 
@@ -251,8 +317,6 @@ describe("JSON Gen", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const checkName = (name: any, withExtras: boolean) => {
         const { first: pfirst } = name
-
-        console.log("name")
 
         expect(pfirst).toMatchObject({})
         const expected = {
