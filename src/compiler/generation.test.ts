@@ -1,13 +1,13 @@
 import { compile } from "."
 import { QueryType } from "./ASTNode"
-import { getQmapCtx, wrapQmapCtx } from "./utils"
+import { getQmapCtx } from "./utils"
 
 describe("JSON Gen", () => {
   describe("root query", () => {
     it("empty query", () => {
-      const queries = ["", " ", "\t", "\n", "\n\r\n"]
+      const queries = [null, undefined, "", " ", "\t", "\n", "\n\r\n"]
 
-      queries.forEach((query) => {
+      queries.forEach((query: string | undefined | null) => {
         const json = compile(query)
 
         expect(json).toMatchObject({
