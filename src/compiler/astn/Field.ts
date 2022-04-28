@@ -1,5 +1,5 @@
 import { ASTNode, ASTNodeEntry, Json, SymbolTable } from ".."
-import { getQmapCtx, mergeObjects, mergeObjectsWithCtx, mergeQmapJsonWithCtx } from "../utils"
+import { getQmapCtx, mergeObjectsWithCtx, mergeQmapJsonWithCtx, wrapQmapJsonCtx } from "../utils"
 import { ObjRef } from "./ObjRef"
 
 export class Field implements ASTNode {
@@ -21,12 +21,12 @@ export class Field implements ASTNode {
     }
 
     if (noKeyed) {
-      const { accessed } = getQmapCtx(entryJson)
+      const { index} = getQmapCtx(entryJson)
       const result = mergeObjectsWithCtx(
-        entryJson[accessed[0]] as Json,
+        entryJson[index[0]] as Json,
         this.body?.generate(table)
       )
-      entryJson[accessed[0]] = result
+      entryJson[index[0]] = result
       parentTable.add(null, entryJson)
       return entryJson
     }
@@ -38,8 +38,10 @@ export class Field implements ASTNode {
 
     parentTable.add(this.entry.id, body)
 
-    return {
+    return wrapQmapJsonCtx({
       [this.entry.id]: body
-    }
+    }, {
+      index: [this.entry.id]
+    })
   }
 }

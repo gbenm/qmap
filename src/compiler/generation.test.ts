@@ -1,4 +1,5 @@
 import { compile } from "."
+import { QueryType } from "./ASTNode"
 import { getQmapCtx, wrapQmapCtx } from "./utils"
 
 describe("JSON Gen", () => {
@@ -14,6 +15,9 @@ describe("JSON Gen", () => {
           queries: {}
         })
 
+        const { index } = getQmapCtx(json.root)
+        expect(index.length).toBe(0)
+
         expect(json.query).toBeFalsy()
       })
     })
@@ -28,6 +32,10 @@ describe("JSON Gen", () => {
           root: {},
           queries: {}
         })
+
+        const { index } = getQmapCtx(json.root)
+        expect(index.length).toBe(0)
+
         expect(json.query).toBeFalsy()
       })
     })
@@ -50,6 +58,9 @@ describe("JSON Gen", () => {
           query: name,
           queries: {}
         })
+
+        const { index } = getQmapCtx(json.root)
+        expect(index.length).toBe(0)
       })
     })
   })
@@ -60,30 +71,49 @@ describe("JSON Gen", () => {
       expect(root).toMatchObject({
         product: {}
       })
+
+      expect(getQmapCtx(root).index).toEqual(["product"])
+
+      const productCtx = getQmapCtx(root.product)
+      expect(productCtx.index).toEqual([])
+      expect(productCtx.type).toBe(QueryType.FIELD)
+
       expect(queries).toMatchObject({ product: {} })
     })
 
     it("multiple", () => {
       const { root, queries } = compile("{ first_name, last_name, age, image }")
+
       const expected = {
         first_name: {},
         last_name: {},
         age: {},
         image: {}
       }
+
+      Object.keys(expected).forEach((key) => {
+        const ctx = getQmapCtx(root[key])
+
+        expect(ctx.index).toEqual([])
+        expect(ctx.type).toEqual(QueryType.FIELD)
+      })
+
+      expect(getQmapCtx(root).index).toEqual(Object.keys(expected))
+
       expect(root).toMatchObject(expected)
       expect(queries).toMatchObject(expected)
     })
 
     it("access", () => {
       const { root, queries } = compile("{ transaction.product.name }")
-      const { accessed } = getQmapCtx(root)
-      const [key] = accessed
+      const { index } = getQmapCtx(root)
+      const [key] = index
 
       expect(key).not.toBeFalsy()
       expect(getQmapCtx(root[key])).toMatchObject({
         keys: ["transaction", "product", "name"],
-        name: "transaction_product_name"
+        name: "transaction_product_name",
+        type: QueryType.ACCESS
       })
       expect(queries).toMatchObject({
         transaction: {
@@ -96,15 +126,20 @@ describe("JSON Gen", () => {
 
     it("access with query", () => {
       const { root, queries } = compile("{ transaction.product { name } }")
-      const { accessed } = getQmapCtx(root)
-      const [key] = accessed
+      const { index } = getQmapCtx(root)
+      const [key] = index
 
       expect(key).not.toBeFalsy()
 
-      expect(root[key]).toMatchObject({})
+      expect(getQmapCtx(root).index.length).toBe(1)
+      expect(root[key]).toMatchObject({
+        name: {}
+      })
       expect(getQmapCtx(root[key])).toMatchObject({
         keys: ["transaction", "product"],
-        name: "transaction_product"
+        name: "transaction_product",
+        type: QueryType.ACCESS,
+        index: ["name"]
       })
       expect(queries).toMatchObject({
         transaction: {
@@ -125,8 +160,17 @@ describe("JSON Gen", () => {
         }
       }
 
+      expect(getQmapCtx(root).index).toMatchObject(["transaction"])
       expect(transaction).toMatchObject(expected)
+      expect(getQmapCtx(transaction)).toMatchObject({
+        index: ["product"],
+        type: QueryType.FIELD,
+      })
       expect(transaction.product).toMatchObject(expected.product)
+      expect(getQmapCtx(transaction.product)).toMatchObject({
+        index: ["id", "name"],
+        type: QueryType.FIELD,
+      })
       expect(queries).toMatchObject({
         transaction: {
           product: {
@@ -141,9 +185,10 @@ describe("JSON Gen", () => {
   describe("exclude", () => {
     it("simple", () => {
       const { root, queries } = compile("{ !name }")
-      const ctx = wrapQmapCtx({
-        exclude: ["name"]
-      })
+      const ctx = {
+        exclude: ["name"],
+        index: [],
+      }
 
       expect(getQmapCtx(root)).toMatchObject(ctx)
       expect(getQmapCtx(queries)).toMatchObject({
@@ -154,9 +199,10 @@ describe("JSON Gen", () => {
 
     it("multiple", () => {
       const { root, queries } = compile("{ !name, !id }")
-      const ctx = wrapQmapCtx({
-        exclude: ["name", "id"]
-      })
+      const ctx = {
+        index: [],
+        exclude: ["name", "id"],
+      }
 
       expect(getQmapCtx(root)).toMatchObject(ctx)
       expect(getQmapCtx(queries)).toMatchObject({
@@ -170,16 +216,21 @@ describe("JSON Gen", () => {
       const { root, queries } = compile("{ transaction { !product, !provider } }")
       const transaction = root.transaction
       const ctx = {
+        index: [],
+        type: QueryType.FIELD,
         exclude: ["product", "provider"]
       }
 
+      expect(getQmapCtx(root).index).toEqual(["transaction"])
       expect(getQmapCtx(transaction)).toMatchObject(ctx)
       expect(queries).toMatchObject({
         transaction: {}
       })
       expect(queries.transaction.product).toBeFalsy()
       expect(queries.transaction.provider).toBeFalsy()
-      expect(getQmapCtx(queries.transaction)).toMatchObject(ctx)
+      expect(getQmapCtx(queries.transaction)).toMatchObject({
+        exclude: ctx.exclude
+      })
     })
   })
 
@@ -188,7 +239,8 @@ describe("JSON Gen", () => {
       const { root, queries } = compile("{ ... }")
 
       expect(getQmapCtx(root)).toMatchObject({
-        all: true
+        all: true,
+        index: []
       })
       expect(getQmapCtx(queries)).toMatchObject({
         all: true
@@ -197,36 +249,73 @@ describe("JSON Gen", () => {
 
     it("Implicit root", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const checkName = (name: any) => {
+      const checkName = (name: any, withExtras: boolean) => {
         const { first: pfirst } = name
 
+        console.log("name")
+
         expect(pfirst).toMatchObject({})
-        expect(getQmapCtx(name)).toMatchObject({
-          exclude: ["last"]
-        })
-        expect(getQmapCtx(name)).toMatchObject({
-          all: true
-        })
+        const expected = {
+          exclude: ["last"],
+          all: true,
+        }
+
+        if (withExtras) {
+          expected["index"] = ["first"]
+          expected["type"] = QueryType.FIELD
+        }
+
+        expect(getQmapCtx(name)).toMatchObject(expected)
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const checkPublic = (pub: any) => {
-        checkName(pub.name)
+      const checkPublic = (pub: any, withExtras: boolean) => {
+        checkName(pub.name, withExtras)
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const checkUser = (user: any) => {
-        checkPublic(user)
+      const checkUser = (user: any, withExtras: boolean) => {
+        checkPublic(user, withExtras)
         const { age } = user
         expect(age).toMatchObject({})
-        expect(getQmapCtx(user)).toMatchObject({
+
+        const expected = {
           all: true,
-        })
+        }
+
+        if (withExtras) {
+          expected["type"] = QueryType.FIELD
+        }
+
+        expect(getQmapCtx(user)).toMatchObject(expected)
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const checkAdmin = (admin: any) => {
-        checkUser(admin)
+      const checkAdmin = (admin: any, withExtras: boolean) => {
+        checkUser(admin, withExtras)
         const { phone, contact } = admin
+
+        if (withExtras) {
+          expect(getQmapCtx(admin)).toMatchObject({
+            type: QueryType.FIELD,
+          })
+
+          expect(getQmapCtx(phone)).toMatchObject({
+            type: QueryType.FIELD,
+          })
+
+          expect(getQmapCtx(contact)).toMatchObject({
+            type: QueryType.FIELD,
+          })
+
+          expect(getQmapCtx(contact.user)).toMatchObject({
+            type: QueryType.FIELD,
+          })
+
+          expect(getQmapCtx(contact.email)).toMatchObject({
+            type: QueryType.FIELD,
+          })
+        }
+
         expect(phone).toMatchObject({})
         const { user, email } = contact
         expect(user).toMatchObject({})
@@ -234,8 +323,8 @@ describe("JSON Gen", () => {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const checkPerson = (person: any) => {
-        checkName(person)
+      const checkPerson = (person: any, withExtras: boolean) => {
+        checkName(person, withExtras)
       }
 
       const { root, queries } = compile(`{
@@ -258,16 +347,34 @@ describe("JSON Gen", () => {
         }
       }`)
 
-      checkPublic(root.public)
-      checkUser(root.user)
-      checkAdmin(root.admin)
-      checkPerson(root.person)
+      checkPublic(root.public, true)
+      checkUser(root.user, true)
+      checkAdmin(root.admin, true)
+      checkPerson(root.person, true)
       expect(Object.keys(root)).toMatchObject(["public", "user", "admin", "person"])
+      expect(getQmapCtx(root)).toMatchObject({
+        index: ["public", "user", "admin", "person"],
+      })
+      expect(getQmapCtx(root.public)).toMatchObject({
+        index: ["name"],
+      })
+      expect(getQmapCtx(root.user)).toMatchObject({
+        index: ["name", "age"],
+      })
+      expect(getQmapCtx(root.admin)).toMatchObject({
+        index: ["name", "age", "phone", "contact"],
+      })
+      expect(getQmapCtx(root.admin.contact)).toMatchObject({
+        index: ["user", "email"],
+      })
+      expect(getQmapCtx(root.person)).toMatchObject({
+        index: ["first"],
+      })
 
-      checkPublic(queries.public)
-      checkUser(queries.user)
-      checkAdmin(queries.admin)
-      checkPerson(queries.person)
+      checkPublic(queries.public, false,)
+      checkUser(queries.user, false)
+      checkAdmin(queries.admin, false)
+      checkPerson(queries.person, false)
       expect(Object.keys(queries)).toMatchObject(["public", "user", "admin", "person"])
     })
 
@@ -284,6 +391,25 @@ describe("JSON Gen", () => {
         }
       }`)
 
+      expect(getQmapCtx(root)).toMatchObject({
+        index: ["target", "pub"],
+      })
+      expect(getQmapCtx(root.target)).toMatchObject({
+        index: ["name"],
+        type: QueryType.FIELD,
+      })
+      expect(getQmapCtx(root.pub)).toMatchObject({
+        index: ["target", "person"],
+        type: QueryType.FIELD,
+      })
+      expect(getQmapCtx(root.pub.target)).toMatchObject({
+        index: ["person"],
+        type: QueryType.FIELD,
+      })
+      expect(getQmapCtx(root.pub.person)).toMatchObject({
+        index: ["name"],
+        type: QueryType.FIELD,
+      })
       expect(root.pub.person.name).toMatchObject({})
       expect(Object.keys(root.pub.person.name).length).toBe(0)
       expect(queries).toMatchObject({
@@ -318,6 +444,26 @@ describe("JSON Gen", () => {
           }
         }
       }`)
+
+      expect(getQmapCtx(root)).toMatchObject({
+        index: ["target", "pub"],
+      })
+      expect(getQmapCtx(root.target)).toMatchObject({
+        index: ["name"],
+        type: QueryType.FIELD,
+      })
+      expect(getQmapCtx(root.pub)).toMatchObject({
+        index: ["target", "person"],
+        type: QueryType.FIELD,
+      })
+      expect(getQmapCtx(root.pub.target)).toMatchObject({
+        index: ["age"],
+        type: QueryType.FIELD,
+      })
+      expect(getQmapCtx(root.pub.person)).toMatchObject({
+        index: ["age"],
+        type: QueryType.FIELD,
+      })
 
       expect(root.pub.person.age).toMatchObject({})
       expect(queries).toMatchObject({

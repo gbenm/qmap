@@ -1,5 +1,12 @@
 import { SymbolTable } from "./SymbolTable"
 
+export enum QueryType {
+  FIELD = "field",
+  FUNCTION = "function",
+  CLIENT_FUNCTION = "client_function",
+  ACCESS = "access",
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Json = { [key: string | symbol]: any }
 

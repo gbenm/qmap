@@ -1,4 +1,5 @@
 import { ASTNodeEntry, ASTNode, JsonNode } from ".."
+import { QueryType } from "../ASTNode"
 import { wrapQmapCtx, wrapQmapJsonCtx } from "../utils"
 
 let idCounter = 0
@@ -15,7 +16,10 @@ export class ObjRef extends ASTNodeEntry {
   body(): ASTNode {
 
     if (this.ids.length == 0) {
-      return new JsonNode(wrapQmapCtx({}))
+      return new JsonNode(wrapQmapCtx({
+        index: [],
+        type: QueryType.FIELD,
+      }))
     }
 
     const key = Symbol(`a_${idCounter++}`)
@@ -25,10 +29,11 @@ export class ObjRef extends ASTNodeEntry {
     return new JsonNode(wrapQmapJsonCtx({
       [key]: wrapQmapCtx({
         keys: path,
+        type: QueryType.ACCESS,
         name: path.join("_")
       })
     }, {
-      accessed: [key],
+      index: [key]
     }))
   }
 }
