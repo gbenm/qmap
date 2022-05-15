@@ -5,9 +5,10 @@ export const qmapCTXKey = Symbol("qmap")
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getValue(obj: any, keys: string[], getter = (value: any, key: string) => value[key]): Json {
   let value = obj
-  for (const key of keys) {
+
+  keys.forEach((key) => {
     value = getter(value, key)
-  }
+  })
 
   return value
 }

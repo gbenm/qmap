@@ -7,10 +7,10 @@ export class Field implements ASTNode {
   generate(parentTable: SymbolTable): QueryNode {
     const [primaryId, ...otherIds] = this.accessKeys
 
-    if (otherIds.length === 0) {
-      const table = parentTable.enterTo(primaryId)
-      const definitions = this.nodes?.map(node => node.generate(table)) ?? []
+    const table = parentTable.enterTo(primaryId, ...otherIds)
+    const definitions = this.nodes?.map(node => node.generate(table)) ?? []
 
+    if (otherIds.length === 0) {
       const selectNode = {
         type: QueryType.SELECT,
         name: primaryId,
@@ -21,9 +21,6 @@ export class Field implements ASTNode {
 
       return selectNode
     }
-
-    const table = parentTable.enterTo(primaryId, ...otherIds)
-    const definitions = this.nodes?.map(node => node.generate(table)) ?? []
 
     return {
       type: QueryType.ACCESS,

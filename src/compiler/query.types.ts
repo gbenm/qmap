@@ -53,6 +53,6 @@ export interface RootQueryNode {
   type: QueryType.ROOT
   definitions: QueryNode[]
   query?: string
-  index: Json
+  descriptor: Json
   errors: unknown[]
 }

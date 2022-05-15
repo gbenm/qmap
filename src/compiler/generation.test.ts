@@ -11,11 +11,12 @@ describe("root query", () => {
 
       expect(root).toMatchObject({
         type: QueryType.ROOT,
-        index: {},
+        descriptor: {},
         errors: [],
         definitions: [],
       })
 
+      expect(Object.keys(root.descriptor.index).length).toBe(0)
       expect(root.query).toBeFalsy()
     })
   })
@@ -32,7 +33,7 @@ describe("root query", () => {
         definitions: [],
       })
 
-      expect(Object.keys(root.index).length).toBe(0)
+      expect(Object.keys(root.descriptor.index).length).toBe(0)
       expect(root.query).toBeFalsy()
     })
   })
@@ -54,15 +55,14 @@ describe("root query", () => {
         query: name,
       })
 
-      const index = root.index
-      expect(Object.keys(index).length).toBe(0)
+      expect(Object.keys(root.descriptor.index).length).toBe(0)
     })
   })
 })
 
 describe("fields", () => {
   it("simple", () => {
-    const { definitions, index } = compile("{ product }")
+    const { definitions, descriptor } = compile("{ product }")
 
     const productField: SelectQueryNode = {
       type: QueryType.SELECT,
@@ -73,11 +73,11 @@ describe("fields", () => {
     expect(definitions.length).toBe(1)
     expect(definitions[0]).toMatchObject(productField)
 
-    expect(index).toMatchObject({ product: {} })
+    expect(descriptor.index).toMatchObject({ product: {} })
   })
 
   it("multiple", () => {
-    const { definitions, index } = compile("{ first_name, last_name, age, image }")
+    const { definitions, descriptor } = compile("{ first_name, last_name, age, image }")
 
     const queryNodes: QueryNode[] = [
       {
@@ -112,12 +112,12 @@ describe("fields", () => {
       image: {}
     }
 
-    expect(index).toMatchObject(expected)
+    expect(descriptor.index).toMatchObject(expected)
   })
 
   describe("access", () => {
     it("simple", () => {
-      const { definitions, index } = compile("{ transaction.product.name }")
+      const { definitions, descriptor } = compile("{ transaction.product.name }")
 
       expect(definitions.length).toBe(1)
 
@@ -130,8 +130,8 @@ describe("fields", () => {
 
       expect(definitions[0]).toMatchObject(expeted)
 
-      expect(Object.keys(index).length).toBe(1)
-      expect(index).toMatchObject({
+      expect(Object.keys(descriptor.index).length).toBe(1)
+      expect(descriptor.index).toMatchObject({
         transaction: {
           index: {
             product: {
@@ -145,7 +145,7 @@ describe("fields", () => {
     })
 
     it("with query", () => {
-      const { definitions, index } = compile("{ transaction.product { name } }")
+      const { definitions, descriptor } = compile("{ transaction.product { name } }")
 
       expect(definitions.length).toBe(1)
 
@@ -165,8 +165,8 @@ describe("fields", () => {
       expect(result.definitions[0]).toMatchObject(selectQueryNode)
       expect((result.definitions[0] as SelectQueryNode).alias).toBeFalsy()
 
-      expect(Object.keys(index).length).toBe(1)
-      expect(index).toMatchObject({
+      expect(Object.keys(descriptor.index).length).toBe(1)
+      expect(descriptor.index).toMatchObject({
         transaction: {
           index: {
             product: {

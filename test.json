@@ -53,23 +53,26 @@
   ],
   "query": "test",
   "index": {
-    "transaction": {
-      "index": {
-        "id": {
-          "index": {}
-        },
-        "provider": {
-          "index": {}
-        },
-        "transaction": {
-          "index": {
-            "product": {
-              "index": {}
+    "index": {
+      "transaction": {
+        "index": {
+          "product": {
+            "index": {
+              "name": {
+                "index": {}
+              }
+            },
+            "all": true,
+            "exclude": {
+              "age": true
             }
+          },
+          "id": {
+            "index": {}
+          },
+          "provider": {
+            "index": {}
           }
-        },
-        "exclude": {
-          "product": true
         }
       }
     }

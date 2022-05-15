@@ -1,4 +1,5 @@
 import { ASTNode, SymbolTable, rootScope, QueryNode, CommonNamedQueryNode, QueryType } from ".."
+import { allQuery } from "../SymbolTable"
 
 function searchQueryNode(node: CommonNamedQueryNode, path: string[]): QueryNode | undefined {
   if (path.length === 0) {
@@ -24,6 +25,7 @@ export class Spread implements ASTNode {
 
   generate (parentTable: SymbolTable): QueryNode {
     if(!this.ids || this.ids.length === 0) {
+      parentTable.addToIndex(allQuery)
       return {
         type: QueryType.ALL,
       }

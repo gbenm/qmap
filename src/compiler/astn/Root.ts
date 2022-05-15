@@ -10,7 +10,7 @@ export class Root implements ASTNode {
       type: QueryType.ROOT,
       definitions: this.children?.map(child => child.generate(rootTable)) ?? [],
       query: this.id,
-      index: rootTable.generateIndex(),
+      descriptor: rootTable.generateIndex(),
       errors: []
     }
   }

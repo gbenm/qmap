@@ -31,7 +31,7 @@ export function compile (query: string | undefined | null): RootQueryNode {
   return {
     type: QueryType.ROOT,
     definitions: [],
-    index: {},
+    descriptor: {},
     errors
    }
 }
