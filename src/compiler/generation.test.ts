@@ -1,5 +1,5 @@
 import { compile, QueryType } from "."
-import { SelectQueryNode } from "./query.types"
+import { QueryNode, SelectQueryNode } from "./query.types"
 
 
 describe("root query", () => {
@@ -76,28 +76,44 @@ describe("fields", () => {
     expect(index).toMatchObject({ product: {} })
   })
 
-  // it("multiple", () => {
-  //   const { root, queries } = compile("{ first_name, last_name, age, image }")
+  it("multiple", () => {
+    const { definitions, index } = compile("{ first_name, last_name, age, image }")
 
-  //   const expected = {
-  //     first_name: {},
-  //     last_name: {},
-  //     age: {},
-  //     image: {}
-  //   }
+    const queryNodes: QueryNode[] = [
+      {
+        type: QueryType.SELECT,
+        name: "first_name",
+        definitions: []
+      },
+      {
+        type: QueryType.SELECT,
+        name: "last_name",
+        definitions: []
+      },
+      {
+        type: QueryType.SELECT,
+        name: "age",
+        definitions: []
+      },
+      {
+        type: QueryType.SELECT,
+        name: "image",
+        definitions: []
+      }
+    ]
 
-  //   Object.keys(expected).forEach((key) => {
-  //     const ctx = getQmapCtx(root[key])
+    expect(definitions.length).toBe(4)
+    definitions.forEach((node, i) => expect(node).toMatchObject(queryNodes[i]))
 
-  //     expect(ctx.index).toEqual([])
-  //     expect(ctx.type).toEqual(QueryType.SELECT)
-  //   })
+    const expected = {
+      first_name: {},
+      last_name: {},
+      age: {},
+      image: {}
+    }
 
-  //   expect(getQmapCtx(root).index).toEqual(Object.keys(expected))
-
-  //   expect(root).toMatchObject(expected)
-  //   expect(queries).toMatchObject(expected)
-  // })
+    expect(index).toMatchObject(expected)
+  })
 
   // describe("access", () => {
   //   it("simple", () => {
