@@ -1,4 +1,3 @@
-import { map } from "lodash"
 import { ASTNode, SymbolTableImpl, QueryNode, QueryType } from ".."
 
 export class Root implements ASTNode {
