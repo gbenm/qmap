@@ -8,7 +8,7 @@ export class Field implements ASTNode {
     const [primaryId, ...otherIds] = this.accessKeys
 
     if (otherIds.length === 0) {
-      const table = parentTable.enterTo(primaryId, ...otherIds)
+      const table = parentTable.enterTo(primaryId)
       const definitions = this.nodes?.map(node => node.generate(table)) ?? []
 
       const selectNode = {
@@ -22,6 +22,7 @@ export class Field implements ASTNode {
       return selectNode
     }
 
+    parentTable.addToIndex(primaryId, ...otherIds)
     const table = parentTable.createScope()
     const definitions = this.nodes?.map(node => node.generate(table)) ?? []
 
