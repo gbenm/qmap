@@ -1,5 +1,5 @@
 import { compile, QueryType } from "."
-import { QueryNode, SelectQueryNode } from "./query.types"
+import { AccessQueryNode, QueryNode, SelectQueryNode } from "./query.types"
 
 
 describe("root query", () => {
@@ -115,26 +115,33 @@ describe("fields", () => {
     expect(index).toMatchObject(expected)
   })
 
-  // describe("access", () => {
-  //   it("simple", () => {
-  //     const { root, queries } = compile("{ transaction.product.name }")
-  //     const { index } = getQmapCtx(root)
-  //     const [key] = index
+  describe("access", () => {
+    it("simple", () => {
+      const { definitions, index } = compile("{ transaction.product.name }")
 
-  //     expect(key).not.toBeFalsy()
-  //     expect(getQmapCtx(root[key])).toMatchObject({
-  //       keys: ["transaction", "product", "name"],
-  //       name: "transaction_product_name",
-  //       type: QueryType.ACCESS
-  //     })
-  //     expect(queries).toMatchObject({
-  //       transaction: {
-  //         product: {
-  //           name: {}
-  //         }
-  //       }
-  //     })
-  //   })
+      expect(definitions.length).toBe(1)
+
+      const expeted: AccessQueryNode = {
+        type: QueryType.ACCESS,
+        keys: ["transaction", "product", "name"],
+        definitions: []
+      }
+
+      expect(definitions[0]).toMatchObject(expeted)
+
+      expect(Object.keys(index).length).toBe(1)
+      expect(index).toMatchObject({
+        transaction: {
+          index: {
+            product: {
+              index: {
+                name: {}
+              }
+            }
+          }
+        }
+      })
+    })
 
   //   it("with query", () => {
   //     const { root, queries } = compile("{ transaction.product { name } }")
@@ -225,7 +232,7 @@ describe("fields", () => {
   //       }
   //     })
   //   })
-  // })
+  })
 
   // it("nested", () => {
   //   const { root, queries } = compile("{ transaction { product {id, name} } }")
