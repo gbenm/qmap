@@ -124,6 +124,7 @@ describe("fields", () => {
       const expeted: AccessQueryNode = {
         type: QueryType.ACCESS,
         keys: ["transaction", "product", "name"],
+        alias: "transaction_product_name",
         definitions: []
       }
 
@@ -143,31 +144,40 @@ describe("fields", () => {
       })
     })
 
-  //   it("with query", () => {
-  //     const { root, queries } = compile("{ transaction.product { name } }")
-  //     const { index } = getQmapCtx(root)
-  //     const [key] = index
+    it("with query", () => {
+      const { definitions, index } = compile("{ transaction.product { name } }")
 
-  //     expect(key).not.toBeFalsy()
+      expect(definitions.length).toBe(1)
 
-  //     expect(getQmapCtx(root).index.length).toBe(1)
-  //     expect(root[key]).toMatchObject({
-  //       name: {}
-  //     })
-  //     expect(getQmapCtx(root[key])).toMatchObject({
-  //       keys: ["transaction", "product"],
-  //       name: "transaction_product",
-  //       type: QueryType.ACCESS,
-  //       index: ["name"]
-  //     })
-  //     expect(queries).toMatchObject({
-  //       transaction: {
-  //         product: {
-  //           name: {}
-  //         }
-  //       }
-  //     })
-  //   })
+      const selectQueryNode: SelectQueryNode = {
+        type: QueryType.SELECT,
+        name: "name",
+        definitions: []
+      }
+
+      const result = definitions[0] as AccessQueryNode
+
+      expect(result.type).toBe(QueryType.ACCESS)
+      expect(result["name"]).toBeFalsy()
+      expect(result.alias).toBe("transaction_product")
+      expect(result.keys).toEqual(["transaction", "product"])
+      expect(result.definitions.length).toBe(1)
+      expect(result.definitions[0]).toMatchObject(selectQueryNode)
+      expect((result.definitions[0] as SelectQueryNode).alias).toBeFalsy()
+
+      expect(Object.keys(index).length).toBe(1)
+      expect(index).toMatchObject({
+        transaction: {
+          index: {
+            product: {
+              index: {
+                name: {}
+              }
+            }
+          }
+        }
+      })
+    })
 
   //   it("multiple", () => {
   //     const query = `cartitem {

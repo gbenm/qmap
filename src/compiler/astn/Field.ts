@@ -22,8 +22,7 @@ export class Field implements ASTNode {
       return selectNode
     }
 
-    parentTable.addToIndex(primaryId, ...otherIds)
-    const table = parentTable.createScope()
+    const table = parentTable.enterTo(primaryId, ...otherIds)
     const definitions = this.nodes?.map(node => node.generate(table)) ?? []
 
     return {

@@ -1,5 +1,5 @@
 import { Json, QueryNode } from "./query.types"
-import { getQmapCtx, getValue, mergeObjectsWithCtx } from "./utils"
+import { getValue, mergeObjectsWithCtx } from "./utils"
 
 export const rootScope = Symbol("__root__")
 export const allQuery = Symbol("__all__")

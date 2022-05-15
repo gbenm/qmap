@@ -1,0 +1,78 @@
+{
+  "type": "root",
+  "definitions": [
+    {
+      "type": "select",
+      "name": "transaction",
+      "definitions": [
+        {
+          "type": "select",
+          "name": "product",
+          "definitions": []
+        },
+        {
+          "type": "select",
+          "name": "id",
+          "definitions": []
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "name": "transaction",
+      "definitions": [
+        {
+          "type": "select",
+          "name": "provider",
+          "definitions": []
+        }
+      ]
+    },
+    {
+      "type": "access",
+      "alias": "transaction_product",
+      "keys": [
+        "transaction",
+        "product"
+      ],
+      "definitions": [
+        {
+          "type": "all"
+        },
+        {
+          "type": "select",
+          "name": "name",
+          "definitions": []
+        },
+        {
+          "type": "exclude",
+          "name": "age"
+        }
+      ]
+    }
+  ],
+  "query": "test",
+  "index": {
+    "transaction": {
+      "index": {
+        "id": {
+          "index": {}
+        },
+        "provider": {
+          "index": {}
+        },
+        "transaction": {
+          "index": {
+            "product": {
+              "index": {}
+            }
+          }
+        },
+        "exclude": {
+          "product": true
+        }
+      }
+    }
+  },
+  "errors": []
+}
