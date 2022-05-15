@@ -1,23 +1,18 @@
-import { ASTNode, SymbolTableImpl } from ".."
-import { getQmapCtx } from "../utils"
+import { map } from "lodash"
+import { ASTNode, SymbolTableImpl, QueryNode, QueryType } from ".."
 
 export class Root implements ASTNode {
-  constructor (public id: string, public children: ASTNode) { }
+  constructor (public id: string | undefined, public children: ASTNode[] | null) { }
 
-  generate (): { [key: string]: unknown } {
+  generate (): QueryNode {
     const rootTable = SymbolTableImpl.create()
-    const json = this.children ? this.children.generate(rootTable) : {}
-
-    const ctx = getQmapCtx(json)
-
-    if (!ctx.index) {
-      ctx.index = []
-    }
 
     return {
-      root: json,
+      type: QueryType.ROOT,
+      definitions: this.children?.map(child => child.generate(rootTable)) ?? [],
       query: this.id,
-      queries: rootTable.generateQueries()
+      index: rootTable.generateIndex(),
+      errors: []
     }
   }
 }

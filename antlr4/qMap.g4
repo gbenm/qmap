@@ -4,9 +4,9 @@ grammar qMap;
 import * as astn from "../compiler"
 }
 
-start returns [json]
-    : optional_id { $json = (new astn.Root($optional_id.text, null)).generate() } (LEFT_BRACKET
-        (query_list { $json = (new astn.Root($optional_id.text, $query_list.node)).generate() })?
+start returns [root]
+    : optional_id { $root = (new astn.Root($optional_id.text, null)).generate() } (LEFT_BRACKET
+        (query_list {$root = (new astn.Root($optional_id.text, $query_list.nodes)).generate() })?
     RIGHT_BRACKET)?
 ;
 
@@ -52,23 +52,23 @@ query returns [node]
     | field_rename
     | client_function
 ;
-query_list returns [node]
+query_list returns [nodes]
     : {
     const nodes = []
     }
     ( query {nodes.push($query.node)} (COMMA query {nodes.push($query.node)})* COMMA?)
-    {$node = new astn.QueryList(nodes)}
+    {$nodes = nodes}
 ;
 
-obj_ref returns [node]
+obj_ref returns [ids]
     : {const ids = []}
-    (id {ids.push($id.text)} | STRING {ids.push($STRING.text)} ) (DOT id {ids.push($id.text)})*
-    {$node = new astn.ObjRef(ids)}
+    id {ids.push($id.text)} (DOT id {ids.push($id.text)})*
+    {$ids = ids}
 ;
 
 field returns [node]
-    : obj_ref { $node = new astn.Field($obj_ref.node, null) }
-    (LEFT_BRACKET query_list RIGHT_BRACKET { $node = new astn.Field($obj_ref.node, $query_list.node) })?
+    : obj_ref { $node = new astn.Field($obj_ref.ids, null) }
+    (LEFT_BRACKET query_list RIGHT_BRACKET { $node = new astn.Field($obj_ref.ids, $query_list.nodes) })?
 ;
 field_rename: id COLON stm;
 fn: ID LEFT_BRACKET params RIGHT_BRACKET;

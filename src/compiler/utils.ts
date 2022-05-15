@@ -1,12 +1,12 @@
-import { Json } from "./ASTNode"
+import { Json } from "./query.types"
 
 export const qmapCTXKey = Symbol("qmap")
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getValue(obj: any, keys: string[]): Json {
+export function getValue(obj: any, keys: string[], getter = (value: any, key: string) => value[key]): Json {
   let value = obj
   for (const key of keys) {
-    value = value[key]
+    value = getter(value, key)
   }
 
   return value

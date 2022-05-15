@@ -1,17 +1,14 @@
-import { ASTNode, Json, SymbolTable } from ".."
-import { excludeQuery } from "../SymbolTable"
-import { wrapQmapCtx } from "../utils"
+import { ASTNode, SymbolTable, QueryNode, QueryType, excludeQuery } from ".."
 
 export class Exclude implements ASTNode {
   constructor (public name: string) { }
 
-  generate (parentTable: SymbolTable): Json {
-    parentTable.enterTo(this.name).addQuery(excludeQuery)
+  generate (parentTable: SymbolTable): QueryNode {
+    parentTable.addToIndex(excludeQuery)
 
-    const json = wrapQmapCtx({
-      exclude: [this.name],
-    })
-
-    return json
+    return {
+      type: QueryType.EXCLUDE,
+      name: this.name
+    }
   }
 }

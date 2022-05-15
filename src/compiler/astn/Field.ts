@@ -1,47 +1,35 @@
-import { ASTNode, ASTNodeEntry, Json, SymbolTable } from ".."
-import { getQmapCtx, mergeObjectsWithCtx, mergeQmapJsonWithCtx, wrapQmapJsonCtx } from "../utils"
-import { ObjRef } from "./ObjRef"
+import { ASTNode, SymbolTable, QueryNode } from ".."
+import { QueryType } from "../query.types"
 
 export class Field implements ASTNode {
-  constructor (public entry: ASTNodeEntry, public body: ASTNode) { }
+  constructor (public accessKeys: string[], public nodes: ASTNode[] | null) { }
 
-  generate(parentTable: SymbolTable): Json {
-    let table = parentTable.createScope()
-    const entryJson = this.entry.body(table).generate(table)
+  generate(parentTable: SymbolTable): QueryNode {
+    const [primaryId, ...otherIds] = this.accessKeys
 
-    let noKeyed = false
+    if (otherIds.length === 0) {
+      const table = parentTable.enterTo(primaryId, ...otherIds)
+      const definitions = this.nodes?.map(node => node.generate(table)) ?? []
 
-    if (this.entry instanceof ObjRef) {
-      table = table.enterTo(this.entry.id, ...this.entry.ids)
-      if (this.entry.ids.length > 0) {
-        noKeyed = true
+      const selectNode = {
+        type: QueryType.SELECT,
+        name: primaryId,
+        definitions
       }
-    } else {
-      table = table.enterTo(this.entry.id)
+
+      parentTable.add(primaryId, selectNode)
+
+      return selectNode
     }
 
-    if (noKeyed) {
-      const { index} = getQmapCtx(entryJson)
-      const result = mergeObjectsWithCtx(
-        entryJson[index[0]] as Json,
-        this.body?.generate(table)
-      )
-      entryJson[index[0]] = result
-      parentTable.add(null, entryJson)
-      return entryJson
+    const table = parentTable.createScope()
+    const definitions = this.nodes?.map(node => node.generate(table)) ?? []
+
+    return {
+      type: QueryType.ACCESS,
+      alias: this.accessKeys.join("_"),
+      keys: this.accessKeys,
+      definitions
     }
-
-    const body = mergeQmapJsonWithCtx(
-      entryJson,
-      this.body?.generate(table)
-    )
-
-    parentTable.add(this.entry.id, body)
-
-    return wrapQmapJsonCtx({
-      [this.entry.id]: body
-    }, {
-      index: [this.entry.id]
-    })
   }
 }

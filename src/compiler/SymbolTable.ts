@@ -1,23 +1,25 @@
-import { Json } from "./ASTNode"
+import { Json, QueryNode } from "./query.types"
 import { getQmapCtx, getValue, mergeObjectsWithCtx } from "./utils"
 
 export const rootScope = Symbol("__root__")
 export const allQuery = Symbol("__all__")
 export const excludeQuery = Symbol("__exclude__")
 
-
 export interface SymbolTable {
   createScope(name?: symbol): SymbolTable
-  lookup(name: string, scope?: symbol): [Json | undefined, string[]] | []
-  copyQueryFrom(...path: string[]): void
-  add(name: string | null, value: Json): void
-  addQuery(special: symbol): void
-  addQuery(query: string, ...queries: string[]): void
+  lookup(name: string, scope?: symbol): [QueryNode | undefined, string[]] | []
+  copyIndexFrom(...path: string[]): void
   enterTo(name: string, ...path: string[]): SymbolTable
-  generateQueries(): Json
+  add(name: string, value: QueryNode): void
+  addToIndex(special: symbol): void
+  addToIndex(query: string, ...queries: string[]): void
+  generateIndex(): Json
 }
 
-export type Scope = { name: symbol, table: Json, path: string[] }
+export type ScopeTable = {
+  [key: string]: QueryNode
+}
+export type Scope = { name: symbol, table: ScopeTable, path: string[] }
 
 let globalScopeId = 0
 
@@ -47,69 +49,81 @@ export class SymbolTableImpl implements SymbolTable {
     this.currentScope.path = this.currentPath
   }
 
+  private getValue (path) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return getValue(this.queryDescriptor, path, (obj: any, key: string) => obj[key].index)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _addQueriestoPrevObj(obj: any): void {
-    const prevObj = getValue(this.queryDescriptor, this.prevObjPath)
+  private _addIndextoPrevObj(obj: any): void {
+    const prevObj = this.getValue(this.prevObjPath)
     prevObj[this.lastKeyInPath] = mergeObjectsWithCtx(prevObj[this.lastKeyInPath], obj)
   }
 
-  copyQueryFrom(...path: string[]): void {
+  copyIndexFrom(...path: string[]): void {
     if (!path || path.length === 0) {
       return
     }
 
-    this._addQueriestoPrevObj(getValue(this.queryDescriptor, path))
+    this._addIndextoPrevObj(this.getValue(path))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  _addQuery(obj: any, name: string, ...rest: string[]) {
-    const value = obj[name]
-
+  _addToIndex(obj: any, name: string, ...rest: string[]) {
+    const value = obj[name]?.index
     if (rest.length > 0) {
       if (value) {
-        this._addQuery(value, name, ...rest)
+        this._addToIndex(value, name, ...rest)
       } else {
-        obj[name] = {}
+        if (!obj[name]) {
+          obj[name] = {}
+        }
+        obj[name].index = {}
         const [key, ...rest2] = rest
-        this._addQuery(obj[name], key, ...rest2)
+        this._addToIndex(obj[name].index, key, ...rest2)
       }
       return
     }
 
     if (!value) {
-      obj[name] = {}
+      if (!obj[name]) {
+        obj[name] = {}
+      }
+
+      obj[name].index = {}
     }
   }
 
-  addQuery(special: symbol): void
-  addQuery(name: string, ...queries: string[]): void
-  addQuery(name: symbol | string, ...rest: string[]): void {
-    const currentObj = getValue(this.queryDescriptor, this.currentPath)
+  addToIndex(special: symbol): void;
+  addToIndex(query: string, ...queries: string[]): void;
+  addToIndex(name: symbol | string, ...rest: string[]): void {
+    const currentObj = this.getValue(this.currentPath)
+
     if (typeof name === "symbol") {
       if (name === allQuery) {
-        getQmapCtx(currentObj).all = true
+        currentObj.all = true
       } else if (name === excludeQuery) {
-        const prevObj = getValue(this.queryDescriptor, this.prevObjPath)
-        const [prevKey] = this.currentPath.slice(-1)
-        delete prevObj[prevKey]
-        const context = getQmapCtx(prevObj)
-        if (!context.exclude) {
-          context.exclude = []
+        const prevObj = this.getValue(this.prevObjPath)
+        delete prevObj[this.lastKeyInPath]
+
+        if (!prevObj.exclude) {
+          prevObj.exclude = {}
         }
-        context.exclude.push(this.lastKeyInPath)
+
+        prevObj.exclude[this.lastKeyInPath] = true
       }
       return
     }
 
-    this._addQuery(currentObj, name, ...rest)
+    this._addToIndex(currentObj, name, ...rest)
   }
 
   enterTo(name: string, ...path: string[]): SymbolTable {
-    this.addQuery(name, ...path)
+    this.addToIndex(name, ...path)
     return new SymbolTableImpl(this.stack, this.queryDescriptor, [...this.currentPath, name, ...path])
   }
 
-  generateQueries(): Json {
+  generateIndex(): Json {
     return this.queryDescriptor
   }
 
@@ -154,21 +168,16 @@ export class SymbolTableImpl implements SymbolTable {
     return
   }
 
-  lookup(name: string, scopeName?: symbol): [Json | undefined, string[]] | [] {
+  lookup(name: string, scopeName?: symbol): [QueryNode | undefined, string[]] | [] {
     const scope = this._lookup(name, scopeName)
     if (!scope) {
       return []
     }
 
-    return [scope.table[name] as (Json | undefined), scope.path]
+    return [scope.table[name], scope.path]
   }
 
-  add(name: string | null, value: Json) {
-    if (name === null) {
-      this.currentScope.table = mergeObjectsWithCtx(this.currentScope.table, value)
-      return
-    }
-
+  add(name: string, value: QueryNode) {
     this.currentScope.table[name] = value
   }
 }
