@@ -18,6 +18,10 @@ function forEachDefinition(node: QueryNode, visitor: (node: QueryNode, index: nu
   getDefinitions(node, definitions => definitions.forEach(visitor))
 }
 
+function numberOfKeysMustBe(obj: object, quantity: number) {
+  expect(Object.keys(obj).length).toBe(quantity)
+}
+
 describe("root query", () => {
   it("empty query", () => {
     const queries = [null, undefined, "", " ", "\t", "\n", "\n\r\n"]
@@ -32,7 +36,7 @@ describe("root query", () => {
         definitions: [],
       })
 
-      expect(Object.keys(root.descriptor.index).length).toBe(0)
+      numberOfKeysMustBe(root.descriptor.index, 0)
       expect(root.query).toBeFalsy()
     })
   })
@@ -49,7 +53,7 @@ describe("root query", () => {
         definitions: [],
       })
 
-      expect(Object.keys(root.descriptor.index).length).toBe(0)
+      numberOfKeysMustBe(root.descriptor.index, 0)
       expect(root.query).toBeFalsy()
     })
   })
@@ -71,7 +75,7 @@ describe("root query", () => {
         query: name,
       })
 
-      expect(Object.keys(root.descriptor.index).length).toBe(0)
+      numberOfKeysMustBe(root.descriptor.index, 0)
     })
   })
 })
@@ -146,7 +150,7 @@ describe("fields", () => {
 
       expect(definitions[0]).toMatchObject(expeted)
 
-      expect(Object.keys(descriptor.index).length).toBe(1)
+      numberOfKeysMustBe(descriptor.index, 1)
       expect(descriptor.index).toMatchObject({
         transaction: {
           index: {
@@ -181,7 +185,7 @@ describe("fields", () => {
       expect(result.definitions[0]).toMatchObject(selectQueryNode)
       mustNotHaveAlias(result.definitions[0])
 
-      expect(Object.keys(descriptor.index).length).toBe(1)
+      numberOfKeysMustBe(descriptor.index, 1)
       expect(descriptor.index).toMatchObject({
         transaction: {
           index: {
@@ -384,7 +388,7 @@ describe("exclude", () => {
       exclude: { name: true }
     })
 
-    expect(Object.keys(descriptor.index).length).toBe(0)
+    numberOfKeysMustBe(descriptor.index, 0)
   })
 
   it("multiple", () => {
@@ -408,7 +412,7 @@ describe("exclude", () => {
       }
     })
 
-    expect(Object.keys(descriptor.index).length).toBe(0)
+    numberOfKeysMustBe(descriptor.index, 0)
   })
 
   it ("nested", () => {
@@ -447,258 +451,366 @@ describe("exclude", () => {
       }
     })
 
-    expect(Object.keys(descriptor.index).length).toBe(1)
-    expect(Object.keys(descriptor.index.transaction.index).length).toBe(0)
+    numberOfKeysMustBe(descriptor.index, 1)
+    numberOfKeysMustBe(descriptor.index.transaction.index, 0)
   })
 })
 
-// describe("spread", () => {
-//   it("Include all", () => {
-//     const { root, queries } = compile("{ ... }")
+describe("spread", () => {
+  describe("Include all", () => {
+    it("simple", () => {
+      const { definitions, descriptor } = compile("{ ... }")
 
-//     expect(getQmapCtx(root)).toMatchObject({
-//       all: true,
-//       index: []
-//     })
-//     expect(getQmapCtx(queries)).toMatchObject({
-//       all: true
-//     })
-//   })
+      expect(definitions.length).toBe(1)
 
-//   it("Implicit root", () => {
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const checkName = (name: any, withExtras: boolean) => {
-//       const { first: pfirst } = name
+      expect(definitions[0]).toMatchObject({
+        type: QueryType.ALL,
+      })
 
-//       expect(pfirst).toMatchObject({})
-//       const expected = {
-//         exclude: ["last"],
-//         all: true,
-//       }
+      expect(descriptor).toMatchObject({
+        index: {},
+        all: true
+      })
 
-//       if (withExtras) {
-//         expected["index"] = ["first"]
-//         expected["type"] = QueryType.SELECT
-//       }
+      numberOfKeysMustBe(descriptor.index, 0)
+    })
 
-//       expect(getQmapCtx(name)).toMatchObject(expected)
-//     }
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const checkPublic = (pub: any, withExtras: boolean) => {
-//       checkName(pub.name, withExtras)
-//     }
+    it("after select", () => {
+      const { definitions, descriptor } = compile("{ product, ... }")
 
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const checkUser = (user: any, withExtras: boolean) => {
-//       checkPublic(user, withExtras)
-//       const { age } = user
-//       expect(age).toMatchObject({})
+      expect(definitions.length).toBe(2)
 
-//       const expected = {
-//         all: true,
-//       }
+      const [ allQuery, productQuery ] = definitions
 
-//       if (withExtras) {
-//         expected["type"] = QueryType.SELECT
-//       }
+      expect(allQuery).toMatchObject({
+        type: QueryType.ALL,
+      })
 
-//       expect(getQmapCtx(user)).toMatchObject(expected)
-//     }
+      expect(productQuery).toMatchObject({
+        type: QueryType.SELECT,
+      })
 
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const checkAdmin = (admin: any, withExtras: boolean) => {
-//       checkUser(admin, withExtras)
-//       const { phone, contact } = admin
+      expect(descriptor).toMatchObject({
+        index: {
+          product: { index: {} }
+        },
+        all: true
+      })
 
-//       if (withExtras) {
-//         expect(getQmapCtx(admin)).toMatchObject({
-//           type: QueryType.SELECT,
-//         })
+      numberOfKeysMustBe(descriptor.index, 1)
+    })
+  })
 
-//         expect(getQmapCtx(phone)).toMatchObject({
-//           type: QueryType.SELECT,
-//         })
+  it("Implicit root", () => {
+    function checkNameContent(nodes: QueryNode[]) {
+      expect(nodes.length).toBe(3)
+      const [ allQuery, firstQuery, lastExcludeQuery ] = nodes
 
-//         expect(getQmapCtx(contact)).toMatchObject({
-//           type: QueryType.SELECT,
-//         })
+      expect(allQuery).toMatchObject({
+        type: QueryType.ALL,
+      })
 
-//         expect(getQmapCtx(contact.user)).toMatchObject({
-//           type: QueryType.SELECT,
-//         })
+      expect(firstQuery).toMatchObject({
+        type: QueryType.SELECT,
+        name: "first",
+        definitions: []
+      })
 
-//         expect(getQmapCtx(contact.email)).toMatchObject({
-//           type: QueryType.SELECT,
-//         })
-//       }
+      mustNotHaveAlias(firstQuery)
 
-//       expect(phone).toMatchObject({})
-//       const { user, email } = contact
-//       expect(user).toMatchObject({})
-//       expect(email).toMatchObject({})
-//     }
+      expect(lastExcludeQuery).toMatchObject({
+        type: QueryType.EXCLUDE,
+        name: "last"
+      })
+    }
 
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const checkPerson = (person: any, withExtras: boolean) => {
-//       checkName(person, withExtras)
-//     }
+    function checkPublicContent(nodes: QueryNode[]) {
+      expect(nodes.length).toBe(1)
+      expect(nodes[0]).toMatchObject({
+        type: QueryType.SELECT,
+        name: "name",
+      })
+      getDefinitions(nodes[0], checkNameContent)
+      mustNotHaveAlias(nodes[0])
+    }
 
-//     const { root, queries } = compile(`{
-//       public { name { ..., first, !last } },
-//       user {
-//         ...,
-//         ...public,
-//         age
-//       },
-//       admin {
-//         ...user,
-//         phone,
-//         contact {
-//           user,
-//           email
-//         }
-//       },
-//       person {
-//         ...public.name
-//       }
-//     }`)
+    function checkUserContent(nodes: QueryNode[]) {
+      expect(nodes.length).toBe(3)
+      const [ allQuery, nameQuery, ageQuery ] = nodes
 
-//     checkPublic(root.public, true)
-//     checkUser(root.user, true)
-//     checkAdmin(root.admin, true)
-//     checkPerson(root.person, true)
-//     expect(Object.keys(root)).toMatchObject(["public", "user", "admin", "person"])
-//     expect(getQmapCtx(root)).toMatchObject({
-//       index: ["public", "user", "admin", "person"],
-//     })
-//     expect(getQmapCtx(root.public)).toMatchObject({
-//       index: ["name"],
-//     })
-//     expect(getQmapCtx(root.user)).toMatchObject({
-//       index: ["name", "age"],
-//     })
-//     expect(getQmapCtx(root.admin)).toMatchObject({
-//       index: ["name", "age", "phone", "contact"],
-//     })
-//     expect(getQmapCtx(root.admin.contact)).toMatchObject({
-//       index: ["user", "email"],
-//     })
-//     expect(getQmapCtx(root.person)).toMatchObject({
-//       index: ["first"],
-//     })
+      expect(allQuery).toMatchObject({
+        type: QueryType.ALL,
+      })
 
-//     checkPublic(queries.public, false,)
-//     checkUser(queries.user, false)
-//     checkAdmin(queries.admin, false)
-//     checkPerson(queries.person, false)
-//     expect(Object.keys(queries)).toMatchObject(["public", "user", "admin", "person"])
-//   })
+      checkPublicContent([ nameQuery ])
 
-//   it("Explicit root", () => {
-//     const { root, queries } = compile(`{
-//       target { name },
-//       pub {
-//         target {
-//           person
-//         },
-//         person {
-//           ...&target
-//         }
-//       }
-//     }`)
+      expect(ageQuery).toMatchObject({
+        type: QueryType.SELECT,
+        name: "age",
+        definitions: []
+      })
+      mustNotHaveAlias(ageQuery)
+    }
 
-//     expect(getQmapCtx(root)).toMatchObject({
-//       index: ["target", "pub"],
-//     })
-//     expect(getQmapCtx(root.target)).toMatchObject({
-//       index: ["name"],
-//       type: QueryType.SELECT,
-//     })
-//     expect(getQmapCtx(root.pub)).toMatchObject({
-//       index: ["target", "person"],
-//       type: QueryType.SELECT,
-//     })
-//     expect(getQmapCtx(root.pub.target)).toMatchObject({
-//       index: ["person"],
-//       type: QueryType.SELECT,
-//     })
-//     expect(getQmapCtx(root.pub.person)).toMatchObject({
-//       index: ["name"],
-//       type: QueryType.SELECT,
-//     })
-//     expect(root.pub.person.name).toMatchObject({})
-//     expect(Object.keys(root.pub.person.name).length).toBe(0)
-//     expect(queries).toMatchObject({
-//       target: {
-//         name: {}
-//       },
-//       pub: {
-//         target: {
-//           person: {}
-//         },
-//         person: {
-//           name: {}
-//         }
-//       }
-//     })
-//     expect(Object.keys(queries).length).toBe(2)
-//     expect(Object.keys(queries.target).length).toBe(1)
-//     expect(Object.keys(queries.pub).length).toBe(2)
-//     expect(Object.keys(queries.pub.target).length).toBe(1)
-//     expect(Object.keys(queries.pub.person).length).toBe(1)
-//   })
+    const { definitions, descriptor } = compile(`{
+      public { name { ..., first, !last } },
+      user {
+        ...,
+        ...public,
+        age
+      },
+      admin {
+        ...user,
+        phone,
+        contact {
+          user,
+          email
+        }
+      },
+      person {
+        ...public.name
+      }
+    }`)
 
-//   it("Scope", () => {
-//     const { root, queries } = compile(`{
-//       target { name },
-//       pub {
-//         target {
-//           age
-//         },
-//         person {
-//           ...target
-//         }
-//       }
-//     }`)
+    expect(definitions.length).toBe(4)
 
-//     expect(getQmapCtx(root)).toMatchObject({
-//       index: ["target", "pub"],
-//     })
-//     expect(getQmapCtx(root.target)).toMatchObject({
-//       index: ["name"],
-//       type: QueryType.SELECT,
-//     })
-//     expect(getQmapCtx(root.pub)).toMatchObject({
-//       index: ["target", "person"],
-//       type: QueryType.SELECT,
-//     })
-//     expect(getQmapCtx(root.pub.target)).toMatchObject({
-//       index: ["age"],
-//       type: QueryType.SELECT,
-//     })
-//     expect(getQmapCtx(root.pub.person)).toMatchObject({
-//       index: ["age"],
-//       type: QueryType.SELECT,
-//     })
+    const [ publicNode, userNode, adminNode, personNode ] = definitions
 
-//     expect(root.pub.person.age).toMatchObject({})
-//     expect(queries).toMatchObject({
-//       target: {
-//         name: {}
-//       },
-//       pub: {
-//         target: {
-//           age: {}
-//         },
-//         person: {
-//           age: {}
-//         }
-//       }
-//     })
-//     expect(Object.keys(queries).length).toBe(2)
-//     expect(Object.keys(queries.target).length).toBe(1)
-//     expect(Object.keys(queries.pub).length).toBe(2)
-//     expect(Object.keys(queries.pub.target).length).toBe(1)
-//     expect(Object.keys(queries.pub.person).length).toBe(1)
-//   })
-// })
+    expect(publicNode).toMatchObject({
+      type: QueryType.SELECT,
+      name: "public",
+    })
+    getDefinitions(publicNode, checkPublicContent)
+    mustNotHaveAlias(publicNode)
+
+    expect(userNode).toMatchObject({
+      type: QueryType.SELECT,
+      name: "user",
+    })
+    getDefinitions(userNode, checkUserContent)
+    mustNotHaveAlias(userNode)
+
+    expect(adminNode).toMatchObject({
+      type: QueryType.SELECT,
+      name: "admin"
+    })
+
+    getDefinitions(adminNode, (definitions) => {
+      expect(definitions.length).toBe(5)
+
+      const userContent = definitions.slice(0, 3)
+      checkUserContent(userContent)
+
+      const [ phone, contact ] = definitions.slice(3)
+
+      expect(phone).toMatchObject({
+        type: QueryType.SELECT,
+        name: "phone",
+        definitions: []
+      })
+      mustNotHaveAlias(phone)
+
+      expect(contact).toMatchObject({
+        type: QueryType.SELECT,
+        name: "contact",
+      })
+      getDefinitions(contact, (definitions) => {
+        expect(definitions.length).toBe(2)
+
+        const names = ["user", "email"]
+
+        definitions.forEach((node, i) => {
+          expect(node).toMatchObject({
+            type: QueryType.SELECT,
+            name: names[i],
+            definitions: []
+          })
+          mustNotHaveAlias(node)
+        })
+      })
+      mustNotHaveAlias(contact)
+    })
+
+    mustNotHaveAlias(adminNode)
+
+    expect(personNode).toMatchObject({
+      type: QueryType.SELECT,
+      name: "person",
+    })
+
+    getDefinitions(personNode, checkNameContent)
+
+    mustNotHaveAlias(personNode)
+
+    expect(descriptor).toMatchObject({
+      index: {
+        public: {
+          index: {
+            name: {
+              index: {
+                first: { index: {} },
+              },
+              all: true,
+              exclude: {
+                last: true
+              }
+            }
+          }
+        },
+        user: {
+          index: {
+            name: {
+              index: {
+                first: { index: {} },
+              },
+              all: true,
+              exclude: {
+                last: true
+              }
+            },
+            age: { index: {} }
+          },
+          all: true
+        },
+        admin: {
+          index: {
+            name: {
+              index: {
+                first: { index: {} },
+              },
+              all: true,
+              exclude: {
+                last: true
+              }
+            },
+            age: { index: {} },
+            phone: { index: {} },
+            contact: {
+              index: {
+                user: { index: {} },
+                email: { index: {} }
+              }
+            }
+          }
+        },
+        person: {
+          index: {
+            first: { index: {} },
+          },
+          all: true,
+          exclude: {
+            last: true
+          }
+        }
+      }
+    })
+  })
+
+  // it("Explicit root", () => {
+  //   const { root, queries } = compile(`{
+  //     target { name },
+  //     pub {
+  //       target {
+  //         person
+  //       },
+  //       person {
+  //         ...&target
+  //       }
+  //     }
+  //   }`)
+
+  //   expect(getQmapCtx(root)).toMatchObject({
+  //     index: ["target", "pub"],
+  //   })
+  //   expect(getQmapCtx(root.target)).toMatchObject({
+  //     index: ["name"],
+  //     type: QueryType.SELECT,
+  //   })
+  //   expect(getQmapCtx(root.pub)).toMatchObject({
+  //     index: ["target", "person"],
+  //     type: QueryType.SELECT,
+  //   })
+  //   expect(getQmapCtx(root.pub.target)).toMatchObject({
+  //     index: ["person"],
+  //     type: QueryType.SELECT,
+  //   })
+  //   expect(getQmapCtx(root.pub.person)).toMatchObject({
+  //     index: ["name"],
+  //     type: QueryType.SELECT,
+  //   })
+  //   expect(root.pub.person.name).toMatchObject({})
+  //   expect(Object.keys(root.pub.person.name).length).toBe(0)
+  //   expect(queries).toMatchObject({
+  //     target: {
+  //       name: {}
+  //     },
+  //     pub: {
+  //       target: {
+  //         person: {}
+  //       },
+  //       person: {
+  //         name: {}
+  //       }
+  //     }
+  //   })
+  //   expect(Object.keys(queries).length).toBe(2)
+  //   expect(Object.keys(queries.target).length).toBe(1)
+  //   expect(Object.keys(queries.pub).length).toBe(2)
+  //   expect(Object.keys(queries.pub.target).length).toBe(1)
+  //   expect(Object.keys(queries.pub.person).length).toBe(1)
+  // })
+
+  // it("Scope", () => {
+  //   const { root, queries } = compile(`{
+  //     target { name },
+  //     pub {
+  //       target {
+  //         age
+  //       },
+  //       person {
+  //         ...target
+  //       }
+  //     }
+  //   }`)
+
+  //   expect(getQmapCtx(root)).toMatchObject({
+  //     index: ["target", "pub"],
+  //   })
+  //   expect(getQmapCtx(root.target)).toMatchObject({
+  //     index: ["name"],
+  //     type: QueryType.SELECT,
+  //   })
+  //   expect(getQmapCtx(root.pub)).toMatchObject({
+  //     index: ["target", "person"],
+  //     type: QueryType.SELECT,
+  //   })
+  //   expect(getQmapCtx(root.pub.target)).toMatchObject({
+  //     index: ["age"],
+  //     type: QueryType.SELECT,
+  //   })
+  //   expect(getQmapCtx(root.pub.person)).toMatchObject({
+  //     index: ["age"],
+  //     type: QueryType.SELECT,
+  //   })
+
+  //   expect(root.pub.person.age).toMatchObject({})
+  //   expect(queries).toMatchObject({
+  //     target: {
+  //       name: {}
+  //     },
+  //     pub: {
+  //       target: {
+  //         age: {}
+  //       },
+  //       person: {
+  //         age: {}
+  //       }
+  //     }
+  //   })
+  //   expect(Object.keys(queries).length).toBe(2)
+  //   expect(Object.keys(queries.target).length).toBe(1)
+  //   expect(Object.keys(queries.pub).length).toBe(2)
+  //   expect(Object.keys(queries.pub.target).length).toBe(1)
+  //   expect(Object.keys(queries.pub.person).length).toBe(1)
+  // })
+})

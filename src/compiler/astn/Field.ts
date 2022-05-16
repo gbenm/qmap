@@ -7,7 +7,7 @@ export class Field implements ASTNode {
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     const [primaryId, ...otherIds] = this.accessKeys
 
-    const table = parentTable.enterTo(primaryId, ...otherIds)
+    const table = parentTable.createScope().registerPathInIndex(primaryId, ...otherIds)
     const definitions: QueryNode[] = buildDefinitionsFromASTNodes({
       config,
       table,

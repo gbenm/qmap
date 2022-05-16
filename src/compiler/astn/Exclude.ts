@@ -4,7 +4,7 @@ export class Exclude implements ASTNode {
   constructor (public name: string) { }
 
   generate (_config: CompilerConfig, parentTable: SymbolTable): QueryNode {
-    parentTable.enterTo(this.name).addToIndex(excludeQuery)
+    parentTable.registerPathInIndex(this.name).addToIndex(excludeQuery)
 
     return {
       type: QueryType.EXCLUDE,

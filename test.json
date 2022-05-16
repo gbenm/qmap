@@ -1,81 +1,81 @@
 {
-  "type": "root",
-  "definitions": [
-    {
-      "type": "select",
-      "name": "transaction",
-      "definitions": [
-        {
-          "type": "select",
-          "name": "product",
-          "definitions": []
-        },
-        {
-          "type": "select",
-          "name": "id",
-          "definitions": []
-        }
-      ]
-    },
-    {
-      "type": "select",
-      "name": "transaction",
-      "definitions": [
-        {
-          "type": "select",
-          "name": "provider",
-          "definitions": []
-        }
-      ]
-    },
-    {
-      "type": "access",
-      "alias": "transaction_product",
-      "keys": [
-        "transaction",
-        "product"
-      ],
-      "definitions": [
-        {
-          "type": "all"
-        },
-        {
-          "type": "select",
-          "name": "name",
-          "definitions": []
-        },
-        {
-          "type": "exclude",
-          "name": "age"
-        }
-      ]
-    }
-  ],
-  "query": "test",
   "index": {
-    "index": {
-      "transaction": {
-        "index": {
-          "product": {
-            "index": {
-              "name": {
-                "index": {}
-              }
-            },
-            "all": true,
-            "exclude": {
-              "age": true
+    "public": {
+      "index": {
+        "name": {
+          "index": {
+            "first": {
+              "index": {}
             }
           },
-          "id": {
-            "index": {}
-          },
-          "provider": {
-            "index": {}
+          "all": true,
+          "exclude": {
+            "last": true
           }
         }
       }
+    },
+    "user": {
+      "index": {
+        "name": {
+          "index": {
+            "first": {
+              "index": {}
+            }
+          },
+          "all": true,
+          "exclude": {
+            "last": true
+          }
+        },
+        "age": {
+          "index": {}
+        }
+      },
+      "all": true
+    },
+    "admin": {
+      "index": {
+        "name": {
+          "index": {
+            "first": {
+              "index": {}
+            }
+          },
+          "all": true,
+          "exclude": {
+            "last": true
+          }
+        },
+        "age": {
+          "index": {}
+        },
+        "phone": {
+          "index": {}
+        },
+        "contact": {
+          "index": {
+            "user": {
+              "index": {}
+            },
+            "email": {
+              "index": {}
+            }
+          }
+        }
+      },
+      "all": true
+    },
+    "person": {
+      "index": {
+        "first": {
+          "index": {}
+        }
+      },
+      "all": true,
+      "exclude": {
+        "last": true
+      }
     }
-  },
-  "errors": []
+  }
 }

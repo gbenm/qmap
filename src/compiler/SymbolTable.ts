@@ -1,5 +1,5 @@
 import { Json, QueryNode } from "./query.types"
-import { getValue, mergeObjectsWithCtx } from "./utils"
+import { getValue, mergeObjects } from "./utils"
 
 export const rootScope = Symbol("__root__")
 export const allQuery = Symbol("__all__")
@@ -7,10 +7,12 @@ export const excludeQuery = Symbol("__exclude__")
 
 export interface SymbolTable {
   createScope(name?: symbol): SymbolTable
-  lookup(name: string, scope?: symbol): [QueryNode | undefined, string[]] | []
-  copyIndexFrom(...path: string[]): void
-  enterTo(name: string, ...path: string[]): SymbolTable
   add(name: string, value: QueryNode): void
+  lookup(name: string, scope?: symbol): [QueryNode | undefined, string[]] | []
+
+  // Index methods
+  registerPathInIndex(name: string, ...path: string[]): SymbolTable
+  copyIndexFrom(...path: string[]): void
   addToIndex(special: symbol): void
   addToIndex(query: string, ...queries: string[]): void
   generateIndex(): Json
@@ -63,8 +65,10 @@ export class SymbolTableImpl implements SymbolTable {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _addIndextoPrevObj(obj: any): void {
-    const prevObj = this.getValue(this.prevObjPath)
-    prevObj[this.lastKeyInPath].index = mergeObjectsWithCtx(prevObj[this.lastKeyInPath].index, obj)
+    const currentObj = this.getValue(this.currentPath)
+    currentObj.index = mergeObjects(currentObj.index, obj.index)
+    currentObj.all = currentObj.all || obj.all
+    currentObj.exclude = mergeObjects(currentObj.exclude, obj.exclude)
   }
 
   copyIndexFrom(...path: string[]): void {
@@ -123,7 +127,7 @@ export class SymbolTableImpl implements SymbolTable {
     this._addToIndex(currentObj, name, ...rest)
   }
 
-  enterTo(name: string, ...path: string[]): SymbolTable {
+  registerPathInIndex(name: string, ...path: string[]): SymbolTable {
     this.addToIndex(name, ...path)
     return new SymbolTableImpl(this.stack, this.queryDescriptor, [...this.currentPath, name, ...path])
   }
@@ -146,7 +150,7 @@ export class SymbolTableImpl implements SymbolTable {
     const scope = {
       name: scopeName,
       table: {},
-      path: this.currentPath
+      path: [...this.currentPath]
     }
     const stack = [scope, ...this.stack]
 
