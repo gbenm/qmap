@@ -78,10 +78,10 @@ field_rename returns [node]
     : id COLON stm { $node = new astn.Rename($id.text, $stm.node) }
 ;
 fn returns [node]
-    : ID LEFT_BRACKET params RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes) }
+    : ID LEFT_PAREN params RIHT_PAREN { $node = new astn.Function($ID.text, $params.nodes) }
 ;
 client_function returns [node]
-    : ID EX_MARK LEFT_BRACKET params RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes, true) }
+    : ID EX_MARK LEFT_PAREN params RIHT_PAREN { $node = new astn.Function($ID.text, $params.nodes, true) }
 ;
 
 fragment DOUBLE_QUOTE: '"';

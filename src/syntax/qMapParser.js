@@ -115,13 +115,13 @@ const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
     "\u00b8\u00b9\u0005\u0006\u0004\u0002\u00b9\u00ba\u0007\u0006\u0002\u0002",
     "\u00ba\u00bb\u0005\b\u0005\u0002\u00bb\u00bc\b\u000f\u0001\u0002\u00bc",
     "\u001d\u0003\u0002\u0002\u0002\u00bd\u00be\u0007\u000e\u0002\u0002\u00be",
-    "\u00bf\u0007\u0003\u0002\u0002\u00bf\u00c0\u0005\u0012\n\u0002\u00c0",
-    "\u00c1\u0007\u0004\u0002\u0002\u00c1\u00c2\b\u0010\u0001\u0002\u00c2",
-    "\u001f\u0003\u0002\u0002\u0002\u00c3\u00c4\u0007\u000e\u0002\u0002\u00c4",
-    "\u00c5\u0007\u0005\u0002\u0002\u00c5\u00c6\u0007\u0003\u0002\u0002\u00c6",
-    "\u00c7\u0005\u0012\n\u0002\u00c7\u00c8\u0007\u0004\u0002\u0002\u00c8",
-    "\u00c9\b\u0011\u0001\u0002\u00c9!\u0003\u0002\u0002\u0002\u0012(+06",
-    "ASbeoz~\u008e\u0099\u009d\u00aa\u00b6"].join("");
+    "\u00bf\u0007\n\u0002\u0002\u00bf\u00c0\u0005\u0012\n\u0002\u00c0\u00c1",
+    "\u0007\u000b\u0002\u0002\u00c1\u00c2\b\u0010\u0001\u0002\u00c2\u001f",
+    "\u0003\u0002\u0002\u0002\u00c3\u00c4\u0007\u000e\u0002\u0002\u00c4\u00c5",
+    "\u0007\u0005\u0002\u0002\u00c5\u00c6\u0007\n\u0002\u0002\u00c6\u00c7",
+    "\u0005\u0012\n\u0002\u00c7\u00c8\u0007\u000b\u0002\u0002\u00c8\u00c9",
+    "\b\u0011\u0001\u0002\u00c9!\u0003\u0002\u0002\u0002\u0012(+06ASbeoz",
+    "~\u008e\u0099\u009d\u00aa\u00b6"].join("");
 
 
 const atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
@@ -748,11 +748,11 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 187;
 	        localctx._ID = this.match(qMapParser.ID);
 	        this.state = 188;
-	        this.match(qMapParser.LEFT_BRACKET);
+	        this.match(qMapParser.LEFT_PAREN);
 	        this.state = 189;
 	        localctx._params = this.params();
 	        this.state = 190;
-	        this.match(qMapParser.RIGHT_BRACKET);
+	        this.match(qMapParser.RIHT_PAREN);
 	         localctx.node = new astn.Function((localctx._ID===null ? null : localctx._ID.text), localctx._params.nodes) 
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -780,11 +780,11 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 194;
 	        this.match(qMapParser.EX_MARK);
 	        this.state = 195;
-	        this.match(qMapParser.LEFT_BRACKET);
+	        this.match(qMapParser.LEFT_PAREN);
 	        this.state = 196;
 	        localctx._params = this.params();
 	        this.state = 197;
-	        this.match(qMapParser.RIGHT_BRACKET);
+	        this.match(qMapParser.RIHT_PAREN);
 	         localctx.node = new astn.Function((localctx._ID===null ? null : localctx._ID.text), localctx._params.nodes, true) 
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -1387,16 +1387,16 @@ class FnContext extends antlr4.ParserRuleContext {
 	    return this.getToken(qMapParser.ID, 0);
 	};
 
-	LEFT_BRACKET() {
-	    return this.getToken(qMapParser.LEFT_BRACKET, 0);
+	LEFT_PAREN() {
+	    return this.getToken(qMapParser.LEFT_PAREN, 0);
 	};
 
 	params() {
 	    return this.getTypedRuleContext(ParamsContext,0);
 	};
 
-	RIGHT_BRACKET() {
-	    return this.getToken(qMapParser.RIGHT_BRACKET, 0);
+	RIHT_PAREN() {
+	    return this.getToken(qMapParser.RIHT_PAREN, 0);
 	};
 
 
@@ -1429,16 +1429,16 @@ class Client_functionContext extends antlr4.ParserRuleContext {
 	    return this.getToken(qMapParser.EX_MARK, 0);
 	};
 
-	LEFT_BRACKET() {
-	    return this.getToken(qMapParser.LEFT_BRACKET, 0);
+	LEFT_PAREN() {
+	    return this.getToken(qMapParser.LEFT_PAREN, 0);
 	};
 
 	params() {
 	    return this.getTypedRuleContext(ParamsContext,0);
 	};
 
-	RIGHT_BRACKET() {
-	    return this.getToken(qMapParser.RIGHT_BRACKET, 0);
+	RIHT_PAREN() {
+	    return this.getToken(qMapParser.RIHT_PAREN, 0);
 	};
 
 
