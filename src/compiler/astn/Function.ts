@@ -25,16 +25,8 @@ export class Function implements ASTNode {
     const table = parentTable.createScope()
     const definitions = this.args.map(arg => arg.generate(config, table))
 
-    if (this.clientFn) {
-      return {
-        type: QueryType.CLIENT_FUNCTION,
-        name: this.name,
-        definitions
-      }
-    }
-
     return {
-      type: QueryType.FUNCTION,
+      type: this.clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
       name: this.name,
       alias: generateNameFromNodes(definitions),
       definitions
