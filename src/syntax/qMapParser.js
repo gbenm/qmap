@@ -157,7 +157,7 @@ export default class qMapParser extends antlr4.Parser {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 32;
 	        localctx._optional_id = this.optional_id();
-	         localctx.root = (new astn.Root(localctx._optional_id.text, null)).generate() 
+	         localctx.root = new astn.Root(localctx._optional_id.text, null) 
 	        this.state = 41;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
@@ -170,7 +170,7 @@ export default class qMapParser extends antlr4.Parser {
 	            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << qMapParser.EX_MARK) | (1 << qMapParser.TRIPLE_DOT) | (1 << qMapParser.STRING) | (1 << qMapParser.ID))) !== 0)) {
 	                this.state = 35;
 	                localctx._query_list = this.query_list();
-	                localctx.root = (new astn.Root(localctx._optional_id.text, localctx._query_list.nodes)).generate() 
+	                localctx.root = new astn.Root(localctx._optional_id.text, localctx._query_list.nodes) 
 	            }
 
 	            this.state = 40;

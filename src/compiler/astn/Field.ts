@@ -1,14 +1,13 @@
-import { ASTNode, SymbolTable, QueryNode } from ".."
-import { QueryType } from "../query.types"
+import { ASTNode, SymbolTable, QueryNode, CompilerConfig, QueryType } from ".."
 
 export class Field implements ASTNode {
   constructor (public accessKeys: string[], public nodes: ASTNode[] | null) { }
 
-  generate(parentTable: SymbolTable): QueryNode {
+  generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     const [primaryId, ...otherIds] = this.accessKeys
 
     const table = parentTable.enterTo(primaryId, ...otherIds)
-    const definitions = this.nodes?.map(node => node.generate(table)) ?? []
+    const definitions = this.nodes?.map(node => node.generate(config, table)) ?? []
 
     if (otherIds.length === 0) {
       const selectNode = {

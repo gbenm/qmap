@@ -6,12 +6,14 @@ export enum QueryType {
   ACCESS = "access",
   ALL = "all",
   EXCLUDE = "exclude",
+  SPREAD = "spread",
+  RENAME = "rename",
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Json = { [key: string | symbol]: any }
 
-export type QueryNode = CommonNamedQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode
+export type QueryNode = CommonNamedQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode
 
 export interface CommonQueryNode {
   type: QueryType
@@ -47,6 +49,16 @@ export interface SelectQueryNode extends CommonNamedQueryNode {
 export interface AccessQueryNode extends CommonQueryNode {
   type: QueryType.ACCESS
   keys: string[]
+}
+
+export interface SpreadQueryNode {
+  type: QueryType.SPREAD
+  node: QueryNode
+}
+
+export interface RenameQueryNode {
+  type: QueryType.RENAME
+  node: QueryNode
 }
 
 export interface RootQueryNode {

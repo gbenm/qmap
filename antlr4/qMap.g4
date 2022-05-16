@@ -5,8 +5,8 @@ import * as astn from "../compiler"
 }
 
 start returns [root]
-    : optional_id { $root = (new astn.Root($optional_id.text, null)).generate() } (LEFT_BRACKET
-        (query_list {$root = (new astn.Root($optional_id.text, $query_list.nodes)).generate() })?
+    : optional_id { $root = new astn.Root($optional_id.text, null) } (LEFT_BRACKET
+        (query_list {$root = new astn.Root($optional_id.text, $query_list.nodes) })?
     RIGHT_BRACKET)?
 ;
 

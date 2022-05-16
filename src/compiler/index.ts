@@ -2,13 +2,19 @@ import qMapLexer from "../syntax/qMapLexer"
 import qMapParser from "../syntax/qMapParser"
 import antlr from "antlr4"
 import { QueryType, RootQueryNode } from "./query.types"
+import { CompilerConfig } from "./config"
 
 export * from "./ASTNode"
 export * from "./SymbolTable"
 export * from "./astn"
 export * from "./query.types"
+export * from "./config"
 
-export function compile (query: string | undefined | null): RootQueryNode {
+const defaultConfig: CompilerConfig = {
+  mode: "compact"
+}
+
+export function compile (query: string | undefined | null, config = defaultConfig): RootQueryNode {
   const errors: unknown[] = []
   const chars = new antlr.InputStream(query ?? "")
   const lexer = new qMapLexer(chars)
@@ -19,7 +25,7 @@ export function compile (query: string | undefined | null): RootQueryNode {
 
   try {
     const tree = parser.start()
-    const root = tree.root as RootQueryNode
+    const root = tree.root.generate(config) as RootQueryNode
 
     root.errors = errors
 

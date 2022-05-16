@@ -1,5 +1,6 @@
+import { CompilerConfig } from "./config"
 import { QueryNode } from "./query.types"
 import { SymbolTable } from "./SymbolTable"
 export interface ASTNode {
-  generate (parentTable: SymbolTable): QueryNode
+  generate (config: CompilerConfig, parentTable: SymbolTable): QueryNode
 }

@@ -77,7 +77,6 @@ export class SymbolTableImpl implements SymbolTable {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _addToIndex(obj: any, name: string, ...rest: string[]) {
-    console.log(obj)
     const value = obj.index[name]
 
     if (rest.length > 0) {
@@ -103,10 +102,7 @@ export class SymbolTableImpl implements SymbolTable {
   addToIndex(special: symbol): void;
   addToIndex(query: string, ...queries: string[]): void;
   addToIndex(name: symbol | string, ...rest: string[]): void {
-    console.log("addToIndex pre Header", JSON.stringify(this.queryDescriptor, null, 2))
     const currentObj = this.getValue(this.currentPath)
-    console.log("addToIndex Header", JSON.stringify(this.queryDescriptor, null, 2))
-    console.log("addToIndex", name, rest, this.currentPath, currentObj)
 
     if (typeof name === "symbol") {
       if (name === allQuery) {
@@ -124,9 +120,7 @@ export class SymbolTableImpl implements SymbolTable {
       return
     }
 
-    console.log("addToIndex pre", JSON.stringify(this.queryDescriptor, null, 2))
     this._addToIndex(currentObj, name, ...rest)
-    console.log("addToIndex post", JSON.stringify(this.queryDescriptor, null, 2))
   }
 
   enterTo(name: string, ...path: string[]): SymbolTable {

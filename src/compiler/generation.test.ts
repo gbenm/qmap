@@ -1,6 +1,22 @@
 import { compile, QueryType } from "."
 import { AccessQueryNode, QueryNode, SelectQueryNode } from "./query.types"
 
+function mustNotHaveName(node: QueryNode) {
+  expect(node["name"]).toBeFalsy()
+}
+
+function mustNotHaveAlias(node: QueryNode) {
+  expect(node["alias"]).toBeFalsy()
+}
+
+function getDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) => void) {
+  expect(node["definitions"]).toBeTruthy()
+  consumer(node["definitions"])
+}
+
+function forEachDefinition(node: QueryNode, visitor: (node: QueryNode, index: number, nodes: QueryNode[]) => void) {
+  getDefinitions(node, definitions => definitions.forEach(visitor))
+}
 
 describe("root query", () => {
   it("empty query", () => {
@@ -163,7 +179,7 @@ describe("fields", () => {
       expect(result.keys).toEqual(["transaction", "product"])
       expect(result.definitions.length).toBe(1)
       expect(result.definitions[0]).toMatchObject(selectQueryNode)
-      expect((result.definitions[0] as SelectQueryNode).alias).toBeFalsy()
+      mustNotHaveAlias(result.definitions[0])
 
       expect(Object.keys(descriptor.index).length).toBe(1)
       expect(descriptor.index).toMatchObject({
@@ -179,154 +195,262 @@ describe("fields", () => {
       })
     })
 
-  //   it("multiple", () => {
-  //     const query = `cartitem {
-  //       id,
-  //       transaction.product { id, name },
-  //       transaction {
-  //         id
-  //       },
-  //       user.account { email }
-  //     }`
-  //     const { root, queries } = compile(query)
+    it("multiple", () => {
+      const query = `cartitem {
+        id,
+        transaction.product { id, name },
+        transaction {
+          id
+        },
+        user.account { email }
+      }`
 
-  //     const rootIndex = getQmapCtx(root).index
-  //     const idField = root[rootIndex[0]]
-  //     const transactionAccessField = root[rootIndex[1]]
-  //     const transactionField = root[rootIndex[2]]
-  //     const userAccessField = root[rootIndex[3]]
+      const { definitions, descriptor } = compile(query)
 
-  //     expect(Object.keys(idField).length).toBe(0)
-  //     expect(getQmapCtx(idField)).toMatchObject({
-  //       index: [],
-  //       type: QueryType.SELECT
-  //     })
-  //     expect(transactionAccessField).toMatchObject({
-  //       id: {},
-  //       name: {}
-  //     })
-  //     expect(getQmapCtx(transactionAccessField)).toMatchObject({
-  //       index: ["id", "name"],
-  //       keys: ["transaction", "product"],
-  //       type: QueryType.ACCESS
-  //     })
-  //     expect(transactionField).toMatchObject({
-  //       id: {}
-  //     })
-  //     expect(getQmapCtx(transactionField)).toMatchObject({
-  //       index: ["id"],
-  //       type: QueryType.SELECT
-  //     })
-  //     expect(userAccessField).toMatchObject({
-  //       email: {}
-  //     })
-  //     expect(getQmapCtx(userAccessField)).toMatchObject({
-  //       index: ["email"],
-  //       keys: ["user", "account"],
-  //       type: QueryType.ACCESS,
-  //     })
+      expect(definitions.length).toBe(4)
 
-  //     expect(queries).toMatchObject({
-  //       id: {},
-  //       transaction: {
-  //         id: {},
-  //         product: {
-  //           id: {},
-  //           name: {}
-  //         }
-  //       },
-  //       user: {
-  //         account: {
-  //           email: {}
-  //         }
-  //       }
-  //     })
-  //   })
+      const [idNode, transactionProductNode, transactionNode, userAccountNode] = definitions
+
+      expect(idNode).toMatchObject({
+        type: QueryType.SELECT,
+        name: "id",
+        definitions: []
+      })
+
+      mustNotHaveAlias(idNode)
+
+
+      expect(transactionProductNode).toMatchObject({
+        type: QueryType.ACCESS,
+        keys: ["transaction", "product"],
+        alias: "transaction_product",
+      })
+
+      getDefinitions(transactionProductNode, (definitions) => {
+        expect(definitions.length).toBe(2)
+        const [idNode, nameNode] = definitions
+
+        expect(idNode).toMatchObject({
+          type: QueryType.SELECT,
+          name: "id",
+          definitions: []
+        })
+        mustNotHaveAlias(idNode)
+
+        expect(nameNode).toMatchObject({
+          type: QueryType.SELECT,
+          name: "name",
+          definitions: []
+        })
+        mustNotHaveAlias(nameNode)
+      })
+
+      mustNotHaveName(transactionProductNode)
+
+
+      expect(transactionNode).toMatchObject({
+        type: QueryType.SELECT,
+        name: "transaction"
+      })
+
+      forEachDefinition(transactionNode, (node, _i, nodes) => {
+        expect(nodes.length).toBe(1)
+        expect(node).toMatchObject({
+          type: QueryType.SELECT,
+          name: "id",
+          definitions: []
+        })
+        mustNotHaveAlias(node)
+      })
+
+      mustNotHaveAlias(transactionNode)
+
+
+      expect(userAccountNode).toMatchObject({
+        type: QueryType.ACCESS,
+        alias: "user_account",
+        keys: ["user", "account"]
+      })
+
+      forEachDefinition(userAccountNode, (node, _i, nodes) => {
+        expect(nodes.length).toBe(1)
+        expect(node).toMatchObject({
+          type: QueryType.SELECT,
+          name: "email",
+          definitions: []
+        })
+        mustNotHaveAlias(node)
+      })
+
+      mustNotHaveName(userAccountNode)
+
+
+      expect(descriptor.index).toMatchObject({
+        id: {
+          index: {}
+        },
+        transaction: {
+          index: {
+            id: {
+              index: {}
+            },
+            product: {
+              index: {
+                id: { index: {} },
+                name: { index: {} }
+              }
+            }
+          }
+        },
+        user: {
+          index: {
+            account: {
+              index: {
+                email: { index: {} }
+              }
+            }
+          }
+        }
+      })
+    })
   })
 
-  // it("nested", () => {
-  //   const { root, queries } = compile("{ transaction { product {id, name} } }")
-  //   const transaction = root.transaction
-  //   const expected = {
-  //     product: {
-  //       id: {},
-  //       name: {}
-  //     }
-  //   }
+  it("nested", () => {
+    const { definitions, descriptor } = compile("{ transaction { product {id, name} } }")
 
-  //   expect(getQmapCtx(root).index).toMatchObject(["transaction"])
-  //   expect(transaction).toMatchObject(expected)
-  //   expect(getQmapCtx(transaction)).toMatchObject({
-  //     index: ["product"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(transaction.product).toMatchObject(expected.product)
-  //   expect(getQmapCtx(transaction.product)).toMatchObject({
-  //     index: ["id", "name"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(queries).toMatchObject({
-  //     transaction: {
-  //       product: {
-  //         id: {},
-  //         name: {}
-  //       }
-  //     }
-  //   })
-  // })
+    expect(definitions.length).toBe(1)
+
+    const [transactionNode] = definitions
+
+    expect(transactionNode).toMatchObject({
+      type: QueryType.SELECT,
+      name: "transaction",
+    })
+
+    getDefinitions(transactionNode, (definitions) => {
+      expect(definitions.length).toBe(1)
+      const [productNode] = definitions
+
+      expect(productNode).toMatchObject({
+        type: QueryType.SELECT,
+        name: "product",
+      })
+
+      const names = ["id", "name"]
+
+      getDefinitions(productNode, definitions => expect(definitions.length).toBe(names.length))
+      forEachDefinition(productNode, (node, i) => {
+        expect(node).toMatchObject({
+          type: QueryType.SELECT,
+          name: names[i],
+          definitions: []
+        })
+
+        mustNotHaveAlias(node)
+      })
+
+      mustNotHaveAlias(productNode)
+    })
+
+    mustNotHaveAlias(transactionNode)
+
+    expect(descriptor.index).toMatchObject({
+      transaction: {
+        index: {
+          product: {
+            index: {
+              id: { index: {} },
+              name: { index: {} }
+            }
+          }
+        }
+      }
+    })
+  })
 })
 
-// describe("exclude", () => {
-//   it("simple", () => {
-//     const { root, queries } = compile("{ !name }")
-//     const ctx = {
-//       exclude: ["name"],
-//       index: [],
-//     }
+describe("exclude", () => {
+  it("simple", () => {
+    const { definitions, descriptor } = compile("{ !name }")
 
-//     expect(getQmapCtx(root)).toMatchObject(ctx)
-//     expect(getQmapCtx(queries)).toMatchObject({
-//       exclude: ["name"]
-//     })
-//     expect(queries.name).toBeFalsy()
-//   })
+    expect(definitions.length).toBe(1)
+    expect(definitions[0]).toMatchObject({
+      type: QueryType.EXCLUDE,
+      name: "name"
+    })
 
-//   it("multiple", () => {
-//     const { root, queries } = compile("{ !name, !id }")
-//     const ctx = {
-//       index: [],
-//       exclude: ["name", "id"],
-//     }
+    expect(descriptor).toMatchObject({
+      index: { },
+      exclude: { name: true }
+    })
 
-//     expect(getQmapCtx(root)).toMatchObject(ctx)
-//     expect(getQmapCtx(queries)).toMatchObject({
-//       exclude: ["name", "id"]
-//     })
-//     expect(queries.name).toBeFalsy()
-//     expect(queries.id).toBeFalsy()
-//   })
+    expect(Object.keys(descriptor.index).length).toBe(0)
+  })
 
-//   it ("nested", () => {
-//     const { root, queries } = compile("{ transaction { !product, !provider } }")
-//     const transaction = root.transaction
-//     const ctx = {
-//       index: [],
-//       type: QueryType.SELECT,
-//       exclude: ["product", "provider"]
-//     }
+  it("multiple", () => {
+    const { definitions, descriptor } = compile("{ !name, !id }")
 
-//     expect(getQmapCtx(root).index).toEqual(["transaction"])
-//     expect(getQmapCtx(transaction)).toMatchObject(ctx)
-//     expect(queries).toMatchObject({
-//       transaction: {}
-//     })
-//     expect(queries.transaction.product).toBeFalsy()
-//     expect(queries.transaction.provider).toBeFalsy()
-//     expect(getQmapCtx(queries.transaction)).toMatchObject({
-//       exclude: ctx.exclude
-//     })
-//   })
-// })
+    const names = ["name", "id"]
+
+    expect(definitions.length).toBe(2)
+    definitions.forEach((node, i) => {
+      expect(node).toMatchObject({
+        type: QueryType.EXCLUDE,
+        name: names[i]
+      })
+    })
+
+    expect(descriptor).toMatchObject({
+      index: {},
+      exclude: {
+        name: true,
+        id: true
+      }
+    })
+
+    expect(Object.keys(descriptor.index).length).toBe(0)
+  })
+
+  it ("nested", () => {
+    const { descriptor, definitions } = compile("{ transaction { !product, !provider } }")
+
+    expect(definitions.length).toBe(1)
+
+
+    expect(definitions[0]).toMatchObject({
+      type: QueryType.SELECT,
+      name: "transaction",
+    })
+
+    getDefinitions(definitions[0], (definitions) => {
+      const names = ["product", "provider"]
+      expect(definitions.length).toBe(2)
+      definitions.forEach((node, i) => {
+        expect(node).toMatchObject({
+          type: QueryType.EXCLUDE,
+          name: names[i]
+        })
+      })
+    })
+
+    mustNotHaveAlias(definitions[0])
+
+    expect(descriptor).toMatchObject({
+      index: {
+        transaction: {
+          index: {},
+          exclude: {
+            product: true,
+            provider: true
+          }
+        }
+      }
+    })
+
+    expect(Object.keys(descriptor.index).length).toBe(1)
+    expect(Object.keys(descriptor.index.transaction.index).length).toBe(0)
+  })
+})
 
 // describe("spread", () => {
 //   it("Include all", () => {
