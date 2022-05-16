@@ -21,7 +21,8 @@ id returns [text]
 
 stm returns [node]
     : field {$node = $field.node}
-    | fn
+    | fn { $node = $fn.node }
+    | client_function { $node = $client_function.node }
 ;
 exclude returns [node]
     : EX_MARK id { $node = new astn.Exclude($id.text) }
@@ -43,14 +44,17 @@ spread returns [node]
     | scoped_spread { $node = $scoped_spread.node }
 ;
 
-params: (stm (COMMA stm)* COMMA?);
+params returns [nodes]
+    : { const nodes = [] }
+    (stm { nodes.push($stm.node) } (COMMA stm { nodes.push($stm.node) })* COMMA?)
+    {$nodes = nodes}
+;
 
 query returns [node]
     : stm {$node = $stm.node}
     | exclude {$node = $exclude.node}
     | spread {$node = $spread.node}
-    | field_rename
-    | client_function
+    | field_rename {$node = $field_rename.node}
 ;
 query_list returns [nodes]
     : {
@@ -70,9 +74,15 @@ field returns [node]
     : obj_ref { $node = new astn.Field($obj_ref.ids, null) }
     (LEFT_BRACKET query_list RIGHT_BRACKET { $node = new astn.Field($obj_ref.ids, $query_list.nodes) })?
 ;
-field_rename: id COLON stm;
-fn: ID LEFT_BRACKET params RIGHT_BRACKET;
-client_function: ID EX_MARK LEFT_BRACKET params RIGHT_BRACKET;
+field_rename returns [node]
+    : id COLON stm { $node = new astn.Rename($id.text, $stm.node) }
+;
+fn returns [node]
+    : ID LEFT_BRACKET params RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes) }
+;
+client_function returns [node]
+    : ID EX_MARK LEFT_BRACKET params RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes, true) }
+;
 
 fragment DOUBLE_QUOTE: '"';
 fragment SINGLE_QUOTE: '\'';

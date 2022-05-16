@@ -59,6 +59,7 @@ export interface SpreadQueryNode {
 
 export interface RenameQueryNode {
   type: QueryType.RENAME
+  alias: string
   node: QueryNode
 }
 
