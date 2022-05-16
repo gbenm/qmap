@@ -9,6 +9,49 @@ function mustNotHaveAlias(node: QueryNode) {
   expect(node["alias"]).toBeFalsy()
 }
 
+function checkSelectQueryNode(node: QueryNode, {
+  name,
+  consumer
+}: { name: string, consumer?: (definitions: QueryNode[]) => void }) {
+  const expected = {
+    type: QueryType.SELECT,
+    name,
+  }
+
+  if (!consumer) {
+    expected["definitions"] = []
+  }
+
+  expect(node).toMatchObject(expected)
+
+  if (consumer) {
+    getDefinitions(node, consumer)
+  }
+  mustNotHaveAlias(node)
+}
+
+function checkAccessQueryNode(node: QueryNode, {
+  keys,
+  consumer
+}: { keys: string[], consumer?: (definitions: QueryNode[]) => void }) {
+  const expected = {
+    type: QueryType.ACCESS,
+    keys,
+  }
+
+  if (!consumer) {
+    expected["definitions"] = []
+  }
+
+  expect(node).toMatchObject(expected)
+
+  if (consumer) {
+    getDefinitions(node, consumer)
+  }
+
+  mustNotHaveName(node)
+}
+
 function getDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) => void) {
   expect(node["definitions"]).toBeTruthy()
   consumer(node["definitions"])
@@ -706,111 +749,151 @@ describe("spread", () => {
     })
   })
 
-  // it("Explicit root", () => {
-  //   const { root, queries } = compile(`{
-  //     target { name },
-  //     pub {
-  //       target {
-  //         person
-  //       },
-  //       person {
-  //         ...&target
-  //       }
-  //     }
-  //   }`)
+  it("Explicit root", () => {
+    const { definitions, descriptor } = compile(`{
+      target { name },
+      pub {
+        target {
+          person
+        },
+        person {
+          ...&target
+        }
+      }
+    }`)
 
-  //   expect(getQmapCtx(root)).toMatchObject({
-  //     index: ["target", "pub"],
-  //   })
-  //   expect(getQmapCtx(root.target)).toMatchObject({
-  //     index: ["name"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(getQmapCtx(root.pub)).toMatchObject({
-  //     index: ["target", "person"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(getQmapCtx(root.pub.target)).toMatchObject({
-  //     index: ["person"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(getQmapCtx(root.pub.person)).toMatchObject({
-  //     index: ["name"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(root.pub.person.name).toMatchObject({})
-  //   expect(Object.keys(root.pub.person.name).length).toBe(0)
-  //   expect(queries).toMatchObject({
-  //     target: {
-  //       name: {}
-  //     },
-  //     pub: {
-  //       target: {
-  //         person: {}
-  //       },
-  //       person: {
-  //         name: {}
-  //       }
-  //     }
-  //   })
-  //   expect(Object.keys(queries).length).toBe(2)
-  //   expect(Object.keys(queries.target).length).toBe(1)
-  //   expect(Object.keys(queries.pub).length).toBe(2)
-  //   expect(Object.keys(queries.pub.target).length).toBe(1)
-  //   expect(Object.keys(queries.pub.person).length).toBe(1)
-  // })
+    expect(definitions.length).toBe(2)
 
-  // it("Scope", () => {
-  //   const { root, queries } = compile(`{
-  //     target { name },
-  //     pub {
-  //       target {
-  //         age
-  //       },
-  //       person {
-  //         ...target
-  //       }
-  //     }
-  //   }`)
+    const [ targetNode, pubNode ] = definitions
 
-  //   expect(getQmapCtx(root)).toMatchObject({
-  //     index: ["target", "pub"],
-  //   })
-  //   expect(getQmapCtx(root.target)).toMatchObject({
-  //     index: ["name"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(getQmapCtx(root.pub)).toMatchObject({
-  //     index: ["target", "person"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(getQmapCtx(root.pub.target)).toMatchObject({
-  //     index: ["age"],
-  //     type: QueryType.SELECT,
-  //   })
-  //   expect(getQmapCtx(root.pub.person)).toMatchObject({
-  //     index: ["age"],
-  //     type: QueryType.SELECT,
-  //   })
+    checkSelectQueryNode(targetNode, {
+      name: "target",
+      consumer(definitions) {
+        expect(definitions.length).toBe(1)
+        checkSelectQueryNode(definitions[0], { name: "name" })
+      }
+    })
 
-  //   expect(root.pub.person.age).toMatchObject({})
-  //   expect(queries).toMatchObject({
-  //     target: {
-  //       name: {}
-  //     },
-  //     pub: {
-  //       target: {
-  //         age: {}
-  //       },
-  //       person: {
-  //         age: {}
-  //       }
-  //     }
-  //   })
-  //   expect(Object.keys(queries).length).toBe(2)
-  //   expect(Object.keys(queries.target).length).toBe(1)
-  //   expect(Object.keys(queries.pub).length).toBe(2)
-  //   expect(Object.keys(queries.pub.target).length).toBe(1)
-  //   expect(Object.keys(queries.pub.person).length).toBe(1)
-  // })
+    checkSelectQueryNode(pubNode, {
+      name: "pub",
+      consumer(definitions) {
+        expect(definitions.length).toBe(2)
+
+        const [ target, person ] = definitions
+        checkSelectQueryNode(target, {
+          name: "target",
+          consumer(definitions) {
+            expect(definitions.length).toBe(1)
+            checkSelectQueryNode(definitions[0], { name: "person" })
+          }
+        })
+
+        checkSelectQueryNode(person, {
+          name: "person",
+          consumer(definitions) {
+            expect(definitions.length).toBe(1)
+            checkSelectQueryNode(definitions[0], { name: "name" })
+          }
+        })
+      }
+    })
+
+    expect(descriptor).toMatchObject({
+      index: {
+        target: {
+          index: {
+            name: { index: {} }
+          }
+        },
+        pub: {
+          index: {
+            target: {
+              index: {
+                person: { index: {} }
+              }
+            },
+            person: {
+              index: {
+                name: { index: {} }
+              }
+            }
+          }
+        }
+      }
+    })
+  })
+
+  it("Scope", () => {
+    const { definitions, descriptor } = compile(`{
+      target { name },
+      pub {
+        target {
+          age
+        },
+        person {
+          ...target
+        }
+      }
+    }`)
+
+    expect(definitions.length).toBe(2)
+
+    const [ targetNode, pubNode ] = definitions
+
+    checkSelectQueryNode(targetNode, {
+      name: "target",
+      consumer(definitions) {
+        expect(definitions.length).toBe(1)
+        checkSelectQueryNode(definitions[0], { name: "name" })
+      }
+    })
+
+    checkSelectQueryNode(pubNode, {
+      name: "pub",
+      consumer(definitions) {
+        expect(definitions.length).toBe(2)
+
+        const [ target, person ] = definitions
+        checkSelectQueryNode(target, {
+          name: "target",
+          consumer(definitions) {
+            expect(definitions.length).toBe(1)
+            checkSelectQueryNode(definitions[0], { name: "age" })
+          }
+        })
+
+        checkSelectQueryNode(person, {
+          name: "person",
+          consumer(definitions) {
+            expect(definitions.length).toBe(1)
+            checkSelectQueryNode(definitions[0], { name: "age" })
+          }
+        })
+      }
+    })
+
+    expect(descriptor).toMatchObject({
+      index: {
+        target: {
+          index: {
+            name: { index: {} }
+          }
+        },
+        pub: {
+          index: {
+            target: {
+              index: {
+                age: { index: {} }
+              }
+            },
+            person: {
+              index: {
+                age: { index: {} }
+              }
+            }
+          }
+        }
+      }
+    })
+  })
 })
