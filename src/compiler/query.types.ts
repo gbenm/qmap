@@ -53,6 +53,7 @@ export interface AccessQueryNode extends CommonQueryNode {
 
 export interface SpreadQueryNode {
   type: QueryType.SPREAD
+  keys: (string | symbol)[]
   node: QueryNode
 }
 

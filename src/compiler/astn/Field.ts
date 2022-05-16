@@ -1,4 +1,5 @@
 import { ASTNode, SymbolTable, QueryNode, CompilerConfig, QueryType } from ".."
+import { buildDefinitionsFromASTNodes } from "../utils"
 
 export class Field implements ASTNode {
   constructor (public accessKeys: string[], public nodes: ASTNode[] | null) { }
@@ -7,7 +8,11 @@ export class Field implements ASTNode {
     const [primaryId, ...otherIds] = this.accessKeys
 
     const table = parentTable.enterTo(primaryId, ...otherIds)
-    const definitions = this.nodes?.map(node => node.generate(config, table)) ?? []
+    const definitions: QueryNode[] = buildDefinitionsFromASTNodes({
+      config,
+      table,
+      nodes: this.nodes
+    })
 
     if (otherIds.length === 0) {
       const selectNode = {

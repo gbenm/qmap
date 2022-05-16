@@ -1,4 +1,7 @@
-import { Json } from "./query.types"
+import { ASTNode } from "./ASTNode"
+import { CompilerConfig } from "./config"
+import { Json, QueryNode, QueryType } from "./query.types"
+import { SymbolTable } from "./SymbolTable"
 
 export const qmapCTXKey = Symbol("qmap")
 
@@ -102,3 +105,27 @@ export const mergeQmapJsonWithCtx = (...jsons: Json[]) => jsons
     ...mergeQmapCtx(json, next)
   }
   }, {})
+
+export function buildDefinitionsFromASTNodes ({
+  config,
+  nodes,
+  table
+}: {
+  config: CompilerConfig, nodes: ASTNode[] | null, table: SymbolTable
+}): QueryNode[] {
+  const definitions: QueryNode[] = []
+
+  nodes?.forEach((child) => {
+    const queryNode = child.generate(config, table)
+
+    if (queryNode.type == QueryType.ALL) {
+      definitions.unshift(queryNode)
+    } else if (queryNode.type === QueryType.SPREAD && config.mode === "compact") {
+      definitions.push(...queryNode["node"].definitions)
+    } else {
+      definitions.push(queryNode)
+    }
+  })
+
+  return definitions
+}

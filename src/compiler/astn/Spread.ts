@@ -23,7 +23,7 @@ function searchQueryNode(node: CommonNamedQueryNode, path: string[]): QueryNode 
 export class Spread implements ASTNode {
   constructor (public ids: (string | symbol)[]) {}
 
-  generate ({ mode }: CompilerConfig, parentTable: SymbolTable): QueryNode {
+  generate (_config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     if(!this.ids || this.ids.length === 0) {
       parentTable.addToIndex(allQuery)
       return {
@@ -49,14 +49,11 @@ export class Spread implements ASTNode {
 
       parentTable.copyIndexFrom(...(path || []), key as string, ...rest as string[])
 
-      if (mode === "extended") {
-        return {
-          type: QueryType.SPREAD,
-          node: queryNode
-        }
+      return {
+        type: QueryType.SPREAD,
+        keys: this.ids,
+        node: queryNode
       }
-
-      return queryNode
     } else {
       const [value, path] = parentTable.lookup(primaryId as string)
 
@@ -72,14 +69,11 @@ export class Spread implements ASTNode {
 
       parentTable.copyIndexFrom(...(path || []), primaryId as string, ...othersIds as string[])
 
-      if (mode === "extended") {
-        return {
-          type: QueryType.SPREAD,
-          node: queryNode
-        }
+      return {
+        type: QueryType.SPREAD,
+        keys: this.ids,
+        node: queryNode
       }
-
-      return queryNode
     }
   }
 }
