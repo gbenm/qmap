@@ -1320,4 +1320,24 @@ describe("rename", () => {
       last_name: { index: {} }
     })
   })
+
+  it("extended", () => {
+    const query = "{ id: access_number }"
+
+    const { definitions, descriptor } = compile(query, {
+      mode: "extended"
+    })
+
+    expect(definitions.length).toBe(1)
+    expect(definitions[0]).toMatchObject({
+      type: QueryType.RENAME,
+      alias: "id",
+    })
+
+    checkSelectQueryNode(definitions[0]["node"], { name: "access_number" })
+
+    expect(descriptor.index).toMatchObject({
+      access_number: { index: {} },
+    })
+  })
 })
