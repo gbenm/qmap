@@ -1,21 +1,24 @@
-import { ASTNode } from ".."
+import { ASTNode, SymbolTableImpl, QueryNode, QueryType, CompilerConfig } from ".."
+import { buildDefinitionsFromASTNodes } from "../utils"
 
 export class Root implements ASTNode {
-  constructor (public id: string, public children: ASTNode) { }
+  constructor (public id: string | undefined, public children: ASTNode[] | null) { }
 
-  generate (): { [key: string]: unknown } {
-    const json = this.children ? this.children.generate() : {}
+  generate (config: CompilerConfig): QueryNode {
+    const rootTable = SymbolTableImpl.create(config.ignoreIndex)
 
-    if (this.id) {
-      return {
-        [this.id]: json,
-        named: true
-      }
-    }
+    const definitions: QueryNode[] = buildDefinitionsFromASTNodes({
+      config,
+      table: rootTable,
+      nodes: this.children
+    })
 
     return {
-      "root": json,
-      named: false
+      type: QueryType.ROOT,
+      definitions,
+      query: this.id,
+      descriptor: rootTable.generateIndex(),
+      errors: []
     }
   }
 }

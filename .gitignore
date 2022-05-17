@@ -12,5 +12,5 @@
 
 node_modules/
 dist/
-ignore.js
+*.ignore.js
 antlr4/.antlr

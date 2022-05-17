@@ -1,3 +1,3 @@
 import { compile } from "./compiler"
 
-console.log(compile("hola"))
+console.log(JSON.stringify(compile("hola"), null, 2))

@@ -1,0 +1,81 @@
+{
+  "index": {
+    "public": {
+      "index": {
+        "name": {
+          "index": {
+            "first": {
+              "index": {}
+            }
+          },
+          "all": true,
+          "exclude": {
+            "last": true
+          }
+        }
+      }
+    },
+    "user": {
+      "index": {
+        "name": {
+          "index": {
+            "first": {
+              "index": {}
+            }
+          },
+          "all": true,
+          "exclude": {
+            "last": true
+          }
+        },
+        "age": {
+          "index": {}
+        }
+      },
+      "all": true
+    },
+    "admin": {
+      "index": {
+        "name": {
+          "index": {
+            "first": {
+              "index": {}
+            }
+          },
+          "all": true,
+          "exclude": {
+            "last": true
+          }
+        },
+        "age": {
+          "index": {}
+        },
+        "phone": {
+          "index": {}
+        },
+        "contact": {
+          "index": {
+            "user": {
+              "index": {}
+            },
+            "email": {
+              "index": {}
+            }
+          }
+        }
+      },
+      "all": true
+    },
+    "person": {
+      "index": {
+        "first": {
+          "index": {}
+        }
+      },
+      "all": true,
+      "exclude": {
+        "last": true
+      }
+    }
+  }
+}

@@ -1,16 +1,6 @@
-export type Json = { [key: string]: unknown }
-
+import { CompilerConfig } from "./config"
+import { QueryNode } from "./query.types"
+import { SymbolTable } from "./SymbolTable"
 export interface ASTNode {
-  generate (): Json
-}
-
-export abstract class ASTNodeEntry implements ASTNode {
-  abstract id: string
-  abstract body: ASTNode
-
-  public generate (): Json {
-    return {
-      [this.id]: this.body.generate()
-    }
-  }
+  generate (config: CompilerConfig, parentTable: SymbolTable): QueryNode
 }
