@@ -9,13 +9,41 @@ function mustNotHaveAlias(node: QueryNode) {
   expect(node["alias"]).toBeFalsy()
 }
 
+function checkFunctionQueryNode(node: QueryNode, {
+  name,
+  alias,
+  consumer,
+  clientFn = false,
+}: {
+  name: string,
+  alias: string,
+  clientFn?: boolean,
+  consumer: (definitions: QueryNode[]) => void
+}) {
+  const expected = {
+    type: clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
+    name,
+    alias,
+  }
+
+  expect(node).toMatchObject(expected)
+  getDefinitions(node, consumer)
+}
+
 function checkSelectQueryNode(node: QueryNode, {
   name,
+  alias,
   consumer
-}: { name: string, consumer?: (definitions: QueryNode[]) => void }) {
+}: { name: string, alias?: string, consumer?: (definitions: QueryNode[]) => void }) {
   const expected = {
     type: QueryType.SELECT,
     name,
+  }
+
+  if (!alias) {
+    mustNotHaveAlias(node)
+  } else {
+    expected["alias"] = alias
   }
 
   if (!consumer) {
@@ -27,15 +55,16 @@ function checkSelectQueryNode(node: QueryNode, {
   if (consumer) {
     getDefinitions(node, consumer)
   }
-  mustNotHaveAlias(node)
 }
 
 function checkAccessQueryNode(node: QueryNode, {
   keys,
+  alias,
   consumer
-}: { keys: string[], consumer?: (definitions: QueryNode[]) => void }) {
+}: { keys: string[], alias?: string, consumer?: (definitions: QueryNode[]) => void }) {
   const expected = {
     type: QueryType.ACCESS,
+    alias: alias || keys.join("_"),
     keys,
   }
 
@@ -894,6 +923,401 @@ describe("spread", () => {
           }
         }
       }
+    })
+  })
+
+  it ("extended", () => {
+    const query = `{
+      target { name },
+      dst {
+        ...target
+      }
+    }`
+
+    const { definitions, descriptor } = compile(query, { mode: "extended" })
+
+    expect(definitions.length).toBe(2)
+
+    const [ targetNode, dstNode ] = definitions
+
+    checkSelectQueryNode(targetNode, {
+      name: "target",
+      consumer(definitions) {
+        expect(definitions.length).toBe(1)
+        checkSelectQueryNode(definitions[0], { name: "name" })
+      }
+    })
+
+    checkSelectQueryNode(dstNode, {
+      name: "dst",
+      consumer(definitions) {
+        expect(definitions.length).toBe(1)
+        expect(definitions[0]).toMatchObject({
+          type: QueryType.SPREAD,
+          keys: ["target"],
+        })
+        checkSelectQueryNode(definitions[0]["node"], {
+          name: "target",
+          consumer(definitions) {
+            expect(definitions.length).toBe(1)
+            checkSelectQueryNode(definitions[0], { name: "name" })
+          }
+        })
+      }
+    })
+
+    expect(descriptor).toMatchObject({
+      index: {
+        target: {
+          index: {
+            name: { index: {} }
+          }
+        },
+        dst: {
+          index: {
+            name: {}
+          }
+        }
+      }
+    })
+  })
+})
+
+describe("functions", () => {
+  describe("normal", () => {
+    it("simple", () => {
+      const query = "{ upperCase(name) }"
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "name",
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], { name: "name" })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        name: { index: {} },
+      })
+    })
+
+    it("access", () => {
+      const query = "{ upperCase(person.name) }"
+
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "person_name",
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkAccessQueryNode(definitions[0], {
+            keys: ["person", "name"],
+          })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        person: {
+          index: {
+            name: { index: {} }
+          }
+        }
+      })
+    })
+
+    it("select", () => {
+      const query = "{ upperCase(person { name }) }"
+
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "person",
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], {
+            name: "person",
+            consumer(definitions) {
+              expect(definitions.length).toBe(1)
+              checkSelectQueryNode(definitions[0], { name: "name" })
+            }
+          })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        person: {
+          index: {
+            name: { index: {} }
+          }
+        }
+      })
+    })
+
+    it("compose", () => {
+      const query = "{ upperCase(getName(person)) }"
+
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "person",
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkFunctionQueryNode(definitions[0], {
+            name: "getName",
+            alias: "person",
+            consumer(definitions) {
+              expect(definitions.length).toBe(1)
+              checkSelectQueryNode(definitions[0], { name: "person" })
+            }
+          })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        person: {
+          index: {}
+        }
+      })
+    })
+  })
+
+  describe("client", () => {
+    it("simple", () => {
+      const query = "{ upperCase!(name) }"
+
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "name",
+        clientFn: true,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], { name: "name" })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        name: { index: {} },
+      })
+    })
+
+    it("access", () => {
+      const query = "{ upperCase!(person.name) }"
+
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "person_name",
+        clientFn: true,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkAccessQueryNode(definitions[0], {
+            keys: ["person", "name"],
+          })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        person: {
+          index: {
+            name: { index: {} }
+          }
+        }
+      })
+    })
+
+    it("select", () => {
+      const query = "{ upperCase!(person { name }) }"
+
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "person",
+        clientFn: true,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], {
+            name: "person",
+            consumer(definitions) {
+              expect(definitions.length).toBe(1)
+              checkSelectQueryNode(definitions[0], { name: "name" })
+            }
+          })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        person: {
+          index: {
+            name: { index: {} }
+          }
+        }
+      })
+    })
+
+    it("compose", () => {
+      const query = "{ upperCase!(getName!(person)) }"
+
+      const { definitions, descriptor } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "person",
+        clientFn: true,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkFunctionQueryNode(definitions[0], {
+            name: "getName",
+            alias: "person",
+            clientFn: true,
+            consumer(definitions) {
+              expect(definitions.length).toBe(1)
+              checkSelectQueryNode(definitions[0], { name: "person" })
+            }
+          })
+        }
+      })
+
+      expect(descriptor.index).toMatchObject({
+        person: {
+          index: {}
+        }
+      })
+    })
+  })
+})
+
+describe("rename", () => {
+  it("simple", () => {
+    const query = "{ name: NAME }"
+
+    const { definitions, descriptor } = compile(query)
+
+    expect(definitions.length).toBe(1)
+
+    checkSelectQueryNode(definitions[0], {
+      name: "NAME",
+      alias: "name"
+    })
+
+    expect(descriptor.index).toMatchObject({
+      NAME: { index: {} },
+    })
+  })
+
+  it("query", () => {
+    const query = "{ agent: person { id, name } }"
+
+    const { definitions, descriptor } = compile(query)
+
+    expect(definitions.length).toBe(1)
+
+    checkSelectQueryNode(definitions[0], {
+      name: "person",
+      alias: "agent",
+      consumer(definitions) {
+        expect(definitions.length).toBe(2)
+        const [id, name] = definitions
+        checkSelectQueryNode(id, { name: "id" })
+        checkSelectQueryNode(name, { name: "name" })
+      }
+    })
+
+    expect(descriptor.index).toMatchObject({
+      person: {
+        index: {
+          id: { index: {} },
+          name: { index: {} }
+        }
+      }
+    })
+  })
+
+  it("access", () => {
+    const query = "{ id: transaction.id }"
+
+    const { definitions, descriptor } = compile(query)
+
+    expect(definitions.length).toBe(1)
+
+    checkAccessQueryNode(definitions[0], {
+      keys: ["transaction", "id"],
+      alias: "id"
+    })
+
+    expect(descriptor.index).toMatchObject({
+      transaction: {
+        index: {
+          id: { index: {} }
+        }
+      }
+    })
+  })
+
+  it("function", () => {
+    const query = "{ full_name: concat(fist_name, last_name) }"
+
+    const { definitions, descriptor } = compile(query)
+
+    expect(definitions.length).toBe(1)
+
+    checkFunctionQueryNode(definitions[0], {
+      name: "concat",
+      alias: "full_name",
+      consumer(definitions) {
+        expect(definitions.length).toBe(2)
+        const [first_name, last_name] = definitions
+        checkSelectQueryNode(first_name, { name: "fist_name" })
+        checkSelectQueryNode(last_name, { name: "last_name" })
+      }
+    })
+
+    expect(descriptor.index).toMatchObject({
+      fist_name: { index: {} },
+      last_name: { index: {} }
+    })
+  })
+
+  it("client function", () => {
+    const query = "{ full_name: concat!(fist_name, last_name) }"
+
+    const { definitions, descriptor } = compile(query)
+
+    expect(definitions.length).toBe(1)
+
+    checkFunctionQueryNode(definitions[0], {
+      name: "concat",
+      alias: "full_name",
+      clientFn: true,
+      consumer(definitions) {
+        expect(definitions.length).toBe(2)
+        const [first_name, last_name] = definitions
+        checkSelectQueryNode(first_name, { name: "fist_name" })
+        checkSelectQueryNode(last_name, { name: "last_name" })
+      }
+    })
+
+    expect(descriptor.index).toMatchObject({
+      fist_name: { index: {} },
+      last_name: { index: {} }
     })
   })
 })
