@@ -1,8 +1,12 @@
 {
   "name": "qmapjs",
   "packageManager": "yarn@3.2.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/engine/index.js",
+  "types": "dist/engine/index.d.ts",
+  "exports": {
+    ".": "./dist/engine/index.js",
+    "./compiler": "./dist/compiler/index.js"
+  },
   "scripts": {
     "lint": "eslint . --ext .ts",
     "test": "jest",
@@ -25,5 +29,10 @@
   "dependencies": {
     "antlr4": "~4.9.3",
     "lodash": "^4.17.21"
+  },
+  "typesVersions": {
+    "*": {
+      "compiler": ["./dist/compiler/index.d.ts"]
+    }
   }
 }
