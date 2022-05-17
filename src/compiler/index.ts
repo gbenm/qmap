@@ -3,6 +3,7 @@ import qMapParser from "../syntax/qMapParser"
 import antlr from "antlr4"
 import { QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
+import { mergeObjects } from "./utils"
 
 export * from "./ASTNode"
 export * from "./SymbolTable"
@@ -11,10 +12,13 @@ export * from "./query.types"
 export * from "./config"
 
 const defaultConfig: CompilerConfig = {
-  mode: "compact"
+  mode: "compact",
+  ignoreIndex: false
 }
 
-export function compile (query: string | undefined | null, config = defaultConfig): RootQueryNode {
+export function compile (query: string | undefined | null, config: Partial<CompilerConfig> = defaultConfig): RootQueryNode {
+  config = mergeObjects(config, defaultConfig)
+
   const errors: unknown[] = []
   const chars = new antlr.InputStream(query ?? "")
   const lexer = new qMapLexer(chars)

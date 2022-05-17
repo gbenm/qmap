@@ -5,7 +5,7 @@ export class Root implements ASTNode {
   constructor (public id: string | undefined, public children: ASTNode[] | null) { }
 
   generate (config: CompilerConfig): QueryNode {
-    const rootTable = SymbolTableImpl.create()
+    const rootTable = SymbolTableImpl.create(config.ignoreIndex)
 
     const definitions: QueryNode[] = buildDefinitionsFromASTNodes({
       config,

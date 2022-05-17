@@ -46,7 +46,8 @@ export class SymbolTableImpl implements SymbolTable {
     private stack: Scope[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private queryDescriptor: any,
-    private currentPath: string[]
+    private currentPath: string[],
+    private ignoreIndex: boolean
   ) {
     this.currentScope.path = this.currentPath
   }
@@ -72,6 +73,10 @@ export class SymbolTableImpl implements SymbolTable {
   }
 
   copyIndexFrom(...path: string[]): void {
+    if (this.ignoreIndex) {
+      return
+    }
+
     if (!path || path.length === 0) {
       return
     }
@@ -106,6 +111,10 @@ export class SymbolTableImpl implements SymbolTable {
   addToIndex(special: symbol): void;
   addToIndex(query: string, ...queries: string[]): void;
   addToIndex(name: symbol | string, ...rest: string[]): void {
+    if (this.ignoreIndex) {
+      return
+    }
+
     const currentObj = this.getValue(this.currentPath)
 
     if (typeof name === "symbol") {
@@ -128,21 +137,25 @@ export class SymbolTableImpl implements SymbolTable {
   }
 
   registerPathInIndex(name: string, ...path: string[]): SymbolTable {
+    if (this.ignoreIndex) {
+      return this
+    }
+
     this.addToIndex(name, ...path)
-    return new SymbolTableImpl(this.stack, this.queryDescriptor, [...this.currentPath, name, ...path])
+    return new SymbolTableImpl(this.stack, this.queryDescriptor, [...this.currentPath, name, ...path], this.ignoreIndex)
   }
 
   generateIndex(): Json {
     return this.queryDescriptor
   }
 
-  public static create(): SymbolTable {
+  public static create(ignoreIndex: boolean): SymbolTable {
     const scopes = [{
       name: rootScope,
       table: {},
       path: []
     }]
-    return new SymbolTableImpl(scopes, { index: {} }, [])
+    return new SymbolTableImpl(scopes, { index: {} }, [], ignoreIndex)
   }
 
   createScope(name?: symbol): SymbolTable {
@@ -154,7 +167,7 @@ export class SymbolTableImpl implements SymbolTable {
     }
     const stack = [scope, ...this.stack]
 
-    return new SymbolTableImpl(stack, this.queryDescriptor, this.currentPath)
+    return new SymbolTableImpl(stack, this.queryDescriptor, this.currentPath, this.ignoreIndex)
   }
 
   private _lookup(name: string, scope?: symbol): Scope | undefined {

@@ -1341,3 +1341,32 @@ describe("rename", () => {
     })
   })
 })
+
+describe("ignore index", () => {
+  it("complex", () => {
+    const query = `{
+      public { name { ..., first, !last } },
+      user {
+        ...,
+        ...public,
+        age
+      },
+      admin {
+        ...user,
+        phone,
+        contact {
+          user,
+          email
+        }
+      },
+      person {
+        ...public.name
+      }
+    }`
+    const { descriptor } = compile(query, {
+      ignoreIndex: true
+    })
+
+    expect(descriptor.index).toEqual({})
+  })
+})

@@ -40,6 +40,15 @@ describe("Utils", () => {
     expect(mergeObjects({ array: [1,2] }, { array: [3,4] })).toMatchObject({
       array: [1,2,3,4]
     })
+    const arg1 = {
+      flag: true,
+      name: "John"
+    }
+    const arg2 = {
+      flag: false,
+      name: "Pete"
+    }
+    expect(mergeObjects(arg1, arg2)).toEqual(arg1)
   })
 })
 
