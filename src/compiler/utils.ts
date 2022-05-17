@@ -3,8 +3,6 @@ import { CompilerConfig } from "./config"
 import { Json, QueryNode, QueryType } from "./query.types"
 import { SymbolTable } from "./SymbolTable"
 
-export const qmapCTXKey = Symbol("qmap")
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getValue(obj: any, keys: string[], getter = (value: any, key: string) => value[key]): Json {
   let value = obj
@@ -60,51 +58,6 @@ export const mergeObjects = (obj: any, obj2: any) => {
 
   return result
 }
-
-export const mergeObjectsWithCtx = (obj: Json, obj2: Json) => {
-  const merged = mergeObjects(obj, obj2)
-  const ctx = wrapQmapCtx(mergeObjects(getQmapCtx(obj), getQmapCtx(obj2)))
-  return {
-    ...merged,
-    ...ctx
-  }
-}
-
-export const wrapQmapCtx = (json: Json) => ({
-  [qmapCTXKey]: json
-})
-
-export const wrapQmapJsonCtx = (json: Json, ctx: Json) => mergeQmapJsonWithCtx(json, wrapQmapCtx(ctx))
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getQmapCtx = (json?: Json): any => {
-  if (!json) {
-    return {}
-  }
-
-  if(!json[qmapCTXKey]) {
-    json[qmapCTXKey] = {}
-    return json[qmapCTXKey]
-  }
-
-  return json[qmapCTXKey]
-}
-
-export const mergeQmapCtx = (json?: Json, ...jsons: Json[]) => json === undefined ?
-  {} :
-  wrapQmapCtx(mergeObjects(
-    getQmapCtx(json),
-    getQmapCtx(mergeQmapCtx(...jsons))
-  ))
-
-export const mergeQmapJsonWithCtx = (...jsons: Json[]) => jsons
-  .reduce((json, next) => {
-    return {
-    ...json,
-    ...next,
-    ...mergeQmapCtx(json, next)
-  }
-  }, {})
 
 export function buildDefinitionsFromASTNodes ({
   config,
