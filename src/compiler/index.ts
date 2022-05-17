@@ -22,6 +22,14 @@ export function compile (query: string | undefined | null, config = defaultConfi
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parser = new qMapParser(tokens) as any
   parser.buildParseTrees = true
+  parser.addErrorListener({
+    syntaxError: (_: string, offendingSymbol: string, line: string, column: string, msg: string, error: Error) => {
+      errors.push(`${offendingSymbol} line ${line}, col ${column}: ${msg}`)
+      if (error) {
+        errors.push(error)
+      }
+    }
+  })
 
   try {
     const tree = parser.start()
