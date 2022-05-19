@@ -13,13 +13,13 @@ function fromDefinitionsToJson(definitions: QueryNode[]) {
   }, {})
 }
 
-export function qmapCreator(descriptor: QMapDescriptor): QMap {
-  const { definitions: schemaDefinitions } = compile(descriptor.schemas)
-  const { definitions: queryDefinitions } = compile(descriptor.queries)
+export function qmapCreator(descriptor?: QMapDescriptor): QMap {
+  const { definitions: schemaDefinitions } = compile(descriptor?.schemas)
+  const { definitions: queryDefinitions } = compile(descriptor?.queries)
 
   const context: QMapContext = {
-    extends: descriptor.extends,
-    functions: descriptor.functions ?? {},
+    extends: descriptor?.extends,
+    functions: descriptor?.functions ?? {},
     queries: fromDefinitionsToJson(schemaDefinitions),
     schemas: fromDefinitionsToJson(queryDefinitions)
   }
