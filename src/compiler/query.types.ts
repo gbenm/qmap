@@ -8,12 +8,14 @@ export enum QueryType {
   EXCLUDE = "exclude",
   SPREAD = "spread",
   RENAME = "rename",
+  VAR = "variable",
+  HIDE = "hide",
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Json = { [key: string | symbol]: any }
 
-export type QueryNode = CommonNamedQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode
+export type QueryNode = CommonNamedQueryNode | CommonFunctionQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
 
 export interface CommonQueryNode {
   type: QueryType
@@ -29,11 +31,16 @@ export interface AllQueryNode {
   type: QueryType.ALL
 }
 
-export interface FunctionQueryNode extends CommonNamedQueryNode {
+
+export interface CommonFunctionQueryNode extends CommonNamedQueryNode {
+  byItem: boolean
+}
+
+export interface FunctionQueryNode extends CommonFunctionQueryNode {
   type: QueryType.FUNCTION
 }
 
-export interface ClientFunctionQueryNode extends CommonNamedQueryNode {
+export interface ClientFunctionQueryNode extends CommonFunctionQueryNode {
   type: QueryType.CLIENT_FUNCTION
 }
 
@@ -61,6 +68,18 @@ export interface RenameQueryNode {
   type: QueryType.RENAME
   alias: string
   node: QueryNode
+}
+
+export interface VarQueryNode {
+  type: QueryType.VAR
+  name: string
+}
+
+export interface HideQueryNode {
+  type: QueryType.HIDE
+  name: string
+  definitions: QueryNode[]
+  index: Json
 }
 
 export interface RootQueryNode {

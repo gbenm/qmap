@@ -14,16 +14,19 @@ function checkFunctionQueryNode(node: QueryNode, {
   alias,
   consumer,
   clientFn = false,
+  byItem = false
 }: {
   name: string,
   alias: string,
   clientFn?: boolean,
+  byItem?: boolean,
   consumer: (definitions: QueryNode[]) => void
 }) {
   const expected = {
     type: clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
     name,
     alias,
+    byItem
   }
 
   expect(node).toMatchObject(expected)
@@ -1089,6 +1092,41 @@ describe("functions", () => {
         }
       })
     })
+
+    it ("byItem", () => {
+      const query = "{ [upperCase(students)] }"
+      const { definitions } = compile(query)
+      expect(definitions.length).toBe(1)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "students",
+        byItem: true,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], { name: "students" })
+        }
+      })
+    })
+
+    it("variables", () => {
+      const query = "{ take(students, @count) }"
+      const { definitions } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "take",
+        alias: "students_count",
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+          checkSelectQueryNode(definitions[0], { name: "students" })
+          expect(definitions[1]).toMatchObject({
+            type: QueryType.VAR,
+            name: "count"
+          })
+        }
+      })
+    })
   })
 
   describe("client", () => {
@@ -1199,6 +1237,43 @@ describe("functions", () => {
       expect(descriptor.index).toMatchObject({
         person: {
           index: {}
+        }
+      })
+    })
+
+    it ("byItem", () => {
+      const query = "{ [upperCase!(students)] }"
+      const { definitions } = compile(query)
+      expect(definitions.length).toBe(1)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "students",
+        byItem: true,
+        clientFn: true,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], { name: "students" })
+        }
+      })
+    })
+
+    it("variables", () => {
+      const query = "{ take!(students, @count) }"
+      const { definitions } = compile(query)
+
+      expect(definitions.length).toBe(1)
+      checkFunctionQueryNode(definitions[0], {
+        name: "take",
+        alias: "students_count",
+        clientFn: true,
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+          checkSelectQueryNode(definitions[0], { name: "students" })
+          expect(definitions[1]).toMatchObject({
+            type: QueryType.VAR,
+            name: "count"
+          })
         }
       })
     })
