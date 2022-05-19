@@ -11,7 +11,7 @@ export function includes(this: RootQueryNode, path: string[]): boolean {
   path = [...path]
 
   for (key = path.shift() as string; path.length > 0; key = path.shift() as string) {
-    descriptor = descriptor?.[key]
+    descriptor = descriptor?.index[key]
     if (!descriptor) {
       return false
     }
