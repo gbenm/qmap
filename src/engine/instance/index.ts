@@ -1,7 +1,7 @@
 import { compile, RootQueryNode } from "../../compiler"
 import { Nullable } from "../../utils/types"
 import { QMapContext } from "../creator/types"
-import { QMapIndex } from "./types"
+import { QMapExecutors, QMapIndex } from "./types"
 
 export { QMap } from "./types"
 
@@ -30,7 +30,7 @@ export function apply(this: RootQueryNode, target: any): any {
   return target
 }
 
-export function qmap(this: QMapContext, target: Nullable<string>) {
+export function qmap(this: QMapContext, target: Nullable<string>): QMapExecutors {
   const root = compile(target)
 
   return {
