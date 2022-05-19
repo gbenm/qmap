@@ -8,8 +8,8 @@ export interface QMapFunctions {
 export interface QMapDescriptor {
   extends?: QMapContext
   functions?: QMapFunctions
-  schemas: string
-  queries: string
+  schemas?: string
+  queries?: string
 }
 
 export interface QMapQueries {

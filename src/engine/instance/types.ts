@@ -1,4 +1,3 @@
-import { QueryNode } from "../../compiler"
 import { Nullable } from "../../utils/types"
 import { QMapContext } from "../creator/types"
 
