@@ -168,7 +168,10 @@ describe("fields", () => {
     expect(definitions.length).toBe(1)
     expect(definitions[0]).toMatchObject(productField)
 
-    expect(descriptor.index).toMatchObject({ product: {} })
+    expect(descriptor.index).toMatchObject({ product: {
+      index: {},
+      all: true
+    } })
   })
 
   it("multiple", () => {
@@ -201,10 +204,22 @@ describe("fields", () => {
     definitions.forEach((node, i) => expect(node).toMatchObject(queryNodes[i]))
 
     const expected = {
-      first_name: {},
-      last_name: {},
-      age: {},
-      image: {}
+      first_name: {
+        index: {},
+        all: true
+      },
+      last_name: {
+        index: {},
+        all: true
+      },
+      age: {
+        index: {},
+        all: true
+      },
+      image: {
+        index: {},
+        all: true
+      }
     }
 
     expect(descriptor.index).toMatchObject(expected)
@@ -231,7 +246,10 @@ describe("fields", () => {
           index: {
             product: {
               index: {
-                name: {}
+                name: {
+                  index: {},
+                  all: true
+                }
               }
             }
           }

@@ -1,5 +1,6 @@
 import { ASTNode, SymbolTable, QueryNode, CompilerConfig, QueryType } from ".."
 import { buildDefinitionsFromASTNodes } from "../utils"
+import { Spread } from "./Spread"
 
 export class Field implements ASTNode {
   constructor (public accessKeys: string[], public nodes: ASTNode[] | null) { }
@@ -13,6 +14,11 @@ export class Field implements ASTNode {
       table,
       nodes: this.nodes
     })
+
+    if(definitions.length === 0) {
+      // sets all flag to true
+      new Spread([]).generate(config, table)
+    }
 
     if (otherIds.length === 0) {
       const selectNode = {
