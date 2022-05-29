@@ -1,4 +1,4 @@
-import { compile, QueryNode, QueryType, SelectQueryNode } from "../../compiler"
+import { compile, QueryNode, QueryType } from "../../compiler"
 import { qmap as qmapFn, QMap } from "../instance"
 import { QMapIndex } from "../instance/types"
 import { QMapContext, QMapDescriptor, QMapQueries } from "./types"

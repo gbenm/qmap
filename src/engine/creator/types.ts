@@ -1,9 +1,11 @@
 import { QueryNode } from "../../compiler"
 import { QMapIndex } from "../instance/types"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type QMapFunction = (...args: any[]) => any
+
 export interface QMapFunctions {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: (...args: any[]) => any
+  [key: string]: QMapFunction
 }
 
 export interface QMapDescriptor {
