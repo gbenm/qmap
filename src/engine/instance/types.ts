@@ -1,7 +1,7 @@
 import { Nullable } from "../../utils/types"
 import { QMapContext } from "../creator/types"
 
-export type QMap = ((query: Nullable<string>) => QMapExecutors) & QMapContext
+export type QMap = ((query: Nullable<string>, schemaName?: Nullable<string>) => QMapExecutors) & QMapContext
 
 export interface QMapExecutors {
   errors: unknown[] | undefined
@@ -15,7 +15,7 @@ export interface QMapIndex {
     [key: string]: QMapIndex
   },
   all: boolean
-  exclude: {
+  exclude?: {
     [key: string]: boolean
   }
 }

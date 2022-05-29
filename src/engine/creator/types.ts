@@ -1,4 +1,5 @@
-import { SelectQueryNode } from "../../compiler"
+import { QueryNode } from "../../compiler"
+import { QMapIndex } from "../instance/types"
 
 export interface QMapFunctions {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,8 +13,13 @@ export interface QMapDescriptor {
   queries?: string
 }
 
+export interface QMapQuery {
+  definitions: QueryNode[]
+  descriptor: QMapIndex
+}
+
 export interface QMapQueries {
-  [key: string]: SelectQueryNode
+  [key: string]: QMapQuery
 }
 
 export interface QMapContext {
