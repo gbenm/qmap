@@ -203,4 +203,72 @@ describe("includes", () => {
       })
     })
   })
+
+  describe ("with extends", () => {
+    const qmapParent = qmapCreator({
+      schemas: `{
+        admin {
+          product {
+            id, name
+          },
+          transaction,
+        },
+      }`,
+      queries: `{
+        product_compact {
+          product {
+            id, name
+          }
+        }
+      }`
+    })
+
+    const qmap = qmapCreator({
+      extends: qmapParent,
+      schemas: `{
+        client {
+          product {
+            name
+          }
+        }
+      }`
+    })
+
+    it ("admin schema", () => {
+      const { includes } = qmap(`product_compact {
+        product {
+          ...,
+          provider {
+            id, name
+          }
+        }
+      }`, "admin")
+
+      expect(includes(["product"])).toBe(true)
+      expect(includes(["product", "id"])).toBe(true)
+      expect(includes(["product", "name"])).toBe(true)
+      expect(includes(["product", "provider"])).toBe(false)
+      expect(includes(["product", "provider", "id"])).toBe(false)
+      expect(includes(["product", "provider", "name"])).toBe(false)
+      expect(includes(["transaction"])).toBe(false)
+    })
+
+    it ("client schema", () => {
+      const { includes } = qmap(`product_compact {
+        product {
+          ...,
+          provider {
+            id, name
+          }
+        }
+      }`, "client")
+
+      expect(includes(["product"])).toBe(true)
+      expect(includes(["product", "id"])).toBe(false)
+      expect(includes(["product", "name"])).toBe(true)
+      expect(includes(["product", "provider"])).toBe(false)
+      expect(includes(["product", "provider", "id"])).toBe(false)
+      expect(includes(["product", "provider", "name"])).toBe(false)
+    })
+  })
 })
