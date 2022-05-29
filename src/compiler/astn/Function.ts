@@ -18,7 +18,8 @@ export class Function implements ASTNode {
   constructor(
     private name: string,
     private args: ASTNode[],
-    private clientFn: boolean = false
+    private clientFn: boolean,
+    private byItem: boolean = false
   ) { }
 
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
@@ -29,7 +30,8 @@ export class Function implements ASTNode {
       type: this.clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
       name: this.name,
       alias: generateNameFromNodes(definitions),
-      definitions
+      definitions,
+      byItem: this.byItem
     }
   }
 

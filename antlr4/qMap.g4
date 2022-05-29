@@ -5,9 +5,9 @@ import * as astn from "../compiler"
 }
 
 start returns [root]
-    : optional_id { $root = new astn.Root($optional_id.text, null) } (LEFT_BRACKET
+    : optional_id { $root = new astn.Root($optional_id.text, null) } (LEFT_BRACE
         (query_list {$root = new astn.Root($optional_id.text, $query_list.nodes) })?
-    RIGHT_BRACKET)?
+    RIGHT_BRACE)?
 ;
 
 optional_id returns [text]
@@ -44,9 +44,14 @@ spread returns [node]
     | scoped_spread { $node = $scoped_spread.node }
 ;
 
+param returns [node]
+    : AT ID { $node = new astn.Var($ID.text) }
+    | stm { $node = $stm.node }
+;
+
 params returns [nodes]
     : { const nodes = [] }
-    (stm { nodes.push($stm.node) } (COMMA stm { nodes.push($stm.node) })* COMMA?)
+    (param { nodes.push($param.node) } (COMMA param { nodes.push($param.node) })*)
     {$nodes = nodes}
 ;
 
@@ -72,16 +77,18 @@ obj_ref returns [ids]
 
 field returns [node]
     : obj_ref { $node = new astn.Field($obj_ref.ids, null) }
-    (LEFT_BRACKET query_list RIGHT_BRACKET { $node = new astn.Field($obj_ref.ids, $query_list.nodes) })?
+    (LEFT_BRACE query_list RIGHT_BRACE { $node = new astn.Field($obj_ref.ids, $query_list.nodes) })?
 ;
 field_rename returns [node]
     : id COLON stm { $node = new astn.Rename($id.text, $stm.node) }
 ;
 fn returns [node]
-    : ID LEFT_PAREN params RIHT_PAREN { $node = new astn.Function($ID.text, $params.nodes) }
+    : ID LEFT_PAREN params RIGHT_PAREN { $node = new astn.Function($ID.text, $params.nodes, false) }
+    | LEFT_BRACKET ID LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes, false, true) }
 ;
 client_function returns [node]
-    : ID EX_MARK LEFT_PAREN params RIHT_PAREN { $node = new astn.Function($ID.text, $params.nodes, true) }
+    : ID EX_MARK LEFT_PAREN params RIGHT_PAREN { $node = new astn.Function($ID.text, $params.nodes, true) }
+    | LEFT_BRACKET ID EX_MARK LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes, true, true) }
 ;
 
 fragment DOUBLE_QUOTE: '"';
@@ -90,15 +97,18 @@ fragment ESCAPE: '\\' ['"?abfnrtv\\];
 fragment DLOUBE_QUOTE_STR_CHAR: ~["]|ESCAPE|'\\'?'\r'?'\n';
 fragment SINGLE_QUOTE_STR_CHAR: ~[']|ESCAPE|'\\'?'\r'?'\n';
 
-LEFT_BRACKET: '{';
-RIGHT_BRACKET: '}';
+AT: '@';
+LEFT_BRACKET: '[';
+RIGHT_BRACKET: ']';
+LEFT_BRACE: '{';
+RIGHT_BRACE: '}';
 EX_MARK: '!';
 COLON: ':';
 COMMA: ',';
 TRIPLE_DOT: '...';
 DOT: '.';
 LEFT_PAREN: '(';
-RIHT_PAREN: ')';
+RIGHT_PAREN: ')';
 AMPERSAND: '&';
 STRING: (SINGLE_QUOTE SINGLE_QUOTE_STR_CHAR*? SINGLE_QUOTE)
  | (DOUBLE_QUOTE DLOUBE_QUOTE_STR_CHAR*? DOUBLE_QUOTE);
