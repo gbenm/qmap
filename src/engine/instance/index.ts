@@ -2,7 +2,7 @@ import { compile, RootQueryNode } from "../../compiler"
 import { Nullable } from "../../utils/types"
 import { QMapContext } from "../creator/types"
 import { includes } from "./features"
-import { QMapExecutors } from "./types"
+import { QMapExecutors, QMapOptions } from "./types"
 import { findQuery, findSchema } from "./utils"
 
 export { QMap } from "./types"
@@ -14,7 +14,7 @@ export function apply(this: RootQueryNode, target: any): any {
   return target
 }
 
-export function qmap(this: QMapContext, target: Nullable<string>, schema?: Nullable<string>): QMapExecutors {
+export function qmap(this: QMapContext, target: Nullable<string>, options?: QMapOptions): QMapExecutors {
   const root = compile(target)
 
   return {
@@ -22,7 +22,7 @@ export function qmap(this: QMapContext, target: Nullable<string>, schema?: Nulla
     includes: includes.bind({
       root,
       query: findQuery(this, root.query),
-      schema: findSchema(this, schema),
+      schema: findSchema(this, options?.schema),
     }),
     errors: root.errors.length > 0 ? root.errors : undefined,
   }

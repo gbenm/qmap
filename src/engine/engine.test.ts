@@ -85,13 +85,15 @@ describe("includes", () => {
     })
 
     it ("without query", () => {
-      const { includes } = qmap("", "admin")
+      const schema = "admin"
+      const { includes } = qmap("", { schema })
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(true)
     })
 
     it ("with query", () => {
-      const { includes } = qmap("{ product { id } }", "user")
+      const schema = "user"
+      const { includes } = qmap("{ product { id } }", { schema })
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(false)
     })
@@ -147,8 +149,9 @@ describe("includes", () => {
     })
 
     describe("as admin", () => {
+      const schema = "admin"
       it ("without select", () => {
-        const { includes } = qmap("product_compact", "admin")
+        const { includes } = qmap("product_compact", { schema })
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(true)
         expect(includes(["transaction"])).toBe(false)
@@ -163,7 +166,7 @@ describe("includes", () => {
               id, name
             }
           }
-        }`, "admin")
+        }`, { schema })
 
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(true)
@@ -176,8 +179,9 @@ describe("includes", () => {
     })
 
     describe("as client", () => {
+      const schema = "client"
       it ("without select", () => {
-        const { includes } = qmap("product_compact", "client")
+        const { includes } = qmap("product_compact", { schema })
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(false)
         expect(includes(["transaction"])).toBe(false)
@@ -192,7 +196,7 @@ describe("includes", () => {
               id, name
             }
           }
-        }`, "client")
+        }`, { schema })
 
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(false)
@@ -235,6 +239,7 @@ describe("includes", () => {
     })
 
     it ("admin schema", () => {
+      const schema = "admin"
       const { includes } = qmap(`product_compact {
         product {
           ...,
@@ -242,7 +247,7 @@ describe("includes", () => {
             id, name
           }
         }
-      }`, "admin")
+      }`, { schema })
 
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(true)
@@ -254,6 +259,8 @@ describe("includes", () => {
     })
 
     it ("client schema", () => {
+      const schema = "client"
+
       const { includes } = qmap(`product_compact {
         product {
           ...,
@@ -261,7 +268,7 @@ describe("includes", () => {
             id, name
           }
         }
-      }`, "client")
+      }`, { schema })
 
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(false)
