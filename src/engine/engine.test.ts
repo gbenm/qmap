@@ -286,11 +286,14 @@ describe("apply", () => {
       upperCase(str: string) {
         return str.toUpperCase()
       },
-      concat(str1: string, str2: string) {
-        return str1 + str2
+      concat(...strs: string[]) {
+        return strs.join("")
       },
       take(list: unknown[], n: number) {
         return list.slice(0, n)
+      },
+      currency(value: number) {
+        return `$${value.toFixed(2)}`
       }
     }
   })
@@ -334,6 +337,55 @@ describe("apply", () => {
         { user: { id: 5, name: "john" } },
         { user: { id: 3, name: "john 2" } },
       ]
+    })
+  })
+
+  it ("select with all and exclude", () => {
+    const { apply, errors } = qmap(`{
+      ...,
+      transaction {
+        ...,
+        !old_id,
+        id: old_id
+      },
+      product {
+        ...,
+        label: concat(id, @sep, currency(price))
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      id: 1,
+      balance: 23,
+      transaction: {
+        id: 2,
+        old_id: 3,
+        description: "test",
+      },
+      product: {
+        id: 4,
+        price: 3.0,
+      }
+    }, {
+      variables: {
+        sep: " - "
+      }
+    })
+
+    expect(result).toEqual({
+      id: 1,
+      balance: 23,
+      transaction: {
+        description: "test",
+        id: 3,
+      },
+      product: {
+        id: 4,
+        price: 3.0,
+        label: "4 - $3.00",
+      }
     })
   })
 
