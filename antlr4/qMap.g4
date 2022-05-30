@@ -116,3 +116,5 @@ STRING: (SINGLE_QUOTE SINGLE_QUOTE_STR_CHAR*? SINGLE_QUOTE)
 ID: ([a-zA-Z0-9_$]+);
 
 WS: [ \t\n\r]+ -> skip;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
