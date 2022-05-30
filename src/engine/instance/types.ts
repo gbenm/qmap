@@ -6,7 +6,7 @@ export type QMap = ((query: Nullable<string>, options?: Nullable<QMapOptions>) =
 export interface QMapExecutors {
   errors: unknown[] | undefined
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  apply: (target: any) => any
+  apply: (target: any, overrideOptions?: Nullable<QMapOptions>) => any
   includes: (path: string[]) => boolean
 }
 
@@ -20,9 +20,11 @@ export interface QMapIndex {
   }
 }
 
+export interface QMapVars {
+  [key: string]: unknown
+}
+
 export interface QMapOptions {
   schema?: Nullable<string>
-  variables?: {
-    [key: string | number]: unknown
-  }
+  variables?: QMapVars
 }

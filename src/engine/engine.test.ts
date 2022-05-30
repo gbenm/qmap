@@ -279,3 +279,112 @@ describe("includes", () => {
     })
   })
 })
+
+describe("apply", () => {
+  const qmap = qmapCreator({
+    functions: {
+      upperCase(str: string) {
+        return str.toUpperCase()
+      },
+      concat(str1: string, str2: string) {
+        return str1 + str2
+      },
+      take(list: unknown[], n: number) {
+        return list.slice(0, n)
+      }
+    }
+  })
+
+  it ("nested select", () => {
+    const { apply } = qmap(`{
+      balance,
+      call_history {
+        time,
+        cost,
+        user { name }
+      },
+      dials {
+        user {
+          id, name
+        }
+      }
+    }`)
+
+    const result = apply({
+      balance: 3.0,
+      call_history: [
+        { id: 1, time: "01:00", cost: 2.0, user: { name: "john", id: 3 } },
+        { id: 2, time: "02:00", cost: 3.0, user: { name: "john 2", id: 4 } },
+      ],
+      dials: [
+        { id: 1, user: { id: 5, name: "john", alias: "j" } },
+        { id: 2, user: { id: 3, name: "john 2", alias: "j2" } },
+      ]
+    })
+
+    expect(result).toEqual({
+      balance: 3.0,
+      call_history: [
+        { time: "01:00", cost: 2.0, user: { name: "john" } },
+        { time: "02:00", cost: 3.0, user: { name: "john 2" } },
+      ],
+      dials: [
+        { user: { id: 5, name: "john" } },
+        { user: { id: 3, name: "john 2" } },
+      ]
+    })
+  })
+
+  it ("for each function", () => {
+    const { apply } = qmap("{ names: [upperCase([concat(names, salt)])] }")
+    const result = apply({
+      names: ["a", "b", "c"],
+      salt: "!"
+    })
+
+    expect(result).toEqual({
+      names: ["A!", "B!", "C!"]
+    })
+  })
+
+  it("complex", () => {
+    const { apply } = qmap(`{
+      product {
+        id, upperCase(name)
+      },
+      transaction {
+        id, desc: description
+      },
+      take(ids, @n)
+    }`)
+
+    const result = apply({
+      product: {
+        id: 5,
+        name: "camisa",
+        price: 50
+      },
+      transaction: {
+        id: 10,
+        description: "compra"
+      },
+      ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    }, {
+      variables: {
+        n: 2
+      }
+    })
+
+    expect(result).toEqual({
+      product: {
+        id: 5,
+        name: "CAMISA"
+      },
+      transaction: {
+        id: 10,
+        desc: "compra"
+      },
+      ids_n: [1, 2]
+    })
+  })
+})

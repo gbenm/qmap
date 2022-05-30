@@ -17,6 +17,10 @@ export function getValue(obj: any, keys: string[], getter = (value: any, key: st
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isNullable = (obj: any) => obj === null || obj === undefined
 
+/**
+ * 1. objects have precedence over primitives, i.e. mergeObject(3, {}) == {}
+ * 2. the first object has precedence, .e.g. mergeObject({a: 1}, {a: 2}) == {a: 1}
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const mergeObjects = (obj: any, obj2: any) => {
   if (isNullable(obj)) {

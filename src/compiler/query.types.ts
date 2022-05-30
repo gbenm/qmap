@@ -34,6 +34,7 @@ export interface AllQueryNode {
 
 export interface CommonFunctionQueryNode extends CommonNamedQueryNode {
   byItem: boolean
+  alias: string
 }
 
 export interface FunctionQueryNode extends CommonFunctionQueryNode {
@@ -55,6 +56,7 @@ export interface SelectQueryNode extends CommonNamedQueryNode {
 
 export interface AccessQueryNode extends CommonQueryNode {
   type: QueryType.ACCESS
+  alias: string
   keys: string[]
 }
 
