@@ -19,8 +19,8 @@ type ExecutionContext = {
   getFn: (name: string) => QMapFunction
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getResultItemFromAccessNode({context, definitions, keys, target}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: ExecutionContext, keys: string[], definitions: QueryNode[], target: any
 }) {
   if (keys.length === 0) {
