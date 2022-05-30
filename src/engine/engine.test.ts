@@ -294,8 +294,38 @@ describe("apply", () => {
       },
       currency(value: number) {
         return `$${value.toFixed(2)}`
+      },
+      add(a: number, b: number) {
+        return a + b
       }
     }
+  })
+
+  it ("function", () => {
+    const { apply, errors } = qmap(`{
+      upperCase(name),
+      upperCase(concat(id, name)),
+      take(ids, @quantity),
+      take([ currency([ add(ids, @offset) ]) ], @quantity)
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      id: 1,
+      name: "John",
+      ids: [1, 2, 3, 4, 5],
+    }, { variables: {
+      quantity: 3,
+      offset: 100,
+    } })
+
+    expect(result).toEqual({
+      name: "JOHN",
+      id_name: "1JOHN",
+      ids_quantity: [1, 2, 3],
+      ids_offset_quantity: ["$101.00", "$102.00", "$103.00"],
+    })
   })
 
   it ("nested select", () => {
