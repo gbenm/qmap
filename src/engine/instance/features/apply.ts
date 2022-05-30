@@ -63,7 +63,7 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
       }
       break
     case QueryType.ALL:
-      result = target
+      result = {...target}
       break
     case QueryType.CLIENT_FUNCTION:
       throw new Error("Client functions are not supported")
