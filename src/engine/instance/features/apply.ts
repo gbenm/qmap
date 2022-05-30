@@ -1,6 +1,6 @@
 import { isArray } from "lodash"
 import { AccessQueryNode, FunctionQueryNode, QueryNode, QueryType, RenameQueryNode, RootQueryNode, VarQueryNode } from "../../../compiler"
-import { getValue, mergeObjects } from "../../../compiler/utils"
+import { isNullable, mergeObjects } from "../../../compiler/utils"
 import { Nullable } from "../../../utils/types"
 import { QMapContext, QMapFunction, QMapQuery } from "../../creator/types"
 import { QMapOptions, QMapVars } from "../types"
@@ -20,6 +20,27 @@ type ExecutionContext = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getResultItemFromAccessNode({context, definitions, keys, target}: {
+  context: ExecutionContext, keys: string[], definitions: QueryNode[], target: any
+}) {
+  if (keys.length === 0) {
+    return _apply(context, definitions, {}, target)
+  }
+
+  if (isNullable(target)) {
+    return null
+  }
+
+  const [currentKey, ...restOfKeys] = keys
+
+  if (isArray(target[currentKey])) {
+    return target[currentKey].map((item) => getResultItemFromAccessNode({context, definitions, keys: restOfKeys, target: item}))
+  } else {
+    return getResultItemFromAccessNode({context, definitions, keys: restOfKeys, target: target[currentKey]})
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function applyDefinition(context: ExecutionContext, result: any, def: QueryNode, target: any): any {
   let fn: QMapFunction
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,8 +49,12 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
     case QueryType.ACCESS:
       def = def as AccessQueryNode
 
-      // TODO: que hacer con los accesos si son arrays
-      resultItem = _apply(context, def.definitions, {}, getValue(target, def.keys))
+      resultItem = getResultItemFromAccessNode({
+        context,
+        definitions: def.definitions,
+        keys: def.keys,
+        target
+      })
 
       if (isArray(result)) {
         result.push(resultItem)
@@ -95,6 +120,10 @@ function _apply(context: ExecutionContext, definitions: QueryNode[], result: any
     return target
   }
 
+  if (isNullable(target)) {
+    return null
+  }
+
   definitions.forEach((def) => {
     result = applyDefinition(context, result, def, target)
   })
@@ -129,9 +158,10 @@ export function apply(this: ApplyContext, target: any, overrideOptions?: Nullabl
     }
   }
 
-  const applyFn = _apply.bind(null, executionContext)
-  const overSchema = this.schema ? applyFn(this.schema.definitions, {}, target) : target
-  const overQuery = this.query ? applyFn(this.query.definitions, {}, overSchema) : overSchema
+  const getApplyFn = (query) => query?  _apply.bind(null, executionContext, query.definitions) : (_, target) => target
+  const getResult = (target, apply) => isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
 
-  return applyFn(this.root.definitions, {}, overQuery)
+  const overSchema = getResult(target, getApplyFn(this.schema))
+  const overQuery = getResult(overSchema, getApplyFn(this.query))
+  return getResult(overQuery, getApplyFn(this.root))
 }

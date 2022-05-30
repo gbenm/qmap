@@ -1,8 +1,27 @@
 import {
+  getValue,
   mergeObjects,
 } from "./utils"
 
 describe("Utils", () => {
+  it ("get values", () => {
+    const obj = {
+      primary: {
+        transaction: {
+          id: 1,
+          providers: [
+            { id: 1, name: "provider 1" },
+            { id: 2, name: "provider 2" },
+          ]
+        }
+      }
+    }
+
+    expect(getValue(obj, [])).toEqual(obj)
+    expect(getValue(obj, ["primary"])).toEqual(obj.primary)
+    expect(getValue(obj, ["primary", "transaction"])).toEqual(obj.primary.transaction)
+  })
+
   it("merge objects", () => {
     const merged = mergeObjects(
       {

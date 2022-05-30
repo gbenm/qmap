@@ -296,7 +296,7 @@ describe("apply", () => {
   })
 
   it ("nested select", () => {
-    const { apply } = qmap(`{
+    const { apply, errors } = qmap(`{
       balance,
       call_history {
         time,
@@ -309,6 +309,8 @@ describe("apply", () => {
         }
       }
     }`)
+
+    expect(errors).toBeFalsy()
 
     const result = apply({
       balance: 3.0,
@@ -335,8 +337,45 @@ describe("apply", () => {
     })
   })
 
+  it ("access", () => {
+    const { apply, errors } = qmap(`{
+      id: primary.transaction.id,
+      providers: primary.transaction.providers.id,
+      related_ids: related_transactions.id,
+      related_providers: related_transactions.providers { id },
+      related_transactions.providers.id
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      primary: {
+        transaction: {
+          id: 1,
+          providers: [{ id: 22 }, { id: 33 }],
+          description: "transaction 1",
+        }
+      },
+      related_transactions: [
+        { id: 1, providers: [{ id: 1 }, { id: 2 }] },
+        { id: 2, providers: [{ id: 3 }, { id: 4 }] },
+      ]
+    })
+
+    expect(result).toEqual({
+      id: 1,
+      providers: [22, 33],
+      related_ids: [1, 2],
+      related_providers: [[{ id: 1 }, { id: 2 }], [{ id: 3 }, { id: 4 }]],
+      related_transactions_providers_id: [[1, 2], [3, 4]]
+    })
+  })
+
   it ("for each function", () => {
-    const { apply } = qmap("{ names: [upperCase([concat(names, salt)])] }")
+    const { apply, errors } = qmap("{ names: [upperCase([concat(names, salt)])] }")
+
+    expect(errors).toBeFalsy()
+
     const result = apply({
       names: ["a", "b", "c"],
       salt: "!"
@@ -348,7 +387,7 @@ describe("apply", () => {
   })
 
   it("complex", () => {
-    const { apply } = qmap(`{
+    const { apply, errors } = qmap(`{
       product {
         id, upperCase(name)
       },
@@ -357,6 +396,8 @@ describe("apply", () => {
       },
       take(ids, @n)
     }`)
+
+    expect(errors).toBeFalsy()
 
     const result = apply({
       product: {

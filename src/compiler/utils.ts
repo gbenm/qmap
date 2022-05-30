@@ -15,7 +15,7 @@ export function getValue(obj: any, keys: string[], getter = (value: any, key: st
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isNullable = (obj: any) => obj === null || obj === undefined
+export const isNullable = (obj: any) => obj === null || obj === undefined
 
 /**
  * 1. objects have precedence over primitives, i.e. mergeObject(3, {}) == {}
