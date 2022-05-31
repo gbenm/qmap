@@ -753,6 +753,7 @@ __metadata:
     antlr4: ~4.9.3
     eslint: ^8.13.0
     jest: ^27.5.1
+    jest-junit: ^13.2.0
     lodash: ^4.17.21
     ts-jest: ^27.1.4
     ts-node: ^10.7.0
@@ -2968,6 +2969,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-junit@npm:^13.2.0":
+  version: 13.2.0
+  resolution: "jest-junit@npm:13.2.0"
+  dependencies:
+    mkdirp: ^1.0.4
+    strip-ansi: ^6.0.1
+    uuid: ^8.3.2
+    xml: ^1.0.1
+  checksum: 0a42447e0c9ae689ae43275944a72587216cb028d45f2bd54bfc9e7e38f90bb03caa571e58ac16fba44c121c7c5f6ae766c50833851f23153f7430b1b3b317c2
+  languageName: node
+  linkType: hard
+
 "jest-leak-detector@npm:^27.5.1":
   version: 27.5.1
   resolution: "jest-leak-detector@npm:27.5.1"
@@ -4680,6 +4693,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:^8.3.2":
+  version: 8.3.2
+  resolution: "uuid@npm:8.3.2"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
 "v8-compile-cache-lib@npm:^3.0.0":
   version: 3.0.1
   resolution: "v8-compile-cache-lib@npm:3.0.1"
@@ -4849,6 +4871,13 @@ __metadata:
   version: 3.0.0
   resolution: "xml-name-validator@npm:3.0.0"
   checksum: b3ac459afed783c285bb98e4960bd1f3ba12754fd4f2320efa0f9181ca28928c53cc75ca660d15d205e81f92304419afe94c531c7cfb3e0649aa6d140d53ecb0
+  languageName: node
+  linkType: hard
+
+"xml@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "xml@npm:1.0.1"
+  checksum: 11b5545ef3f8fec3fa29ce251f50ad7b6c97c103ed4d851306ec23366f5fa4699dd6a942262df52313a0cd1840ab26256da253c023bad3309d8ce46fe6020ca0
   languageName: node
   linkType: hard
 

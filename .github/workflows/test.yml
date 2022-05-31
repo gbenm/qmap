@@ -14,3 +14,11 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: yarn
       - run: yarn test
+      - run: yarn test-junit
+      - uses: testspace-com/setup-testspace@v1
+        with:
+         domain: ${{ github.repository_owner }}
+      - name: Push result to Testspace server
+        run: |
+          testspace ./junit/*.xml
+        if: always()

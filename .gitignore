@@ -14,3 +14,4 @@ node_modules/
 dist/
 *.ignore.js
 antlr4/.antlr
+junit
