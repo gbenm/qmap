@@ -6,7 +6,7 @@ import * as astn from "../compiler"
 
 
 const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
-    "\u5964\u0003\u0012\u00e7\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004",
+    "\u5964\u0003\u0014\u00e7\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004",
     "\u0004\t\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t",
     "\u0007\u0004\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004",
     "\f\t\f\u0004\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010",
@@ -161,7 +161,7 @@ export default class qMapParser extends antlr4.Parser {
                              "LEFT_BRACE", "RIGHT_BRACE", "EX_MARK", "COLON", 
                              "COMMA", "TRIPLE_DOT", "DOT", "LEFT_PAREN", 
                              "RIGHT_PAREN", "AMPERSAND", "STRING", "ID", 
-                             "WS" ];
+                             "WS", "BLOCK_COMMENT", "LINE_COMMENT" ];
     static ruleNames = [ "start", "optional_id", "id", "stm", "exclude", 
                          "global_spread", "scoped_spread", "spread", "param", 
                          "params", "query", "query_list", "obj_ref", "field", 
@@ -924,6 +924,8 @@ qMapParser.AMPERSAND = 13;
 qMapParser.STRING = 14;
 qMapParser.ID = 15;
 qMapParser.WS = 16;
+qMapParser.BLOCK_COMMENT = 17;
+qMapParser.LINE_COMMENT = 18;
 
 qMapParser.RULE_start = 0;
 qMapParser.RULE_optional_id = 1;

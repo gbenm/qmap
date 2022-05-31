@@ -85,13 +85,15 @@ describe("includes", () => {
     })
 
     it ("without query", () => {
-      const { includes } = qmap("", "admin")
+      const schema = "admin"
+      const { includes } = qmap("", { schema })
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(true)
     })
 
     it ("with query", () => {
-      const { includes } = qmap("{ product { id } }", "user")
+      const schema = "user"
+      const { includes } = qmap("{ product { id } }", { schema })
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(false)
     })
@@ -147,8 +149,9 @@ describe("includes", () => {
     })
 
     describe("as admin", () => {
+      const schema = "admin"
       it ("without select", () => {
-        const { includes } = qmap("product_compact", "admin")
+        const { includes } = qmap("product_compact", { schema })
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(true)
         expect(includes(["transaction"])).toBe(false)
@@ -163,7 +166,7 @@ describe("includes", () => {
               id, name
             }
           }
-        }`, "admin")
+        }`, { schema })
 
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(true)
@@ -176,8 +179,9 @@ describe("includes", () => {
     })
 
     describe("as client", () => {
+      const schema = "client"
       it ("without select", () => {
-        const { includes } = qmap("product_compact", "client")
+        const { includes } = qmap("product_compact", { schema })
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(false)
         expect(includes(["transaction"])).toBe(false)
@@ -192,7 +196,7 @@ describe("includes", () => {
               id, name
             }
           }
-        }`, "client")
+        }`, { schema })
 
         expect(includes(["product"])).toBe(true)
         expect(includes(["product", "id"])).toBe(false)
@@ -235,6 +239,7 @@ describe("includes", () => {
     })
 
     it ("admin schema", () => {
+      const schema = "admin"
       const { includes } = qmap(`product_compact {
         product {
           ...,
@@ -242,7 +247,7 @@ describe("includes", () => {
             id, name
           }
         }
-      }`, "admin")
+      }`, { schema })
 
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(true)
@@ -254,6 +259,8 @@ describe("includes", () => {
     })
 
     it ("client schema", () => {
+      const schema = "client"
+
       const { includes } = qmap(`product_compact {
         product {
           ...,
@@ -261,7 +268,7 @@ describe("includes", () => {
             id, name
           }
         }
-      }`, "client")
+      }`, { schema })
 
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(false)
@@ -269,6 +276,238 @@ describe("includes", () => {
       expect(includes(["product", "provider"])).toBe(false)
       expect(includes(["product", "provider", "id"])).toBe(false)
       expect(includes(["product", "provider", "name"])).toBe(false)
+    })
+  })
+})
+
+describe("apply", () => {
+  const qmap = qmapCreator({
+    functions: {
+      upperCase(str: string) {
+        return str.toUpperCase()
+      },
+      concat(...strs: string[]) {
+        return strs.join("")
+      },
+      take(list: unknown[], n: number) {
+        return list.slice(0, n)
+      },
+      currency(value: number) {
+        return `$${value.toFixed(2)}`
+      },
+      add(a: number, b: number) {
+        return a + b
+      }
+    }
+  })
+
+  it ("function", () => {
+    const { apply, errors } = qmap(`{
+      upperCase(name),
+      upperCase(concat(id, name)),
+      take(ids, @quantity),
+      take([ currency([ add(ids, @offset) ]) ], @quantity)
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      id: 1,
+      name: "John",
+      ids: [1, 2, 3, 4, 5],
+    }, { variables: {
+      quantity: 3,
+      offset: 100,
+    } })
+
+    expect(result).toEqual({
+      name: "JOHN",
+      id_name: "1JOHN",
+      ids_quantity: [1, 2, 3],
+      ids_offset_quantity: ["$101.00", "$102.00", "$103.00"],
+    })
+  })
+
+  it ("nested select", () => {
+    const { apply, errors } = qmap(`{
+      balance,
+      call_history {
+        time,
+        cost,
+        user { name }
+      },
+      dials {
+        user {
+          id, name
+        }
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      balance: 3.0,
+      call_history: [
+        { id: 1, time: "01:00", cost: 2.0, user: { name: "john", id: 3 } },
+        { id: 2, time: "02:00", cost: 3.0, user: { name: "john 2", id: 4 } },
+      ],
+      dials: [
+        { id: 1, user: { id: 5, name: "john", alias: "j" } },
+        { id: 2, user: { id: 3, name: "john 2", alias: "j2" } },
+      ]
+    })
+
+    expect(result).toEqual({
+      balance: 3.0,
+      call_history: [
+        { time: "01:00", cost: 2.0, user: { name: "john" } },
+        { time: "02:00", cost: 3.0, user: { name: "john 2" } },
+      ],
+      dials: [
+        { user: { id: 5, name: "john" } },
+        { user: { id: 3, name: "john 2" } },
+      ]
+    })
+  })
+
+  it ("select with all and exclude", () => {
+    const { apply, errors } = qmap(`{
+      ...,
+      transaction {
+        ...,
+        !old_id,
+        id: old_id
+      },
+      product {
+        ...,
+        label: concat(id, @sep, currency(price))
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      id: 1,
+      balance: 23,
+      transaction: {
+        id: 2,
+        old_id: 3,
+        description: "test",
+      },
+      product: {
+        id: 4,
+        price: 3.0,
+      }
+    }, {
+      variables: {
+        sep: " - "
+      }
+    })
+
+    expect(result).toEqual({
+      id: 1,
+      balance: 23,
+      transaction: {
+        description: "test",
+        id: 3,
+      },
+      product: {
+        id: 4,
+        price: 3.0,
+        label: "4 - $3.00",
+      }
+    })
+  })
+
+  it ("access", () => {
+    const { apply, errors } = qmap(`{
+      id: primary.transaction.id,
+      providers: primary.transaction.providers.id,
+      related_ids: related_transactions.id,
+      related_providers: related_transactions.providers { id },
+      related_transactions.providers.id
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      primary: {
+        transaction: {
+          id: 1,
+          providers: [{ id: 22 }, { id: 33 }],
+          description: "transaction 1",
+        }
+      },
+      related_transactions: [
+        { id: 1, providers: [{ id: 1 }, { id: 2 }] },
+        { id: 2, providers: [{ id: 3 }, { id: 4 }] },
+      ]
+    })
+
+    expect(result).toEqual({
+      id: 1,
+      providers: [22, 33],
+      related_ids: [1, 2],
+      related_providers: [[{ id: 1 }, { id: 2 }], [{ id: 3 }, { id: 4 }]],
+      related_transactions_providers_id: [[1, 2], [3, 4]]
+    })
+  })
+
+  it ("for each function", () => {
+    const { apply, errors } = qmap("{ names: [upperCase([concat(names, salt)])] }")
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      names: ["a", "b", "c"],
+      salt: "!"
+    })
+
+    expect(result).toEqual({
+      names: ["A!", "B!", "C!"]
+    })
+  })
+
+  it("complex", () => {
+    const { apply, errors } = qmap(`{
+      product {
+        id, upperCase(name)
+      },
+      transaction {
+        id, desc: description
+      },
+      take(ids, @n)
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      product: {
+        id: 5,
+        name: "camisa",
+        price: 50
+      },
+      transaction: {
+        id: 10,
+        description: "compra"
+      },
+      ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    }, {
+      variables: {
+        n: 2
+      }
+    })
+
+    expect(result).toEqual({
+      product: {
+        id: 5,
+        name: "CAMISA"
+      },
+      transaction: {
+        id: 10,
+        desc: "compra"
+      },
+      ids_n: [1, 2]
     })
   })
 })
