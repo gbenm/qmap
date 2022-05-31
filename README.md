@@ -45,19 +45,40 @@ para un endpoint get simplemente puede ir como un query string,
 además que si es null **qmap** devuelve el mismo objeto), además
 que también agregar el poder de restringir y disminuir el tamaño
 de las queries. El lado de la restricción se basa en la declaración
-de schemas (opcionales) que indican un límite sobre lo que se
+de `schemas` (opcionales) que indican un límite sobre lo que se
 puede extraer del JSON, por ejemplo al indicarle que use el
 schema **user** la información disponible sería diferente a la
 que si usara **admin** (los nombres los define el desarrollador,
 véase [schemas](#utilizando-schemas)), esto da la flexibilidad
-de cambiar de un enfoque de "se realiza la consulta a los
-datos porque el rol así lo define" a un "la consulta solicita
+de cambiar de un enfoque de "se incluyen los datos
+porque el rol así lo define" a un "la consulta solicita
 la información?" y ya es la librería la que se encarga
 de filtrar la información que puede o no consultar. Por otra parte
-de la disminución del tamaño, del lado del server se pueden
-declarar queries, el cliente puede realizar una consulta
-sobre una query que esté en el servidor y sólo modificar
+la disminución del tamaño es consecuencia de que en el lado del
+servidor se pueden declarar queries, el cliente puede realizar
+una consulta sobre una query ya definida y sólo modificar
 lo que le interese (véase [queries](#utilizando-queries)).
+
+Otro problema puede nacer al consumir APIs de terceros, por ejemplo,
+si esta devuelve:
+```json
+{
+  "id": "1",
+  "price": 2.3,
+  "description": "..."
+}
+```
+pero el sistema únicamente necesita el precio para poderlo
+mostrar, puede de una forma declarativa transformarlo
+```javascript
+const query = `{ currency(price) }`
+
+const result = {
+  "price": "$2.30"
+}
+```
+
+> Puede consultar [Uso](#uso) para más información.
 
 Cabe resaltar que aunque se hable en la documentación con
 este enfoque puede utilizar la librería con otro propósito
