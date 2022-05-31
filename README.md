@@ -3,7 +3,7 @@
 Es un motor para manipulación JSON.
 
 > Este paquete está bajo construcción, por lo que realizar
-> más tests en `src/engine/engine.test.ts` es de una gran
+> más tests en `src/engine/engine.test.ts` es de gran
 > ayuda para verificar que funcionen correctamente las
 > capacidades actuales.
 
