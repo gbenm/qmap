@@ -89,7 +89,7 @@ siempre y cuándo quiera modificar la información de un JSON.
 La forma más simple es simplemente llamando a `qmapCreator()`,
 sin embargo se pueden realizar más cosas.
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 
 const qmap = qmapCreator()
 ```
@@ -98,7 +98,7 @@ const qmap = qmapCreator()
 Para poder utilizar funciones dentro de la query se deben
 agregar al objeto que recibe `qmapCreator`:
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 
 const qmap = qmapCreator({
   functions: {
@@ -124,7 +124,7 @@ de que se puede o no consultar ya es responsabilidad de la librería
 (véase [función includes](#includes-function)).
 
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 
 const qmap = qmapCreator({
   schemas: `{
@@ -153,7 +153,7 @@ También existe la opción de reutilizar schemas si no se es
 muy estricto, por ejemplo:
 
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 
 const qmap = qmapCreator({
   schemas: `{
@@ -183,7 +183,7 @@ Con el motivo de minizar lo que se envía puede dejar queries
 en el lado de su servidor y realizar consultas sobre estas:
 
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 
 const qmap = qmapCreator({
   queries: `{
@@ -205,7 +205,7 @@ ayudarlo a no definir muchas veces las funciones o
 en dispersar sus **queries** o **schemas**.
 
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 
 const qmapCommon = qmapCreator({
   functions: {
@@ -570,7 +570,7 @@ Al ejecutar una query puede hacer uso de 2 funciones y un array:
 1. `errors` es un array con los errores al compilar la query, es
 `undefined` si no hay errores.
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 const qmap = qmapCreator()
 const { errors } = qmap("{ id, name }")
 ```
@@ -581,7 +581,7 @@ que no importa si está en la query que se le pasó a la
 función `qmap`, si el schema o la query no lo tienen
 el resultado será `false`.
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 const qmap = qmapCreator()
 const { includes } = qmap(`{
     product {
@@ -613,7 +613,7 @@ variables y el `schema` que se va utilizar (las variables, pueden
 ser cualquier tipo soportado por javascript).
 
 ```javascript
-import { qmapCreator } from "qmapjs"
+import { qmapCreator } from "@qmap/engine"
 const qmap = qmapCreator()
 
 const { apply } = qmap("{ id, name }")
