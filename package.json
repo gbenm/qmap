@@ -1,7 +1,7 @@
 {
   "name": "@qmap/engine",
   "packageManager": "yarn@3.2.0",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "author": "Josué Galeano",
   "license": "MIT",
   "repository": {
@@ -10,10 +10,18 @@
   },
   "homepage": "https://github.com/gbenm/qmap",
   "keywords": [
-    "JSON",
+    "json",
     "query",
     "transformation",
-    "transform"
+    "transform",
+    "manipulation",
+    "http",
+    "qmap",
+    "engine",
+    "map",
+    "filter",
+    "schemas",
+    "validation"
   ],
   "main": "dist/engine/index.js",
   "types": "dist/engine/index.d.ts",
