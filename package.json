@@ -10,10 +10,9 @@
   },
   "homepage": "https://github.com/gbenm/qmap",
   "keywords": [
-    "JSON",
-    "query",
-    "transformation",
-    "transform"
+    "json", "query", "transformation", "transform",
+    "manipulation", "http", "qmap", "engine", "map",
+    "filter", "schemas", "validation"
   ],
   "main": "dist/engine/index.js",
   "types": "dist/engine/index.d.ts",
