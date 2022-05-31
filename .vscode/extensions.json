@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "mike-lischke.vscode-antlr4",
+        "editorconfig.editorconfig",
+        "dbaeumer.vscode-eslint",
+        "Orta.vscode-jest"
+    ]
+}
