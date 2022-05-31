@@ -740,6 +740,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@qmap/engine@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@qmap/engine@workspace:."
+  dependencies:
+    "@types/eslint": ^8.4.1
+    "@types/jest": ^27.4.1
+    "@types/lodash": ^4.14.181
+    "@types/node": ^17.0.24
+    "@typescript-eslint/eslint-plugin": ^5.19.0
+    "@typescript-eslint/parser": ^5.19.0
+    antlr4: ~4.9.3
+    eslint: ^8.13.0
+    jest: ^27.5.1
+    lodash: ^4.17.21
+    ts-jest: ^27.1.4
+    ts-node: ^10.7.0
+    typescript: ^4.6.3
+  languageName: unknown
+  linkType: soft
+
 "@sinonjs/commons@npm:^1.7.0":
   version: 1.8.3
   resolution: "@sinonjs/commons@npm:1.8.3"
@@ -3951,26 +3971,6 @@ __metadata:
   checksum: 823bf443c6dd14f669984dea25757b37993f67e8d94698996064035edd43bed8a5a17a9f12e439c2b35df1078c6bec05a6c86e336209eb1061e8025c481168e8
   languageName: node
   linkType: hard
-
-"qmapjs@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "qmapjs@workspace:."
-  dependencies:
-    "@types/eslint": ^8.4.1
-    "@types/jest": ^27.4.1
-    "@types/lodash": ^4.14.181
-    "@types/node": ^17.0.24
-    "@typescript-eslint/eslint-plugin": ^5.19.0
-    "@typescript-eslint/parser": ^5.19.0
-    antlr4: ~4.9.3
-    eslint: ^8.13.0
-    jest: ^27.5.1
-    lodash: ^4.17.21
-    ts-jest: ^27.1.4
-    ts-node: ^10.7.0
-    typescript: ^4.6.3
-  languageName: unknown
-  linkType: soft
 
 "queue-microtask@npm:^1.2.2":
   version: 1.2.3
