@@ -7,6 +7,11 @@ Es un motor para manipulación JSON.
 > ayuda para verificar que funcionen correctamente las
 > capacidades actuales.
 
+![NPM](https://img.shields.io/npm/l/@qmap/engine)
+![npm](https://img.shields.io/npm/v/@qmap/engine)
+![AppVeyor](https://img.shields.io/appveyor/build/gbenm/qmap)
+![Testspace pass ratio](https://img.shields.io/testspace/pass-ratio/gbenm/gbenm:qmap/main)
+
 ## Contenido
 - [Motivación](#motivación)
 - [Progreso](#progreso)
