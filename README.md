@@ -1,4 +1,19 @@
+
+<style>
+img {
+  display: block;
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
 # QMap
+
+![NPM](https://img.shields.io/npm/l/@qmap/engine)
+![npm](https://img.shields.io/npm/v/@qmap/engine)
+![AppVeyor](https://img.shields.io/appveyor/build/gbenm/qmap)
+![Testspace pass ratio](https://img.shields.io/testspace/pass-ratio/gbenm/gbenm:qmap/main)
 
 Es un motor para manipulación JSON.
 
@@ -7,10 +22,7 @@ Es un motor para manipulación JSON.
 > ayuda para verificar que funcionen correctamente las
 > capacidades actuales.
 
-![NPM](https://img.shields.io/npm/l/@qmap/engine)
-![npm](https://img.shields.io/npm/v/@qmap/engine)
-![AppVeyor](https://img.shields.io/appveyor/build/gbenm/qmap)
-![Testspace pass ratio](https://img.shields.io/testspace/pass-ratio/gbenm/gbenm:qmap/main)
+![Demo](./demo.gif)
 
 ## Contenido
 - [Motivación](#motivación)
@@ -32,31 +44,32 @@ Es un motor para manipulación JSON.
 ## Motivación
 JSON es una de las formas más ampliamente utilizadas para
 intercambiar información mediante HTTP, una característica
-con la que se debe lidiar es que información se debe mandar
+con la que se debe lidiar es qué información se debe mandar
 como respuesta, las aplicaciones consumen la información
-de muchas maneras, por lo que a veces no es necesaria
-toda la información que nos pueda entregar un endpoint,
-por lo que para llevar esto, simplemente se puede ignorar
+de muchas maneras y eso resulta en que a veces no es necesaria
+toda la que nos pueda entregar un endpoint,
+para llevar esto, simplemente se puede ignorar
 y siempre obtener toda la información (en caso de ser utilizadas
 con datos móviles es un derroche), o tal vez crear filtros con
-los que se pueda mermar el problema, la cuestión es que esto
-provoca tener que manter más código.
+los que se pueda minimizar el problema, la cuestión, es que esto
+provoca tener que mantener más código.
 
-QMap permite por medio de una declaración de queries manipular
-el contenido del JSON, con lo que puede hacer bastante flexible
-lo que consume de un endpoint en específico (la forma en
-que envía la query depende del desarrollador, por ejemplo,
-para un endpoint get simplemente puede ir como un query string,
-además que si es null **qmap** devuelve el mismo objeto), además
-que también agregar el poder de restringir y disminuir el tamaño
-de las queries. El lado de la restricción se basa en la declaración
-de `schemas` (opcionales) que indican un límite sobre lo que se
+QMap permite por medio de la declaración de queries manipular
+el contenido del JSON, dando flexiblilidad a lo que
+se puede consumir de un endpoint (la forma en
+que se envía la query depende del desarrollador, por ejemplo,
+para un endpoint GET simplemente puede mandarse como un query string,
+además que si es `null` **qmap** devuelve el mismo objeto,
+es decir que no lo modifica), también
+agrega el poder de restringir y disminuir el tamaño
+de las queries. El lado de la restricción se obtiene al declarar
+`schemas` (opcionales) que indican un límite sobre lo que se
 puede extraer del JSON, por ejemplo al indicarle que use el
 schema **user** la información disponible sería diferente a la
 que si usara **admin** (los nombres los define el desarrollador,
 véase [schemas](#utilizando-schemas)), esto da la flexibilidad
 de cambiar de un enfoque de "se incluyen los datos
-porque el rol así lo define" a un "la consulta solicita
+porque el rol así lo define" a un "se debe incluir
 la información?" y ya es la librería la que se encarga
 de filtrar la información que puede o no consultar. Por otra parte
 la disminución del tamaño es consecuencia de que en el lado del
@@ -74,7 +87,7 @@ si esta devuelve:
 }
 ```
 pero el sistema únicamente necesita el precio para poderlo
-mostrar, puede de una forma declarativa transformarlo
+mostrar, puede de una forma declarativa transformarlo a:
 ```javascript
 const query = `{ currency(price) }`
 
@@ -85,56 +98,72 @@ const result = {
 
 > Puede consultar [Uso](#uso) para más información.
 
-Cabe resaltar que aunque se hable en la documentación con
-este enfoque puede utilizar la librería con otro propósito
-siempre y cuándo quiera modificar la información de un JSON.
+En la documentación se toma el enfoque de consumo
+de información por medio de HTTP, pero la librería
+no depende de nada del protocolo, por lo que puede
+usarla dónde prefiera, siempre y cuándo exista
+un JSON al cuál modificar.
 
 ## Progreso
 - [x] Motor principal
-- [ ] Motor modo cliente (en este se ejecuta parcialmente y se crear
+- [ ] Motor modo cliente (en este se ejecuta parcialmente y crea
     una query minificada)
 - [ ] Aplicar selección al resultado de la función
 
 ## Capacidades
 - Limitación por medio de `schemas`
 - Predefinición de queries, por medio de `queries`
+- Declaración de funciones, por medio de `functions`
 - Selección de campos
 - Renombrar campos
 - Reutilización de queries
 - Accesos a campos internos (para aplanarlos o utilizarlos
     en una función)
 - Funciones con o sin variables
-- La capacidades de aplicar array queries
-    - selección
-    - acceso
-    - se puede aplicar las funciones a los elementos
-        en vez del array.
+- La capacidad de aplicar `array queries`
+    - Selección
+    - Acceso
+    - Se pueden aplicar las funciones a los elementos
+        del array.
 
 ## Uso
 ### Crear instancia de QMap
-La forma más simple es simplemente llamando a `qmapCreator()`,
-sin embargo se pueden realizar más cosas.
+La forma más simple es llamar a `qmapCreator()`:
 ```javascript
 import { qmapCreator } from "@qmap/engine"
 
 const qmap = qmapCreator()
 ```
 
+El resultado de ejecutar `qmapCreator()` es la función
+de compilación de queries, la cuál al ser ejecutada
+devuelve:
+- La función `apply` que aplica la consulta a un objeto.
+- La función `includes` que permite comprobar si el `path`
+está en la consulta.
+- El array `errors` que contiene los errores de compilación
+
+> Véase [Ejecutar query](#ejecutar-la-query) para mayor información
+
+<hr>
+
+`qmapCreator()` puede recibir un objecto llamado `descriptor`,
+en este se puede definir lo siguiente:
+
 #### Utilizando `functions`
-Para poder utilizar funciones dentro de la query se deben
-agregar al objeto que recibe `qmapCreator`:
+Para poder utilizar funciones dentro de la query, agregue las
+definiciones al objeto que recibe `qmapCreator`:
 ```javascript
 import { qmapCreator } from "@qmap/engine"
 
 const qmap = qmapCreator({
   functions: {
-    upperCase(str) {
-      return str.toUpperCase()
-    }
+    upperCase: (str) => str.toUpperCase()
   }
 })
 ```
-Con esto ya puede ser utilizado `upperCase` dentro la petición
+Las queries compiladas con la función `qmap` tendrán disponible
+`upperCase`.
 
 #### Utilizando `schemas`
 Al tener un servicio que cuenta con varios niveles de
@@ -144,10 +173,10 @@ significa que si se agrega un nuevo rol habrá que cambiar
 el código interno del endpoint, **qmap** tiene como propósito
 no enfocarse en que información tiene que poder consultar cada
 usuario, sino en que es lo que se quiere, por lo que los
-condicionales pueden cambiar su enfoque de un "el rol tiene
-acceso a", a un "se van incluir en lo consultado?", y el problema
-de que se puede o no consultar ya es responsabilidad de la librería
-(véase [función includes](#includes-function)).
+condicionales pueden cambiar su enfoque de **"el rol tiene
+acceso a"**, a **"se van incluir en lo consultado?"**,
+la librería se encarga de filtrar la información según lo
+declarado (véase [función includes](#includes-function)).
 
 ```javascript
 import { qmapCreator } from "@qmap/engine"
@@ -168,15 +197,14 @@ const qmap = qmapCreator({
   }`
 })
 ```
-En este ejemplo el administrador tiene la potestad de consultar
-toda la información en **trasaction**, **product** y **provider**
-sin embargo, el cliente puede ver únicamente la transacción y el
-producto, además que se le restringe que información puede ver,
-por ejemplo no puede ver los `id`s, precio del producto, u otra
-información que puedan contener.
+En este ejemplo el administrador puede consultar
+toda la información en **transaction**, **product** y **provider**
+sin embargo, el cliente puede ver únicamente **transaction** y
+**product**, además que se le restringe que información puede consultar,
+**transaction** se limita a **description, amount y date**, y del **product**
+únicamente a **name**.
 
-También existe la opción de reutilizar schemas si no se es
-muy estricto, por ejemplo:
+Si tiene trozos repetidos puede reutilizarlos usando `spread`:
 
 ```javascript
 import { qmapCreator } from "@qmap/engine"
@@ -195,18 +223,18 @@ const qmap = qmapCreator({
 })
 ```
 
-En lo anterior el cliente tiene acceso total a la transacción y
-al product, y como el administrador también los tiene simplemente
-se utilizar el operado `spread` para copiar lo que ya se definió
-antes (el orden de la declaración importa), algo que por
+En lo anterior el cliente tiene acceso total a **transaction** y
+**product**, como el administrador también los tiene simplemente
+se puede utilizar el operador `spread` para copiar lo que ya se definió
+antes (debe estar declarado antes). Algo que por
 el momento no se ha mencionado, pero es importante, es que
 el `spread` funciona únicamente en el scope de la query (el string)
-por lo que aunque se use `extends` no podrá utilizar las
-del padre.
+por lo que aunque se use `extends` no podrá utilizarlo con los
+`schemas` o `queries` del qmap padre.
 
 #### Utilizando `queries`
-Con el motivo de minizar lo que se envía puede dejar queries
-en el lado de su servidor y realizar consultas sobre estas:
+Permite predefinir manipulaciones del JSON que pueden ser modificadas
+por medio de la query que se manda a ejecutar.
 
 ```javascript
 import { qmapCreator } from "@qmap/engine"
@@ -221,14 +249,15 @@ const qmap = qmapCreator({
 })
 ```
 
-Luego podrá utilizar el nombre que le asignó para realizar una
-consulta sobre el mismo, esto se explicará más adelante.
+Las queries compiladas con la función `qmap` podrá hacer
+uso del nombre `compact_transaction` para referirse a dicha
+query.
 
 #### Utilizando `extends`
-Con el fin de poder modularizar sus instancias puede
-repartirlas en pedazos utilizando esta propiedad, puede
-ayudarlo a no definir muchas veces las funciones o
-en dispersar sus **queries** o **schemas**.
+Permite reutilizar `functions`, `queries` y `schemas` de
+otras instancias ya creadas. Lo definido en la instancia
+actual, sobreescribe el comportamiento de las anteriores
+(únicamente para la nueva instacia).
 
 ```javascript
 import { qmapCreator } from "@qmap/engine"
@@ -262,30 +291,33 @@ const qmapProducts = qmapCreator({
 })
 ```
 
-> Cómo una nota final, `qmapCreator` compila el lenguaje
-> consulta para `schemas` y `queries` al ser ejecutado,
-> por lo que podría serle de utilizar dejar estas fuera
-> de su endpoint para no tener que realizar la misma
-> compilación varias veces
+> `qmapCreator` compila la query de `schemas` y `queries`
+> al ejecutarse (es decir que la instancia devuelta para
+> ejecutar queries ya no las vuelve a compilar)
+> por lo que dejar la llamada a `qmapCreator` en
+> dónde no se vuelva a ejecutar será una buena elección.
 
 ### Consultas
-Para poder agregarlas necesita tener una idea de como
-funciona la plantilla general:
+La estructura de una consulta se define de la siguiente
+forma:
 
 ```javascript
 const query = "NOMBRE_QUERY { }"
 ```
 
 `NOMBRE_QUERY` es opcional y debería ser un nombre declarado
-en la sección `queries` de `qmapCreator` por decirlo de una
-manera es la consulta padre que filtra primero la información.
+en la sección `queries` de `qmapCreator`, si el nombre existe
+en la instancia de `qmap` se aplica primero para filtrar la información,
+luego el resultado es usado para la query dentro de las llaves.
 
-Entre consultar válidas están `null`, `undefined`, `""`, `"{}"`,
-que representan que no se hará ninguna modificación a la información
-del JSON.
+Cuándo la **query** es `null`, `undefined`, `""` o `"{}"`, el objeto
+no es modificado (teniendo en cuenta que sería un parámetro
+opcional en la petición de HTTP, significaría que se quiere toda la
+información que pueda entregar el endpoint).
 
-> Importante: la llaves son importantes, y sólo puede estar
-> un único nombre fuera de ellas (que representan la consulta padre).
+> **Importante:** si se van a declarar acciones sobre el JSON estas deben
+> ir dentro de las llaves (`{}`), la única excepción es el nombre
+> de la consulta padre (`NOMBRE_QUERY`).
 
 #### Selección
 ```javascript
@@ -298,18 +330,21 @@ const query = `{
     "un campo extra"
 }`
 ```
-Esta consiste en declarar que es lo que se quiere recibir,
-si algo no existe en el objeto tendrá valor `null`. Puede
-agregar el nivel de anidación que le apetezca. Observaciones:
-- Si no hay una selección sobre un campo se trae toda la
-información.
+Permite seleccionar que información se va incluir en el
+resultado. Si una llave declarada en la selección no existe,
+el valor será `null`.
+
+- No hay límite en la anidación de la selección.
+- Si no existe una selección sobre la llave se trae
+toda la información sin modificar.
 - No se permite dejar las llaves en blanco, es decir `provider {}`
 es considerado un error.
-- Si es un arreglo la consulta se aplica sobre cada objeto
-- Para poder igual a las claves de JSON también se puede colocar
-cualquier texto dentro de `""` para expecificar cualquier otra cosa,
-puede ir sin comillas cualquier combinación que haga match con
+- Si el contenido de la llave es un arreglo, la selección es aplicada
+a los elementos.
+- Las claves sin comillas son valores que cumplen con la expresión regular
 `[a-zA-Z0-9_$]+`.
+- Si una clave no cumple con la expresión regular anterior, se debe declarar
+entre comillas (`""`), por ejemplo `"value 1"`.
 
 ### Acceso
 Permite aplanar el JSON, también puede ser útil para usarse
@@ -330,10 +365,10 @@ const result = {
     }
 }
 ```
-Esta es la forma más sencilla, observaciones:
-- admite cualquier nivel de acceso
-- el nombre por defecto es la concatenación
-- es válido usar `""` para denotar nombres
+- Admite cualquier nivel de acceso
+- El nombre por defecto es la concatenación de
+los valores separados por punto.
+- Se permite utilizar las claves con comillas (`""`)
 - Funciona en arrays, e.g.
 ```javascript
 const input = {
@@ -359,17 +394,57 @@ const result = {
     transaction_providers_id: [ 1 ]
 }
 ```
-Lo cuál significa que no importa cuál sea el arreglo, tenga
-cuidado para no resultar con listas de listas si eso no
-era lo que quería.
+
+Cualquier clave puede referirse a un arreglo y no se restringe
+la cantidad de arreglos admitidos, tenga cuidado de no resultar
+con arreglo de arreglos, si esto no es lo que necesita.
+
+```javascript
+const input = {
+  objects: [
+    { id: 1, objects: [{ value: 10 }, { value: 15 }] },
+    { id: 2, objects: [{ value: 20 }, { value: 25 }] },
+  ]
+}
+
+const query = `{
+  result: objects.objects.value
+}` // { result: [ [ 10, 15 ], [ 20, 25 ] ] }
+```
+
+Tampoco requiere que los datos sean del mismo tipo
+(por favor, no se asuste xD):
+
+```javascript
+const input = {
+  objects: [
+    {
+      objects: [
+        { value: 10 }, { values: [{ value: 40 }] }
+      ]
+    },
+    { objects: { values:  { value: 30 }  } },
+  ]
+}
+
+const query = `{
+  result: objects.objects.values.value
+}` // { "result": [ [ null, [ 40 ] ],30 ]}
+```
 
 ### Renombrar
+Sirve para reemplazar el nombre que tiene por defecto una consulta
+(en la selección es el mismo nombre de la clave, en el acceso es
+la concatenación y en las funciones es la concatenación de los
+nombres de los parámetros).
+
 ```javascript
 const query = `{
     alias: "my query" {
         id, name
     },
-    other: other."field in".object
+    other: other."field in".object,
+    result: upperCase(text)
 }`
 ```
 
@@ -379,14 +454,13 @@ const query = `{
     ...
 }`
 ```
-Por si sólo no se ve muy útil, ya que este caso dejar vacía
-la consulta es equivalente, pero puede ser de utilidad cuándo
-se quiere sólo modificar pequeñas cosas.
+Este operador copia todos los valores del JSON de
+entrada al resultado. Es de utilidad cuándo no se requiere filtrar
+información sino que modificar algunos valores.
 
 ### Excluir
-Cuándo se le haga más fácil marcar que es lo que no quiere, o
-por ejemplo eliminar un campo renombrado, puede utilizar lo
-siguiente:
+Permite eliminar valores del resultado, es de
+utilidad en combinación con el operador `...`:
 
 ```javascript
 const query = `{
@@ -395,53 +469,68 @@ const query = `{
     id: serial
 }`
 ```
-Al preceder un nombre con un signo de admiración `!name`, se
-elimina la clave que haya sido agregada anteriormente. En el caso
-anterior es necesario borrar serial, porque aunque se esté
-renombrando, el operador `...` ha incluído todas las claves
-permitidas (entre ellas **serial**).
-> Tenga cuidado!, si agrega un **exclude** después de una consulta
-> que tenga el nombre del que va eliminar, este será borrado.
-> No es un operador que esté restringido a `...`
+En este caso es necesario borrar `serial` ya que el operador
+`...` ya lo ha incluido en el resultado.
+
+- Se declara como `!KEY`, dónde `KEY` es una clave en el resultado
+(no en el JSON de entrada).
+```javascript
+const query = `{
+    !serial,
+    ...,
+    id: serial
+}` // !serial no afecta al resultado
+
+const query = `{
+  ...,
+  id: product.id,
+  !id
+}` // se ha eliminado el campo renombrado
+```
+- Se pueden usar claves con comillas `""`
+
+> Tenga cuidado!, como se ha comentado **exclude** no está limitado
+> a borrar lo agreado por `...`
 
 ### Funciones
 Debe declararlas en el `qmapCreator`, luego de esto
-puede utilizar el nombre de la función, debe ser un identificador
-válido, no es permitido utilizar `""` para el nombre de las
-funciones.
+puede utilizar el nombre de la función dentro de la query,
+debe ser un identificador válido, no es permitido utilizar
+`""` para el nombre de las funciones.
 
-0. El nombre que toma la clave es la concatenación de los
+- El nombre que toma la key en el resultado, es la concatenación de los
 argumentos.
-1. Las funciones se aplican sobre claves que estén en ese
-contexto.
+- Las funciones se aplican sobre los valores en el JSON de entrada
+(no sobre los valores incluidos en el resultado).
 ```javascript
 const query = `{
     toString(id)
 }`
 ```
-2. Se pueden componer
+- Se pueden componer
 ```javascript
 const query = `{
     upperCase(fullname(first_name, last_name)),
 }`
 ```
-3. Pueden utilizar variables (los primitivos no se permiten,
-si necesita mandar una información externa, utilice variables,
+- Pueden utilizar variables (los primitivos no se permiten,
+si necesita mandar información externa, utilice variables,
 tampoco es permitido utilizar `""` para el nombre de variables) estas
 se mandan através de `qmap` o `apply` (más adelante)
 
 ```javascript
 const query = `{
-    take(family, @quantity)
+    take(members, @quantity)
 }`
 ```
 
-> Las variables se declaran con un `@` al inicio seguido de un nombre
-> válida a usarse sin comillas
+> Las variables se declaran con un `@` al inicio, seguido de un identificador.
+> **No** puede usar comillas `""`
 
-4. Se pueden declarar dentro de las llaves de otra query,
-además que también es permitido utilizar **selección** y
-**acceso** dentro de las lista de argumentos
+- Pueden usarse dentro de la selección, sin embargo esto limita la información
+que puede utilizar a la que existe dentro de la clave en el JSON
+de entrada. También es permitido utilizar **selección** y
+**acceso** como argumentos.
 
 ```javascript
 const query = `{
@@ -456,19 +545,23 @@ const query = `{
 }`
 ```
 
-7. Queda en responsabilidad del desarrollador controlar
+- Queda en responsabilidad del desarrollador controlar
 errores en las funciones, ya que la función `apply` podría
 fallar, también se debe tener en cuenta que los argumentos
-pueden ser null.
+pueden ser `null`.
 
-8. Las funciones deben ser síncronas, pero podría ser útil
+- No se transforma la salida de la función, es decir que
+puede devolver `undefined` si lo desea.
+
+- Las funciones deben ser síncronas, pero podría ser útil
 posteriormente agregar asíncronas.
 
 
 #### Por item en el array
-Por defecto las funciones toman el objeto completo, por lo que
-si se aplica a un array este tomaría como valor, este y no sus
-items, para cambiar esto, debe utilizar lo siguiente:
+Por defecto las funciones toman el objeto, es decir
+que se ejecutaría una sola vez y como argumento tendría el array,
+para ejecutar la función por cada elemento debe llamar
+su función de esta manera:
 
 ```javascript
 const query = `{
@@ -487,11 +580,11 @@ const result = {
 }
 ```
 
-En lo anterior se encerró la función en `[]` para indicar
-que esta debe ser aplicar a los items no al array.
+Al encerrar la función en corchetes `[]` se indica
+que se debe aplicar a cada elemento en el arreglo.
 
-1. puede utilizar la concatenación de igual forma, por
-lo que tiene la capacidad de hacer cosas como:
+1. Puede utilizar la composición (se pueden componer funciones
+por elemento y normales):
 
 ```javascript
 const query = `{
@@ -509,12 +602,14 @@ const result = {
 ```
 > Con la notación `[]` se asume que el primer argumento es
 > array, los demás deben ser valores globales, es decir,
-> que estén en el scope o bien sean variables, y aunque el segundo
-> o demás sean un array, la función los recibirá de ese modo.
+> que estén en el scope de la clave en el JSON de entrada
+> o bien sean variables. Aunque los demás valores sean
+> arreglos serán tratados como argumentos únicos.
 
 ### Spread
-Este operador no provoca un cambio en el JSON, sólo tiene
-el objetivo de reutilizar consultas.
+Este operador no provoca cambios en el JSON, sólo tiene
+el objetivo de reutilizar declaraciones.
+
 ```javascript
 const query = `{
     user {
@@ -561,7 +656,7 @@ Se copia según el scope, por lo que en el caso de que
 exista un padre cercano con la dirección que se especificó
 y otra al inicio de la query, se copiará la más cercana,
 para especificar explicitamente que se parta desde la raíz
-utilice `&`
+de la consulta, utilice `&`.
 ```javascript
 const query = `{
     target { name },
@@ -591,24 +686,56 @@ const query = `{
 ```
 
 ### Ejecutar la query
-Al ejecutar una query puede hacer uso de 2 funciones y un array:
+`qmapCreator()` devuelve una función de compilación que puede
+usar para compilar la query.
 
-1. `errors` es un array con los errores al compilar la query, es
+```javascript
+const qmap = qmapCreator()
+
+const { errors, apply, includes } = qmap("{ id, name }")
+```
+
+La función `qmap` también recibe un parámetro opcional,
+que es un objeto dónde puede declarar el `schema` y
+las `variables` por default, estás son sobreescritas
+si se vuelven a definir en la función `apply`.
+
+```javascript
+const qmap = qmapCreator()
+
+const { errors, apply, includes } = qmap(`{
+    [ upperCase(products.name) ],
+    transaction.providers.id,
+    take([ currency([ add(ids, @offset) ]) ], @quantity)
+}`, {
+  variables: {
+    quantity: 1,
+    offset: 300,
+  }
+})
+```
+
+La ejecución de la función de compilación devuelve
+un objecto que contiene: `errors`, `apply` e `includes`.
+
+- `errors` es un array con los errores al compilar la query, es
 `undefined` si no hay errores.
 ```javascript
 import { qmapCreator } from "@qmap/engine"
 const qmap = qmapCreator()
 const { errors } = qmap("{ id, name }")
 ```
-2. `includes` esta función le permite saber si la consulta
-determinó que se debe agregar lo que pregunta, se apega
-a los `schemas` y a las `queries` de `qmapCreator`, por lo
-que no importa si está en la query que se le pasó a la
-función `qmap`, si el schema o la query no lo tienen
+- `includes` esta función permite comprobar si el `path`
+(dónde está alojado un objeto dentro del JSON)
+se debe agregar, se respeta a los `schemas` y a las
+`queries` de `qmapCreator`, por lo que no importa si
+está en la query que se compiló con la función `qmap`,
+si el schema o la query no lo tienen
 el resultado será `false`.
 ```javascript
 import { qmapCreator } from "@qmap/engine"
 const qmap = qmapCreator()
+
 const { includes } = qmap(`{
     product {
         provider {
@@ -622,6 +749,7 @@ const { includes } = qmap(`{
 includes(["product"]) // true
 includes(["product", "provider"]) // true
 includes(["product", "provider", "account"]) // true
+includes(["product", "provider", "id"]) // false
 ```
 > `includes` utiliza un índice que se genera en compilación,
 > si se tiene `schemas` o `queries` se realiza la búsqueda
@@ -630,40 +758,53 @@ includes(["product", "provider", "account"]) // true
 > La intención de esta función es que se puedan realizar
 > operaciones de forma condicional, por ejemplo agregar
 > un join si es necesario (ayuda a cambiar el enfoque
-> en el caso de los roles)
+> en el caso de tener diferentes niveles de acceso a la información).
 
 3. `apply` es la función que trasforma el JSON, recibe como
 primer argumento el JSON objetivo, y como segundo (no requerido)
 las opciones, que es el objeto dónde se pueden agregar las
-variables y el `schema` que se va utilizar (las variables, pueden
-ser cualquier tipo soportado por javascript).
+variables y el `schema` que se va utilizar.
+
+> Las variables pueden tener cualquier tipo de dato.
 
 ```javascript
 import { qmapCreator } from "@qmap/engine"
-const qmap = qmapCreator()
 
-const { apply } = qmap("{ id, name }")
+const qmap = qmapCreator({
+  functions: {
+    concat: (...strs) => strs.join("")
+  },
+  schemas: `{
+    user {
+      name
+    }
+  }`
+})
 
-const response = {
+const { apply } = qmap(`{
+  id,
+  name,
+  label: concat(id, @separator, name)
+}`, {
+  variables: {
+    separator: "@"
+  }
+})
+
+const input = {
     id: 1,
     name: "test",
     other: "other"
 }
 
-const result = apply(response)
-// result == { id: 1, name: "test" }
+const result = apply(input)
+// result is { id: 1, name: 'test', label: '1@test' }
 
-const otherResult = apply(response, {
-  schema: "admin",
+const otherResult = apply(input, {
+  schema: "user",
   variables: {
-    quantity: 3
+    separator: "-"
   }
 })
+// result is { id: null, name: 'test', label: '-test' }
 ```
-
-El objeto de opciones también puede ser pasado a la función `qmap`,
-pero `apply` tiene prioridad, lo que significa que si cambia el
-**schema** o las **variables**, son los valores en `apply`
-los que permanecen, pero esto le da la opción de agregar variables
-`default`.
-
