@@ -38,9 +38,15 @@ export function includes(this: IncludesContext, target: string[]): boolean {
     descriptor: this.root.descriptor as QMapIndex,
   }
 
-  const overDescriptor = _includes(root, target)
-  const overQuery = this.query ? _includes(this.query, target) : true
   const overSchema = this.schema ? _includes(this.schema, target) : true
 
-  return overDescriptor && overQuery && overSchema
+  if (overSchema) {
+    const overQuery = this.query ? _includes(this.query, target) : true
+
+    if (overQuery) {
+      return _includes(root, target)
+    }
+  }
+
+  return false
 }
