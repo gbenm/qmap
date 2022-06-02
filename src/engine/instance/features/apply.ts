@@ -117,7 +117,7 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function _apply(context: ExecutionContext, definitions: QueryNode[], result: any, target: any): any {
   if (definitions.length === 0) {
-    return target
+    return target ?? null
   }
 
   if (isNullable(target)) {
