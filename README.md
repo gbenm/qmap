@@ -1,13 +1,3 @@
-
-<style>
-img {
-  display: block;
-  float: none;
-  margin-left: auto;
-  margin-right: auto;
-}
-</style>
-
 # QMap
 
 ![NPM](https://img.shields.io/npm/l/@qmap/engine)
