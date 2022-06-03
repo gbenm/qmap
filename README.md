@@ -30,6 +30,8 @@ Es un motor para manipulación JSON.
             - [Por item en el array](#por-item-en-el-array)
         - [Spread (no provoca cambios en el JSON)](#spread)
     - [Ejecutar la query](#ejecutar-la-query)
+> **Importante:** asegúrese de ver la nota al inicio de [Ejecutar la query](#ejecutar-la-query)
+> sobre los `schemas`.
 
 ## Motivación
 JSON es una de las formas más ampliamente utilizadas para
@@ -137,7 +139,7 @@ está en la consulta.
 
 <hr>
 
-`qmapCreator()` puede recibir un objecto llamado `descriptor`,
+`qmapCreator()` puede recibir un objeto llamado `descriptor`,
 en este se puede definir lo siguiente:
 
 #### Utilizando `functions`
@@ -690,6 +692,10 @@ que es un objeto dónde puede declarar el `schema` y
 las `variables` por default, estás son sobreescritas
 si se vuelven a definir en la función `apply`.
 
+> **Importante:** si sobreescribe el `schema` en la
+> función `apply` debe sobreescribirlo en la función
+> `includes`, ya que sino van a diferir en comportamiento.
+
 ```javascript
 const qmap = qmapCreator()
 
@@ -706,7 +712,7 @@ const { errors, apply, includes } = qmap(`{
 ```
 
 La ejecución de la función de compilación devuelve
-un objecto que contiene: `errors`, `apply` e `includes`.
+un objeto que contiene: `errors`, `apply` e `includes`.
 
 - `errors` es un array con los errores al compilar la query, es
 `undefined` si no hay errores.
@@ -715,13 +721,18 @@ import { qmapCreator } from "@qmap/engine"
 const qmap = qmapCreator()
 const { errors } = qmap("{ id, name }")
 ```
-- `includes` esta función permite comprobar si el `path`
+- `includes` es una función que permite comprobar si el `path`
 (dónde está alojado un objeto dentro del JSON)
-se debe agregar, se respeta a los `schemas` y a las
+se debe agregar. Respeta a los `schemas` y a las
 `queries` de `qmapCreator`, por lo que no importa si
 está en la query que se compiló con la función `qmap`,
-si el schema o la query no lo tienen
-el resultado será `false`.
+si el schema o la query no lo tienen,
+el resultado será `false`. Existe un segundo
+parámetro (opcional) que sirve para sobreescribir
+el schema, si en `apply` declara nuevamente el
+`schema` asegurese de sobreescribirlo también en
+`includes`.
+
 ```javascript
 import { qmapCreator } from "@qmap/engine"
 const qmap = qmapCreator()
@@ -751,9 +762,10 @@ includes(["product", "provider", "id"]) // false
 > en el caso de tener diferentes niveles de acceso a la información).
 
 3. `apply` es la función que trasforma el JSON, recibe como
-primer argumento el JSON objetivo, y como segundo (no requerido)
+primer argumento el JSON objetivo, y como segundo (opcional)
 las opciones, que es el objeto dónde se pueden agregar las
-variables y el `schema` que se va utilizar.
+variables y sobreescribir el `schema` (cuidado con
+sobreescribir el schema, asegúrese de hacerlo en ambos, `apply` e `includes`).
 
 > Las variables pueden tener cualquier tipo de dato.
 
