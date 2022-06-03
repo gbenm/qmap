@@ -14,6 +14,17 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: yarn
       - run: yarn test
+  testspace:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+      - run: yarn
       - run: yarn test-junit
       - uses: testspace-com/setup-testspace@v1
         with:
@@ -21,4 +32,3 @@ jobs:
       - name: Push result to Testspace server
         run: |
           testspace ./junit/*.xml
-        if: always()
