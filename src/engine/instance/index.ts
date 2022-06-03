@@ -21,6 +21,7 @@ export function qmap(this: QMapContext, target: Nullable<string>, options?: QMap
     }),
     includes: includes.bind({
       root,
+      context: this,
       query: findQuery(this, root.query),
       schema: findSchema(this, options?.schema),
     }),

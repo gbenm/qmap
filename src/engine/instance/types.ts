@@ -7,7 +7,7 @@ export interface QMapExecutors {
   errors: unknown[] | undefined
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   apply: (target: any, overrideOptions?: Nullable<QMapOptions>) => any
-  includes: (path: string[]) => boolean
+  includes: (path: string[], overrideOptions?: Nullable<QMapIncludesOptions>) => boolean
 }
 
 export interface QMapIndex {
@@ -27,4 +27,8 @@ export interface QMapVars {
 export interface QMapOptions {
   schema?: Nullable<string>
   variables?: QMapVars
+}
+
+export interface QMapIncludesOptions {
+  schema?: Nullable<string>
 }
