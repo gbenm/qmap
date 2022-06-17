@@ -63,6 +63,16 @@ describe("includes", () => {
     expect(includes(["id"])).toBe(true)
   })
 
+  it("function with select", () => {
+    const qmap = qmapCreator()
+
+    const { includes } = qmap("{ foo(product {id, name}) }")
+    expect(includes(["product"])).toBe(true)
+    expect(includes(["product", "id"])).toBe(true)
+    expect(includes(["product", "name"])).toBe(true)
+    expect(includes(["product", "other"])).toBe(false)
+  })
+
   it("exclude", () => {
     const qmap = qmapCreator()
 
