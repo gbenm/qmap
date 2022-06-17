@@ -260,7 +260,7 @@ describe("includes", () => {
       schemas: `{
         admin {
           product {
-            id, name
+            id, name, provider
           },
           transaction,
         },
