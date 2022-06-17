@@ -139,6 +139,7 @@ describe("includes", () => {
       const { includes } = qmap("product_compact")
       expect(includes(["id"])).toBe(true)
       expect(includes(["name"])).toBe(true)
+      expect(includes(["other"])).toBe(false)
     })
 
     it ("with query", () => {
