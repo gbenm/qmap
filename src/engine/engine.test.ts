@@ -42,6 +42,7 @@ describe("includes", () => {
     const { includes } = qmap("{ name: Name }")
 
     expect(includes(["Name"])).toBe(true)
+    expect(includes(["name"])).toBe(false)
   })
 
   it("access", () => {
@@ -51,6 +52,7 @@ describe("includes", () => {
 
     expect(includes(["product"])).toBe(true)
     expect(includes(["product", "id"])).toBe(true)
+    expect(includes(["product", "id", "any"])).toBe(true)
   })
 
   it("function", () => {
@@ -59,6 +61,26 @@ describe("includes", () => {
     const { includes } = qmap("{ foo(name, id) }")
     expect(includes(["name"])).toBe(true)
     expect(includes(["id"])).toBe(true)
+  })
+
+  it("function with select", () => {
+    const qmap = qmapCreator()
+
+    const { includes } = qmap("{ foo(product {id, name}) }")
+    expect(includes(["product"])).toBe(true)
+    expect(includes(["product", "id"])).toBe(true)
+    expect(includes(["product", "name"])).toBe(true)
+    expect(includes(["product", "other"])).toBe(false)
+  })
+
+  it("function with access", () => {
+    const qmap = qmapCreator()
+
+    const { includes } = qmap("{ foo(product.id) }")
+    expect(includes(["product"])).toBe(true)
+    expect(includes(["product", "id"])).toBe(true)
+    expect(includes(["product", "id", "any"])).toBe(true)
+    expect(includes(["product", "any"])).toBe(false)
   })
 
   it("exclude", () => {
@@ -89,6 +111,8 @@ describe("includes", () => {
       const { includes } = qmap("", { schema })
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(true)
+      expect(includes(["product", "name"])).toBe(true)
+      expect(includes(["product", "other"])).toBe(false)
     })
 
     it ("with query", () => {
@@ -96,6 +120,27 @@ describe("includes", () => {
       const { includes } = qmap("{ product { id } }", { schema })
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(false)
+    })
+
+    it("Can transform data schemas", () => {
+      const qmap = qmapCreator({
+        schemas: `{
+          client {
+            product.name,
+            product.price
+          }
+        }`
+      })
+
+      const schema = "client"
+      const { includes } = qmap("", { schema })
+      expect(includes(["product"])).toBe(true)
+      expect(includes(["product", "name"])).toBe(true)
+      expect(includes(["product", "price"])).toBe(true)
+      expect(includes(["product", "other"])).toBe(false)
+      expect(includes(["other"])).toBe(false)
+      expect(includes(["product_name"])).toBe(false)
+      expect(includes(["product_price"])).toBe(false)
     })
   })
 
@@ -115,11 +160,13 @@ describe("includes", () => {
       const { includes } = qmap("product_compact")
       expect(includes(["id"])).toBe(true)
       expect(includes(["name"])).toBe(true)
+      expect(includes(["other"])).toBe(false)
     })
 
     it ("with query", () => {
       const { includes } = qmap("product_compact { id, other }")
       expect(includes(["id"])).toBe(true)
+      expect(includes(["name"])).toBe(false)
       expect(includes(["other"])).toBe(false)
     })
   })
@@ -213,7 +260,7 @@ describe("includes", () => {
       schemas: `{
         admin {
           product {
-            id, name
+            id, name, provider
           },
           transaction,
         },
@@ -306,7 +353,7 @@ describe("apply", () => {
       upperCase(name),
       upperCase(concat(id, name)),
       take(ids, @quantity),
-      take([ currency([ add(ids, @offset) ]) ], @quantity)
+      take( [currency( [add(ids, @offset)] )], @quantity)
     }`)
 
     expect(errors).toBeFalsy()
@@ -453,7 +500,7 @@ describe("apply", () => {
     })
   })
 
-  it ("for each function", () => {
+  it ("for each - function", () => {
     const { apply, errors } = qmap("{ names: [upperCase([concat(names, salt)])] }")
 
     expect(errors).toBeFalsy()
@@ -508,6 +555,44 @@ describe("apply", () => {
         desc: "compra"
       },
       ids_n: [1, 2]
+    })
+  })
+
+  it("schema can transform data", () => {
+    const qmapFn = qmapCreator({
+      extends: qmap,
+      schemas: `{
+        client {
+          ...,
+          !product,
+          product.id,
+          product.name,
+          product.price,
+        }
+      }`
+    })
+
+    const schema = "client"
+    const { apply,  errors } = qmapFn("", { schema })
+    expect(errors).toBeFalsy()
+
+    const transaction = {
+      id: 1,
+      description: "test",
+      product: {
+        id: 1,
+        name: "shirt",
+        price: 10.5,
+        description: "color: blue"
+      }
+    }
+
+    expect(apply(transaction)).toEqual({
+      id: 1,
+      description: "test",
+      product_name: "shirt",
+      product_price: 10.5,
+      product_id: 1
     })
   })
 })
