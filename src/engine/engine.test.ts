@@ -52,6 +52,7 @@ describe("includes", () => {
 
     expect(includes(["product"])).toBe(true)
     expect(includes(["product", "id"])).toBe(true)
+    expect(includes(["product", "id", "any"])).toBe(true)
   })
 
   it("function", () => {
