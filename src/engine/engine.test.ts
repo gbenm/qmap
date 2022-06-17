@@ -121,6 +121,27 @@ describe("includes", () => {
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(false)
     })
+
+    it("Can transform data schemas", () => {
+      const qmap = qmapCreator({
+        schemas: `{
+          client {
+            product.name,
+            product.price
+          }
+        }`
+      })
+
+      const schema = "client"
+      const { includes } = qmap("", { schema })
+      expect(includes(["product"])).toBe(true)
+      expect(includes(["product", "name"])).toBe(true)
+      expect(includes(["product", "price"])).toBe(true)
+      expect(includes(["product", "other"])).toBe(false)
+      expect(includes(["other"])).toBe(false)
+      expect(includes(["product_name"])).toBe(false)
+      expect(includes(["product_price"])).toBe(false)
+    })
   })
 
   describe("context query", () => {
