@@ -35,7 +35,8 @@
     "test": "jest",
     "test-junit": "JEST_JUNIT_OUTPUT_DIR='junit' jest --reporters='jest-junit'",
     "prebuild": "yarn lint && yarn test",
-    "build": "yarn prebuild && tsc"
+    "build": "yarn prebuild && tsc && yarn postbuild",
+    "postbuild": "yarn del dist/syntax/*.d.ts"
   },
   "devDependencies": {
     "@types/eslint": "^8.4.1",
@@ -44,6 +45,7 @@
     "@types/node": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
+    "del-cli": "^4.0.1",
     "eslint": "^8.13.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.2.0",
