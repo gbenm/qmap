@@ -500,7 +500,7 @@ describe("apply", () => {
     })
   })
 
-  it ("for each function", () => {
+  it ("for each - function", () => {
     const { apply, errors } = qmap("{ names: [upperCase([concat(names, salt)])] }")
 
     expect(errors).toBeFalsy()
