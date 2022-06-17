@@ -111,6 +111,8 @@ describe("includes", () => {
       const { includes } = qmap("", { schema })
       expect(includes(["product"])).toBe(true)
       expect(includes(["product", "id"])).toBe(true)
+      expect(includes(["product", "name"])).toBe(true)
+      expect(includes(["product", "other"])).toBe(false)
     })
 
     it ("with query", () => {
