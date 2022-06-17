@@ -353,7 +353,7 @@ describe("apply", () => {
       upperCase(name),
       upperCase(concat(id, name)),
       take(ids, @quantity),
-      take([ currency([ add(ids, @offset) ]) ], @quantity)
+      take( [currency( [add(ids, @offset)] )], @quantity)
     }`)
 
     expect(errors).toBeFalsy()
