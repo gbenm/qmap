@@ -557,4 +557,42 @@ describe("apply", () => {
       ids_n: [1, 2]
     })
   })
+
+  it("schema can transform data", () => {
+    const qmapFn = qmapCreator({
+      extends: qmap,
+      schemas: `{
+        client {
+          ...,
+          !product,
+          product.id,
+          product.name,
+          product.price,
+        }
+      }`
+    })
+
+    const schema = "client"
+    const { apply,  errors } = qmapFn("", { schema })
+    expect(errors).toBeFalsy()
+
+    const transaction = {
+      id: 1,
+      description: "test",
+      product: {
+        id: 1,
+        name: "shirt",
+        price: 10.5,
+        description: "color: blue"
+      }
+    }
+
+    expect(apply(transaction)).toEqual({
+      id: 1,
+      description: "test",
+      product_name: "shirt",
+      product_price: 10.5,
+      product_id: 1
+    })
+  })
 })
