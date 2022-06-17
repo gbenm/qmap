@@ -1,7 +1,7 @@
 {
   "name": "@qmap/engine",
   "packageManager": "yarn@3.2.0",
-  "version": "1.0.0-rc",
+  "version": "1.0.0",
   "description": "JSON manipulation engine",
   "author": "Josué Galeano",
   "license": "MIT",
