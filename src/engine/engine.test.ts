@@ -42,6 +42,7 @@ describe("includes", () => {
     const { includes } = qmap("{ name: Name }")
 
     expect(includes(["Name"])).toBe(true)
+    expect(includes(["name"])).toBe(false)
   })
 
   it("access", () => {
