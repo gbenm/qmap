@@ -73,6 +73,16 @@ describe("includes", () => {
     expect(includes(["product", "other"])).toBe(false)
   })
 
+  it("function with access", () => {
+    const qmap = qmapCreator()
+
+    const { includes } = qmap("{ foo(product.id) }")
+    expect(includes(["product"])).toBe(true)
+    expect(includes(["product", "id"])).toBe(true)
+    expect(includes(["product", "id", "any"])).toBe(true)
+    expect(includes(["product", "any"])).toBe(false)
+  })
+
   it("exclude", () => {
     const qmap = qmapCreator()
 
