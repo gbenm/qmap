@@ -3,7 +3,7 @@ import { buildDefinitionsFromASTNodes } from "../utils"
 import { Spread } from "./Spread"
 
 export class Field implements ASTNode {
-  constructor (public accessKeys: string[], public nodes: ASTNode[] | null) { }
+  constructor (public accessKeys: string[], public nodes?: ASTNode[]) { }
 
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     const [primaryId, ...otherIds] = this.accessKeys

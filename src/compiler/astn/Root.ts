@@ -3,7 +3,7 @@ import { buildDefinitionsFromASTNodes } from "../utils"
 import { Spread } from "./Spread"
 
 export class Root implements ASTNode {
-  constructor (public id: string | undefined, public children: ASTNode[] | null) { }
+  constructor (public id: string | undefined, public children?: ASTNode[]) { }
 
   generate (config: CompilerConfig): QueryNode {
     const rootTable = SymbolTableImpl.create(config.ignoreIndex)

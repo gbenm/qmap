@@ -68,7 +68,7 @@ export function buildDefinitionsFromASTNodes ({
   nodes,
   table
 }: {
-  config: CompilerConfig, nodes: ASTNode[] | null, table: SymbolTable
+  config: CompilerConfig, nodes: ASTNode[] | undefined, table: SymbolTable
 }): QueryNode[] {
   const definitions: QueryNode[] = []
 
