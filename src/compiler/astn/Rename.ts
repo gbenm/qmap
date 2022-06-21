@@ -20,14 +20,21 @@ export class Rename implements ASTNode {
     return query
   }
 
+  registerAliasInParentTable(parentTable: SymbolTable, node: QueryNode) {
+    const isSelectQuery = this.node instanceof Field && node.type === QueryType.SELECT
+
+    if (isSelectQuery) {
+      parentTable.add(this.alias, node)
+    }
+  }
+
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     const disposableTable = parentTable.createScope()
 
-    const queryNode = this.setAlias(config, this.node.generate(config, disposableTable))
+    const generated = this.node.generate(config, disposableTable)
+    const queryNode = this.setAlias(config, generated)
 
-    if (this.node instanceof Field && queryNode.type === QueryType.SELECT) {
-      parentTable.add(this.alias, queryNode)
-    }
+    this.registerAliasInParentTable(parentTable, generated)
 
     return queryNode
   }
