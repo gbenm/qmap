@@ -1,4 +1,4 @@
-import { Exclude, Field, Root, Spread, Var } from "./astn"
+import { Exclude, Field, Rename, Root, Spread, Var } from "./astn"
 import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
@@ -105,12 +105,13 @@ export default class QMapListener extends Listener {
     }
   }
 
-  enterField_rename(_ctx: ListenerContext): void {
-    //
+  exitField_rename(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [id, _colon, stm] = ctx.children
+
+    ctx.node = new Rename(id.text, stm.node)
   }
-  exitField_rename(_ctx: ListenerContext): void {
-    //
-  }
+
   enterFn(_ctx: ListenerContext): void {
     //
   }

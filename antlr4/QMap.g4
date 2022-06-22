@@ -39,9 +39,8 @@ obj_ref returns [ids]: id (DOT id)*;
 
 field returns [node]: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
 
-field_rename returns [node]
-    : id COLON stm { $node = new astn.Rename($id.text, $stm.node) }
-;
+field_rename returns [node]: id COLON stm;
+
 fn returns [node]
     : ID LEFT_PAREN params RIGHT_PAREN { $node = new astn.Function($ID.text, $params.nodes, false) }
     | LEFT_BRACKET ID LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes, false, true) }
