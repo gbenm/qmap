@@ -1,6 +1,8 @@
+import { CommonNamedQueryNode, QueryType } from "./query.types"
 import {
   getValue,
   mergeObjects,
+  searchQueryNode,
 } from "./utils"
 
 describe("Utils", () => {
@@ -68,6 +70,48 @@ describe("Utils", () => {
       name: "Pete"
     }
     expect(mergeObjects(arg1, arg2)).toEqual(arg1)
+  })
+
+  it("search node", () => {
+    const nameQueryNode = {
+      type: QueryType.SELECT,
+      name: "name",
+      definitions: []
+    }
+
+    const familyQueryNode = {
+      type: QueryType.SELECT,
+      name: "Family",
+      alias: "family",
+      definitions: []
+    }
+
+    const personNode = {
+      type: QueryType.SELECT,
+      name: "person",
+      definitions: [
+        nameQueryNode,
+        familyQueryNode
+      ]
+    }
+
+    const node: CommonNamedQueryNode = {
+      type: QueryType.SELECT,
+      name: "test",
+      definitions: [ personNode ]
+    }
+
+    const result1 = searchQueryNode(node, ["person", "name"])
+    expect(result1).toEqual(nameQueryNode)
+
+    const result2 = searchQueryNode(node, ["person", "Name"])
+    expect(result2).toBeFalsy()
+
+    const result3 = searchQueryNode(node, ["person", "family"])
+    expect(result3).toEqual(familyQueryNode)
+
+    const result4 = searchQueryNode(node, ["person", "Family"])
+    expect(result4).toEqual(familyQueryNode)
   })
 })
 
