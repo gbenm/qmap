@@ -1,4 +1,3 @@
-import { isArray } from "lodash"
 import { AccessQueryNode, FunctionQueryNode, QueryNode, QueryType, RenameQueryNode, RootQueryNode, VarQueryNode } from "../../../compiler"
 import { isNullable, mergeObjects } from "../../../compiler/utils"
 import { Nullable } from "../../../utils/types"
@@ -33,7 +32,7 @@ function getResultItemFromAccessNode({context, definitions, keys, target}: {
 
   const [currentKey, ...restOfKeys] = keys
 
-  if (isArray(target[currentKey])) {
+  if (Array.isArray(target[currentKey])) {
     return target[currentKey].map((item) => getResultItemFromAccessNode({context, definitions, keys: restOfKeys, target: item}))
   } else {
     return getResultItemFromAccessNode({context, definitions, keys: restOfKeys, target: target[currentKey]})
@@ -56,7 +55,7 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
         target
       })
 
-      if (isArray(result)) {
+      if (Array.isArray(result)) {
         result.push(resultItem)
       } else {
         result[def.alias] = resultItem
@@ -79,7 +78,7 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
         resultItem = fn(..._apply(context, def.definitions, [], target))
       ]
 
-      if (isArray(result)) {
+      if (Array.isArray(result)) {
         result.push(resultItem)
       } else {
         result[(def as FunctionQueryNode).alias] = resultItem
@@ -91,20 +90,20 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
       result[(def as RenameQueryNode).alias] = applyDefinition(context, result, (def as RenameQueryNode).node, target)
       break
     case QueryType.SELECT:
-      if(isArray(target[def.name])) {
+      if(Array.isArray(target[def.name])) {
         resultItem = target[def.name].map((item) => _apply(context, def["definitions"], {}, item))
       } else {
         resultItem = _apply(context, def.definitions, {}, target[def.name])
       }
 
-      if (isArray(result)) {
+      if (Array.isArray(result)) {
         result.push(resultItem)
       } else {
         result[def.alias ?? def.name] = resultItem
       }
       break
     case QueryType.VAR:
-      if (!isArray(result)) {
+      if (!Array.isArray(result)) {
         throw new Error("Cannot apply variable to non-array result")
       }
 
@@ -159,7 +158,7 @@ export function apply(this: ApplyContext, target: any, overrideOptions?: Nullabl
   }
 
   const getApplyFn = (query) => query?  _apply.bind(null, executionContext, query.definitions) : (_, target) => target
-  const getResult = (target, apply) => isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
+  const getResult = (target, apply) => Array.isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
 
   const overSchema = getResult(target, getApplyFn(this.schema))
   const overQuery = getResult(overSchema, getApplyFn(this.query))
