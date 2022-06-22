@@ -1,6 +1,7 @@
 // Generated from /home/gbenm/code/pumkat/qmap/antlr4/qMap.g4 by ANTLR 4.9.3
 // jshint ignore: start
 import antlr4 from 'antlr4';
+import qMapListener from './qMapListener.js';
 
 import * as astn from "../compiler"
 
@@ -978,6 +979,18 @@ class StartContext extends antlr4.ParserRuleContext {
 	    return this.getTypedRuleContext(Query_listContext,0);
 	};
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterStart(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitStart(this);
+		}
+	}
+
 
 }
 
@@ -1002,6 +1015,18 @@ class Optional_idContext extends antlr4.ParserRuleContext {
 	id() {
 	    return this.getTypedRuleContext(IdContext,0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterOptional_id(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitOptional_id(this);
+		}
+	}
 
 
 }
@@ -1032,6 +1057,18 @@ class IdContext extends antlr4.ParserRuleContext {
 	STRING() {
 	    return this.getToken(qMapParser.STRING, 0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterId(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitId(this);
+		}
+	}
 
 
 }
@@ -1068,6 +1105,18 @@ class StmContext extends antlr4.ParserRuleContext {
 	    return this.getTypedRuleContext(Client_functionContext,0);
 	};
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterStm(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitStm(this);
+		}
+	}
+
 
 }
 
@@ -1096,6 +1145,18 @@ class ExcludeContext extends antlr4.ParserRuleContext {
 	id() {
 	    return this.getTypedRuleContext(IdContext,0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterExclude(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitExclude(this);
+		}
+	}
 
 
 }
@@ -1149,6 +1210,18 @@ class Global_spreadContext extends antlr4.ParserRuleContext {
 	};
 
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterGlobal_spread(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitGlobal_spread(this);
+		}
+	}
+
 
 }
 
@@ -1197,6 +1270,18 @@ class Scoped_spreadContext extends antlr4.ParserRuleContext {
 	};
 
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterScoped_spread(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitScoped_spread(this);
+		}
+	}
+
 
 }
 
@@ -1226,6 +1311,18 @@ class SpreadContext extends antlr4.ParserRuleContext {
 	scoped_spread() {
 	    return this.getTypedRuleContext(Scoped_spreadContext,0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterSpread(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitSpread(this);
+		}
+	}
 
 
 }
@@ -1260,6 +1357,18 @@ class ParamContext extends antlr4.ParserRuleContext {
 	stm() {
 	    return this.getTypedRuleContext(StmContext,0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterParam(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitParam(this);
+		}
+	}
 
 
 }
@@ -1305,6 +1414,18 @@ class ParamsContext extends antlr4.ParserRuleContext {
 	};
 
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterParams(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitParams(this);
+		}
+	}
+
 
 }
 
@@ -1344,6 +1465,18 @@ class QueryContext extends antlr4.ParserRuleContext {
 	field_rename() {
 	    return this.getTypedRuleContext(Field_renameContext,0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterQuery(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitQuery(this);
+		}
+	}
 
 
 }
@@ -1389,6 +1522,18 @@ class Query_listContext extends antlr4.ParserRuleContext {
 	};
 
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterQuery_list(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitQuery_list(this);
+		}
+	}
+
 
 }
 
@@ -1433,6 +1578,18 @@ class Obj_refContext extends antlr4.ParserRuleContext {
 	};
 
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterObj_ref(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitObj_ref(this);
+		}
+	}
+
 
 }
 
@@ -1471,6 +1628,18 @@ class FieldContext extends antlr4.ParserRuleContext {
 	    return this.getToken(qMapParser.RIGHT_BRACE, 0);
 	};
 
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterField(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitField(this);
+		}
+	}
+
 
 }
 
@@ -1504,6 +1673,18 @@ class Field_renameContext extends antlr4.ParserRuleContext {
 	stm() {
 	    return this.getTypedRuleContext(StmContext,0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterField_rename(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitField_rename(this);
+		}
+	}
 
 
 }
@@ -1550,6 +1731,18 @@ class FnContext extends antlr4.ParserRuleContext {
 	RIGHT_BRACKET() {
 	    return this.getToken(qMapParser.RIGHT_BRACKET, 0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterFn(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitFn(this);
+		}
+	}
 
 
 }
@@ -1600,6 +1793,18 @@ class Client_functionContext extends antlr4.ParserRuleContext {
 	RIGHT_BRACKET() {
 	    return this.getToken(qMapParser.RIGHT_BRACKET, 0);
 	};
+
+	enterRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.enterClient_function(this);
+		}
+	}
+
+	exitRule(listener) {
+	    if(listener instanceof qMapListener ) {
+	        listener.exitClient_function(this);
+		}
+	}
 
 
 }

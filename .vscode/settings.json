@@ -4,7 +4,7 @@
         "alternativeJar": "./antlr4.jar",
         "mode": "external",
         "outputDir": "../src/syntax",
-        "listeners": false
+        "listeners": true
     },
     "antlr4.referencesCodeLens.enabled": false
 }
