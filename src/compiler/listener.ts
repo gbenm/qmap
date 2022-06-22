@@ -1,4 +1,4 @@
-import { Exclude, Root, Spread, Var } from "./astn"
+import { Exclude, Field, Root, Spread, Var } from "./astn"
 import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
@@ -94,12 +94,17 @@ export default class QMapListener extends Listener {
     ctx.ids = ignoreTerminals(ctx.children, id => id.text)
   }
 
-  enterField(_ctx: ListenerContext): void {
-    //
+  exitField(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [objRef, _lbrace, queryList] = ctx.children
+
+    if (queryList) {
+      ctx.node = new Field(objRef.ids, queryList.nodes)
+    } else {
+      ctx.node = new Field(objRef.ids)
+    }
   }
-  exitField(_ctx: ListenerContext): void {
-    //
-  }
+
   enterField_rename(_ctx: ListenerContext): void {
     //
   }

@@ -37,10 +37,8 @@ query_list returns [nodes]: query (COMMA query)* COMMA?;
 
 obj_ref returns [ids]: id (DOT id)*;
 
-field returns [node]
-    : obj_ref { $node = new astn.Field($obj_ref.ids, null) }
-    (LEFT_BRACE query_list RIGHT_BRACE { $node = new astn.Field($obj_ref.ids, $query_list.nodes) })?
-;
+field returns [node]: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
+
 field_rename returns [node]
     : id COLON stm { $node = new astn.Rename($id.text, $stm.node) }
 ;
