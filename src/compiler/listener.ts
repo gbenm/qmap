@@ -1,4 +1,4 @@
-import { Root } from "./astn"
+import { Exclude, Root } from "./astn"
 import Listener from "./syntax/QMapListener"
 
 export interface Parser {
@@ -40,11 +40,9 @@ export default class QMapListener extends Listener {
   exitStm(ctx: ListenerContext): void {
     ctx.node = ctx.getChild(0).node
   }
-  enterExclude(_ctx: ListenerContext): void {
-    //
-  }
-  exitExclude(_ctx: ListenerContext): void {
-    //
+  exitExclude(ctx: ListenerContext): void {
+    const id = ctx.getChild(1)
+    ctx.node = new Exclude(id.getText())
   }
   enterGlobal_spread(_ctx: ListenerContext): void {
     //

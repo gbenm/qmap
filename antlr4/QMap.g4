@@ -12,9 +12,7 @@ id: ID | STRING;
 
 stm: field | fn | client_function;
 
-exclude returns [node]
-    : EX_MARK id { $node = new astn.Exclude($id.text) }
-;
+exclude: EX_MARK id;
 
 global_spread returns [node]
     : { const nodes = [] }
