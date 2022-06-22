@@ -3,7 +3,7 @@
         "additionalParameters": "-Dlanguage=JavaScript",
         "alternativeJar": "./antlr4.jar",
         "mode": "external",
-        "outputDir": "../src/syntax",
+        "outputDir": "../src/compiler/syntax",
         "listeners": true
     },
     "antlr4.referencesCodeLens.enabled": false
