@@ -949,9 +949,13 @@ describe("spread", () => {
 
   it ("extended", () => {
     const query = `{
-      target { name },
+      another {
+        target {
+          name
+        }
+      },
       dst {
-        ...target
+        ...another.target
       }
     }`
 
@@ -962,10 +966,16 @@ describe("spread", () => {
     const [ targetNode, dstNode ] = definitions
 
     checkSelectQueryNode(targetNode, {
-      name: "target",
+      name: "another",
       consumer(definitions) {
         expect(definitions.length).toBe(1)
-        checkSelectQueryNode(definitions[0], { name: "name" })
+        checkSelectQueryNode(definitions[0], {
+          name: "target",
+          consumer(definitions) {
+            expect(definitions.length).toBe(1)
+            checkSelectQueryNode(definitions[0], { name: "name" })
+          }
+        })
       }
     })
 
@@ -975,7 +985,7 @@ describe("spread", () => {
         expect(definitions.length).toBe(1)
         expect(definitions[0]).toMatchObject({
           type: QueryType.SPREAD,
-          keys: ["target"],
+          keys: ["another", "target"],
         })
         checkSelectQueryNode(definitions[0]["node"], {
           name: "target",
@@ -987,16 +997,23 @@ describe("spread", () => {
       }
     })
 
-    expect(descriptor).toMatchObject({
+    expect(descriptor).toEqual({
       index: {
-        target: {
+        another: {
           index: {
-            name: { index: {} }
+            target: {
+              index: {
+                name: { index: {}, all: true }
+              }
+            }
           }
         },
         dst: {
           index: {
-            name: {}
+            name: {
+              index: {},
+              all: true
+            }
           }
         }
       }
