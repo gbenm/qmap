@@ -14,12 +14,8 @@ stm: field | fn | client_function;
 
 exclude: EX_MARK id;
 
-global_spread returns [node]
-    : { const nodes = [] }
-    TRIPLE_DOT AMPERSAND { nodes.push(astn.rootScope) }
-    id { nodes.push($id.text) } (DOT id { nodes.push($id.text) })*
-    { $node = new astn.Spread(nodes) }
-;
+global_spread: TRIPLE_DOT AMPERSAND id (DOT id)*;
+
 scoped_spread returns [node]
     : { const nodes = [] }
     TRIPLE_DOT (id { nodes.push($id.text) } (DOT id { nodes.push($id.text) })* )?

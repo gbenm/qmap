@@ -1,4 +1,5 @@
-import { Exclude, Root } from "./astn"
+import { Exclude, Root, Spread } from "./astn"
+import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
 export interface Parser {
@@ -49,12 +50,14 @@ export default class QMapListener extends Listener {
     ctx.node = new Exclude(id.getText())
   }
 
-  enterGlobal_spread(_ctx: ListenerContext): void {
-    //
+  exitGlobal_spread(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_0, _1, ...idATSNodes] = ctx.children
+    const ids = idATSNodes.map(astn => astn.text)
+
+    ctx.node = new Spread([rootScope, ...ids])
   }
-  exitGlobal_spread(_ctx: ListenerContext): void {
-    //
-  }
+
   enterScoped_spread(_ctx: ListenerContext): void {
     //
   }
