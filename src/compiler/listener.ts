@@ -53,17 +53,18 @@ export default class QMapListener extends Listener {
   exitGlobal_spread(ctx: ListenerContext): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_0, _1, ...idATSNodes] = ctx.children
-    const ids = idATSNodes.map(astn => astn.text)
+    const ids = idATSNodes.filter(astn => !astn.symbol).map(astn => astn.text)
 
     ctx.node = new Spread([rootScope, ...ids])
   }
 
-  enterScoped_spread(_ctx: ListenerContext): void {
-    //
+  exitScoped_spread(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, ...idASTNodes] = ctx.children
+
+    ctx.node = new Spread(idASTNodes.filter(astn => !astn.symbol).map(astn => astn.text))
   }
-  exitScoped_spread(_ctx: ListenerContext): void {
-    //
-  }
+
   enterSpread(_ctx: ListenerContext): void {
     //
   }

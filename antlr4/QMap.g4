@@ -16,11 +16,8 @@ exclude: EX_MARK id;
 
 global_spread: TRIPLE_DOT AMPERSAND id (DOT id)*;
 
-scoped_spread returns [node]
-    : { const nodes = [] }
-    TRIPLE_DOT (id { nodes.push($id.text) } (DOT id { nodes.push($id.text) })* )?
-    { $node = new astn.Spread(nodes) }
-;
+scoped_spread: TRIPLE_DOT id? (DOT id)*;
+
 spread returns [node]
     : global_spread { $node = $global_spread.node }
     | scoped_spread { $node = $scoped_spread.node }
