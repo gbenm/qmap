@@ -1,7 +1,7 @@
-grammar qMap;
+grammar QMap;
 
 @parser::header {
-import * as astn from "../compiler"
+import * as astn from ".."
 }
 
 start returns [root]

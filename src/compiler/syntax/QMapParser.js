@@ -1,9 +1,9 @@
-// Generated from /home/gbenm/code/pumkat/qmap/antlr4/qMap.g4 by ANTLR 4.9.3
+// Generated from /home/gbenm/code/pumkat/qmap/antlr4/QMap.g4 by ANTLR 4.9.3
 // jshint ignore: start
 import antlr4 from 'antlr4';
-import qMapListener from './qMapListener.js';
+import QMapListener from './QMapListener.js';
 
-import * as astn from "../compiler"
+import * as astn from ".."
 
 
 const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
@@ -152,9 +152,9 @@ const decisionsToDFA = atn.decisionToState.map( (ds, index) => new antlr4.dfa.DF
 
 const sharedContextCache = new antlr4.PredictionContextCache();
 
-export default class qMapParser extends antlr4.Parser {
+export default class QMapParser extends antlr4.Parser {
 
-    static grammarFileName = "qMap.g4";
+    static grammarFileName = "QMap.g4";
     static literalNames = [ null, "'@'", "'['", "']'", "'{'", "'}'", "'!'", 
                             "':'", "','", "'...'", "'.'", "'('", "')'", 
                             "'&'" ];
@@ -171,9 +171,9 @@ export default class qMapParser extends antlr4.Parser {
     constructor(input) {
         super(input);
         this._interp = new antlr4.atn.ParserATNSimulator(this, atn, decisionsToDFA, sharedContextCache);
-        this.ruleNames = qMapParser.ruleNames;
-        this.literalNames = qMapParser.literalNames;
-        this.symbolicNames = qMapParser.symbolicNames;
+        this.ruleNames = QMapParser.ruleNames;
+        this.literalNames = QMapParser.literalNames;
+        this.symbolicNames = QMapParser.symbolicNames;
     }
 
     get atn() {
@@ -184,7 +184,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	start() {
 	    let localctx = new StartContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 0, qMapParser.RULE_start);
+	    this.enterRule(localctx, 0, QMapParser.RULE_start);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
@@ -194,20 +194,20 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 43;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        if(_la===qMapParser.LEFT_BRACE) {
+	        if(_la===QMapParser.LEFT_BRACE) {
 	            this.state = 36;
-	            this.match(qMapParser.LEFT_BRACE);
+	            this.match(QMapParser.LEFT_BRACE);
 	            this.state = 40;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
-	            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << qMapParser.LEFT_BRACKET) | (1 << qMapParser.EX_MARK) | (1 << qMapParser.TRIPLE_DOT) | (1 << qMapParser.STRING) | (1 << qMapParser.ID))) !== 0)) {
+	            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << QMapParser.LEFT_BRACKET) | (1 << QMapParser.EX_MARK) | (1 << QMapParser.TRIPLE_DOT) | (1 << QMapParser.STRING) | (1 << QMapParser.ID))) !== 0)) {
 	                this.state = 37;
 	                localctx._query_list = this.query_list();
 	                localctx.root = new astn.Root(localctx._optional_id.text, localctx._query_list.nodes) 
 	            }
 
 	            this.state = 42;
-	            this.match(qMapParser.RIGHT_BRACE);
+	            this.match(QMapParser.RIGHT_BRACE);
 	        }
 
 	    } catch (re) {
@@ -228,14 +228,14 @@ export default class qMapParser extends antlr4.Parser {
 
 	optional_id() {
 	    let localctx = new Optional_idContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 2, qMapParser.RULE_optional_id);
+	    this.enterRule(localctx, 2, QMapParser.RULE_optional_id);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 48;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        if(_la===qMapParser.STRING || _la===qMapParser.ID) {
+	        if(_la===QMapParser.STRING || _la===QMapParser.ID) {
 	            this.state = 45;
 	            localctx._id = this.id();
 	            localctx.text = localctx._id.text
@@ -259,21 +259,21 @@ export default class qMapParser extends antlr4.Parser {
 
 	id() {
 	    let localctx = new IdContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 4, qMapParser.RULE_id);
+	    this.enterRule(localctx, 4, QMapParser.RULE_id);
 	    try {
 	        this.state = 54;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
-	        case qMapParser.ID:
+	        case QMapParser.ID:
 	            this.enterOuterAlt(localctx, 1);
 	            this.state = 50;
-	            localctx._ID = this.match(qMapParser.ID);
+	            localctx._ID = this.match(QMapParser.ID);
 	             localctx.text = (localctx._ID===null ? null : localctx._ID.text) 
 	            break;
-	        case qMapParser.STRING:
+	        case QMapParser.STRING:
 	            this.enterOuterAlt(localctx, 2);
 	            this.state = 52;
-	            localctx._STRING = this.match(qMapParser.STRING);
+	            localctx._STRING = this.match(QMapParser.STRING);
 	             localctx.text = eval((localctx._STRING===null ? null : localctx._STRING.text)) 
 	            break;
 	        default:
@@ -297,7 +297,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	stm() {
 	    let localctx = new StmContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 6, qMapParser.RULE_stm);
+	    this.enterRule(localctx, 6, QMapParser.RULE_stm);
 	    try {
 	        this.state = 65;
 	        this._errHandler.sync(this);
@@ -343,11 +343,11 @@ export default class qMapParser extends antlr4.Parser {
 
 	exclude() {
 	    let localctx = new ExcludeContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 8, qMapParser.RULE_exclude);
+	    this.enterRule(localctx, 8, QMapParser.RULE_exclude);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 67;
-	        this.match(qMapParser.EX_MARK);
+	        this.match(QMapParser.EX_MARK);
 	        this.state = 68;
 	        localctx._id = this.id();
 	         localctx.node = new astn.Exclude(localctx._id.text) 
@@ -369,15 +369,15 @@ export default class qMapParser extends antlr4.Parser {
 
 	global_spread() {
 	    let localctx = new Global_spreadContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 10, qMapParser.RULE_global_spread);
+	    this.enterRule(localctx, 10, QMapParser.RULE_global_spread);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
 	         const nodes = [] 
 	        this.state = 72;
-	        this.match(qMapParser.TRIPLE_DOT);
+	        this.match(QMapParser.TRIPLE_DOT);
 	        this.state = 73;
-	        this.match(qMapParser.AMPERSAND);
+	        this.match(QMapParser.AMPERSAND);
 	         nodes.push(astn.rootScope) 
 	        this.state = 75;
 	        localctx._id = this.id();
@@ -385,9 +385,9 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 83;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        while(_la===qMapParser.DOT) {
+	        while(_la===QMapParser.DOT) {
 	            this.state = 77;
-	            this.match(qMapParser.DOT);
+	            this.match(QMapParser.DOT);
 	            this.state = 78;
 	            localctx._id = this.id();
 	             nodes.push(localctx._id.text) 
@@ -414,26 +414,26 @@ export default class qMapParser extends antlr4.Parser {
 
 	scoped_spread() {
 	    let localctx = new Scoped_spreadContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 12, qMapParser.RULE_scoped_spread);
+	    this.enterRule(localctx, 12, QMapParser.RULE_scoped_spread);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
 	         const nodes = [] 
 	        this.state = 89;
-	        this.match(qMapParser.TRIPLE_DOT);
+	        this.match(QMapParser.TRIPLE_DOT);
 	        this.state = 101;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        if(_la===qMapParser.STRING || _la===qMapParser.ID) {
+	        if(_la===QMapParser.STRING || _la===QMapParser.ID) {
 	            this.state = 90;
 	            localctx._id = this.id();
 	             nodes.push(localctx._id.text) 
 	            this.state = 98;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
-	            while(_la===qMapParser.DOT) {
+	            while(_la===QMapParser.DOT) {
 	                this.state = 92;
-	                this.match(qMapParser.DOT);
+	                this.match(QMapParser.DOT);
 	                this.state = 93;
 	                localctx._id = this.id();
 	                 nodes.push(localctx._id.text) 
@@ -462,7 +462,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	spread() {
 	    let localctx = new SpreadContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 14, qMapParser.RULE_spread);
+	    this.enterRule(localctx, 14, QMapParser.RULE_spread);
 	    try {
 	        this.state = 111;
 	        this._errHandler.sync(this);
@@ -501,22 +501,22 @@ export default class qMapParser extends antlr4.Parser {
 
 	param() {
 	    let localctx = new ParamContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 16, qMapParser.RULE_param);
+	    this.enterRule(localctx, 16, QMapParser.RULE_param);
 	    try {
 	        this.state = 119;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
-	        case qMapParser.AT:
+	        case QMapParser.AT:
 	            this.enterOuterAlt(localctx, 1);
 	            this.state = 113;
-	            this.match(qMapParser.AT);
+	            this.match(QMapParser.AT);
 	            this.state = 114;
-	            localctx._ID = this.match(qMapParser.ID);
+	            localctx._ID = this.match(QMapParser.ID);
 	             localctx.node = new astn.Var((localctx._ID===null ? null : localctx._ID.text)) 
 	            break;
-	        case qMapParser.LEFT_BRACKET:
-	        case qMapParser.STRING:
-	        case qMapParser.ID:
+	        case QMapParser.LEFT_BRACKET:
+	        case QMapParser.STRING:
+	        case QMapParser.ID:
 	            this.enterOuterAlt(localctx, 2);
 	            this.state = 116;
 	            localctx._stm = this.stm();
@@ -543,7 +543,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	params() {
 	    let localctx = new ParamsContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 18, qMapParser.RULE_params);
+	    this.enterRule(localctx, 18, QMapParser.RULE_params);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
@@ -555,9 +555,9 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 130;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        while(_la===qMapParser.COMMA) {
+	        while(_la===QMapParser.COMMA) {
 	            this.state = 124;
-	            this.match(qMapParser.COMMA);
+	            this.match(QMapParser.COMMA);
 	            this.state = 125;
 	            localctx._param = this.param();
 	             nodes.push(localctx._param.node) 
@@ -584,7 +584,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	query() {
 	    let localctx = new QueryContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 20, qMapParser.RULE_query);
+	    this.enterRule(localctx, 20, QMapParser.RULE_query);
 	    try {
 	        this.state = 147;
 	        this._errHandler.sync(this);
@@ -637,7 +637,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	query_list() {
 	    let localctx = new Query_listContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 22, qMapParser.RULE_query_list);
+	    this.enterRule(localctx, 22, QMapParser.RULE_query_list);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
@@ -654,7 +654,7 @@ export default class qMapParser extends antlr4.Parser {
 	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
 	            if(_alt===1) {
 	                this.state = 152;
-	                this.match(qMapParser.COMMA);
+	                this.match(QMapParser.COMMA);
 	                this.state = 153;
 	                localctx._query = this.query();
 	                nodes.push(localctx._query.node) 
@@ -667,9 +667,9 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 162;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        if(_la===qMapParser.COMMA) {
+	        if(_la===QMapParser.COMMA) {
 	            this.state = 161;
-	            this.match(qMapParser.COMMA);
+	            this.match(QMapParser.COMMA);
 	        }
 
 	        localctx.nodes = nodes
@@ -691,7 +691,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	obj_ref() {
 	    let localctx = new Obj_refContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 24, qMapParser.RULE_obj_ref);
+	    this.enterRule(localctx, 24, QMapParser.RULE_obj_ref);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
@@ -702,9 +702,9 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 175;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        while(_la===qMapParser.DOT) {
+	        while(_la===QMapParser.DOT) {
 	            this.state = 169;
-	            this.match(qMapParser.DOT);
+	            this.match(QMapParser.DOT);
 	            this.state = 170;
 	            localctx._id = this.id();
 	            ids.push(localctx._id.text)
@@ -731,7 +731,7 @@ export default class qMapParser extends antlr4.Parser {
 
 	field() {
 	    let localctx = new FieldContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 26, qMapParser.RULE_field);
+	    this.enterRule(localctx, 26, QMapParser.RULE_field);
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
@@ -741,13 +741,13 @@ export default class qMapParser extends antlr4.Parser {
 	        this.state = 187;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        if(_la===qMapParser.LEFT_BRACE) {
+	        if(_la===QMapParser.LEFT_BRACE) {
 	            this.state = 182;
-	            this.match(qMapParser.LEFT_BRACE);
+	            this.match(QMapParser.LEFT_BRACE);
 	            this.state = 183;
 	            localctx._query_list = this.query_list();
 	            this.state = 184;
-	            this.match(qMapParser.RIGHT_BRACE);
+	            this.match(QMapParser.RIGHT_BRACE);
 	             localctx.node = new astn.Field(localctx._obj_ref.ids, localctx._query_list.nodes) 
 	        }
 
@@ -769,13 +769,13 @@ export default class qMapParser extends antlr4.Parser {
 
 	field_rename() {
 	    let localctx = new Field_renameContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 28, qMapParser.RULE_field_rename);
+	    this.enterRule(localctx, 28, QMapParser.RULE_field_rename);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 189;
 	        localctx._id = this.id();
 	        this.state = 190;
-	        this.match(qMapParser.COLON);
+	        this.match(QMapParser.COLON);
 	        this.state = 191;
 	        localctx._stm = this.stm();
 	         localctx.node = new astn.Rename(localctx._id.text, localctx._stm.node) 
@@ -797,37 +797,37 @@ export default class qMapParser extends antlr4.Parser {
 
 	fn() {
 	    let localctx = new FnContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 30, qMapParser.RULE_fn);
+	    this.enterRule(localctx, 30, QMapParser.RULE_fn);
 	    try {
 	        this.state = 208;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
-	        case qMapParser.ID:
+	        case QMapParser.ID:
 	            this.enterOuterAlt(localctx, 1);
 	            this.state = 194;
-	            localctx._ID = this.match(qMapParser.ID);
+	            localctx._ID = this.match(QMapParser.ID);
 	            this.state = 195;
-	            this.match(qMapParser.LEFT_PAREN);
+	            this.match(QMapParser.LEFT_PAREN);
 	            this.state = 196;
 	            localctx._params = this.params();
 	            this.state = 197;
-	            this.match(qMapParser.RIGHT_PAREN);
+	            this.match(QMapParser.RIGHT_PAREN);
 	             localctx.node = new astn.Function((localctx._ID===null ? null : localctx._ID.text), localctx._params.nodes, false) 
 	            break;
-	        case qMapParser.LEFT_BRACKET:
+	        case QMapParser.LEFT_BRACKET:
 	            this.enterOuterAlt(localctx, 2);
 	            this.state = 200;
-	            this.match(qMapParser.LEFT_BRACKET);
+	            this.match(QMapParser.LEFT_BRACKET);
 	            this.state = 201;
-	            localctx._ID = this.match(qMapParser.ID);
+	            localctx._ID = this.match(QMapParser.ID);
 	            this.state = 202;
-	            this.match(qMapParser.LEFT_PAREN);
+	            this.match(QMapParser.LEFT_PAREN);
 	            this.state = 203;
 	            localctx._params = this.params();
 	            this.state = 204;
-	            this.match(qMapParser.RIGHT_PAREN);
+	            this.match(QMapParser.RIGHT_PAREN);
 	            this.state = 205;
-	            this.match(qMapParser.RIGHT_BRACKET);
+	            this.match(QMapParser.RIGHT_BRACKET);
 	             localctx.node = new astn.Function((localctx._ID===null ? null : localctx._ID.text), localctx._params.nodes, false, true) 
 	            break;
 	        default:
@@ -851,41 +851,41 @@ export default class qMapParser extends antlr4.Parser {
 
 	client_function() {
 	    let localctx = new Client_functionContext(this, this._ctx, this.state);
-	    this.enterRule(localctx, 32, qMapParser.RULE_client_function);
+	    this.enterRule(localctx, 32, QMapParser.RULE_client_function);
 	    try {
 	        this.state = 226;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
-	        case qMapParser.ID:
+	        case QMapParser.ID:
 	            this.enterOuterAlt(localctx, 1);
 	            this.state = 210;
-	            localctx._ID = this.match(qMapParser.ID);
+	            localctx._ID = this.match(QMapParser.ID);
 	            this.state = 211;
-	            this.match(qMapParser.EX_MARK);
+	            this.match(QMapParser.EX_MARK);
 	            this.state = 212;
-	            this.match(qMapParser.LEFT_PAREN);
+	            this.match(QMapParser.LEFT_PAREN);
 	            this.state = 213;
 	            localctx._params = this.params();
 	            this.state = 214;
-	            this.match(qMapParser.RIGHT_PAREN);
+	            this.match(QMapParser.RIGHT_PAREN);
 	             localctx.node = new astn.Function((localctx._ID===null ? null : localctx._ID.text), localctx._params.nodes, true) 
 	            break;
-	        case qMapParser.LEFT_BRACKET:
+	        case QMapParser.LEFT_BRACKET:
 	            this.enterOuterAlt(localctx, 2);
 	            this.state = 217;
-	            this.match(qMapParser.LEFT_BRACKET);
+	            this.match(QMapParser.LEFT_BRACKET);
 	            this.state = 218;
-	            localctx._ID = this.match(qMapParser.ID);
+	            localctx._ID = this.match(QMapParser.ID);
 	            this.state = 219;
-	            this.match(qMapParser.EX_MARK);
+	            this.match(QMapParser.EX_MARK);
 	            this.state = 220;
-	            this.match(qMapParser.LEFT_PAREN);
+	            this.match(QMapParser.LEFT_PAREN);
 	            this.state = 221;
 	            localctx._params = this.params();
 	            this.state = 222;
-	            this.match(qMapParser.RIGHT_PAREN);
+	            this.match(QMapParser.RIGHT_PAREN);
 	            this.state = 223;
-	            this.match(qMapParser.RIGHT_BRACKET);
+	            this.match(QMapParser.RIGHT_BRACKET);
 	             localctx.node = new astn.Function((localctx._ID===null ? null : localctx._ID.text), localctx._params.nodes, true, true) 
 	            break;
 	        default:
@@ -908,43 +908,43 @@ export default class qMapParser extends antlr4.Parser {
 
 }
 
-qMapParser.EOF = antlr4.Token.EOF;
-qMapParser.AT = 1;
-qMapParser.LEFT_BRACKET = 2;
-qMapParser.RIGHT_BRACKET = 3;
-qMapParser.LEFT_BRACE = 4;
-qMapParser.RIGHT_BRACE = 5;
-qMapParser.EX_MARK = 6;
-qMapParser.COLON = 7;
-qMapParser.COMMA = 8;
-qMapParser.TRIPLE_DOT = 9;
-qMapParser.DOT = 10;
-qMapParser.LEFT_PAREN = 11;
-qMapParser.RIGHT_PAREN = 12;
-qMapParser.AMPERSAND = 13;
-qMapParser.STRING = 14;
-qMapParser.ID = 15;
-qMapParser.WS = 16;
-qMapParser.BLOCK_COMMENT = 17;
-qMapParser.LINE_COMMENT = 18;
+QMapParser.EOF = antlr4.Token.EOF;
+QMapParser.AT = 1;
+QMapParser.LEFT_BRACKET = 2;
+QMapParser.RIGHT_BRACKET = 3;
+QMapParser.LEFT_BRACE = 4;
+QMapParser.RIGHT_BRACE = 5;
+QMapParser.EX_MARK = 6;
+QMapParser.COLON = 7;
+QMapParser.COMMA = 8;
+QMapParser.TRIPLE_DOT = 9;
+QMapParser.DOT = 10;
+QMapParser.LEFT_PAREN = 11;
+QMapParser.RIGHT_PAREN = 12;
+QMapParser.AMPERSAND = 13;
+QMapParser.STRING = 14;
+QMapParser.ID = 15;
+QMapParser.WS = 16;
+QMapParser.BLOCK_COMMENT = 17;
+QMapParser.LINE_COMMENT = 18;
 
-qMapParser.RULE_start = 0;
-qMapParser.RULE_optional_id = 1;
-qMapParser.RULE_id = 2;
-qMapParser.RULE_stm = 3;
-qMapParser.RULE_exclude = 4;
-qMapParser.RULE_global_spread = 5;
-qMapParser.RULE_scoped_spread = 6;
-qMapParser.RULE_spread = 7;
-qMapParser.RULE_param = 8;
-qMapParser.RULE_params = 9;
-qMapParser.RULE_query = 10;
-qMapParser.RULE_query_list = 11;
-qMapParser.RULE_obj_ref = 12;
-qMapParser.RULE_field = 13;
-qMapParser.RULE_field_rename = 14;
-qMapParser.RULE_fn = 15;
-qMapParser.RULE_client_function = 16;
+QMapParser.RULE_start = 0;
+QMapParser.RULE_optional_id = 1;
+QMapParser.RULE_id = 2;
+QMapParser.RULE_stm = 3;
+QMapParser.RULE_exclude = 4;
+QMapParser.RULE_global_spread = 5;
+QMapParser.RULE_scoped_spread = 6;
+QMapParser.RULE_spread = 7;
+QMapParser.RULE_param = 8;
+QMapParser.RULE_params = 9;
+QMapParser.RULE_query = 10;
+QMapParser.RULE_query_list = 11;
+QMapParser.RULE_obj_ref = 12;
+QMapParser.RULE_field = 13;
+QMapParser.RULE_field_rename = 14;
+QMapParser.RULE_fn = 15;
+QMapParser.RULE_client_function = 16;
 
 class StartContext extends antlr4.ParserRuleContext {
 
@@ -957,7 +957,7 @@ class StartContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_start;
+        this.ruleIndex = QMapParser.RULE_start;
         this.root = null
         this._optional_id = null; // Optional_idContext
         this._query_list = null; // Query_listContext
@@ -968,11 +968,11 @@ class StartContext extends antlr4.ParserRuleContext {
 	};
 
 	LEFT_BRACE() {
-	    return this.getToken(qMapParser.LEFT_BRACE, 0);
+	    return this.getToken(QMapParser.LEFT_BRACE, 0);
 	};
 
 	RIGHT_BRACE() {
-	    return this.getToken(qMapParser.RIGHT_BRACE, 0);
+	    return this.getToken(QMapParser.RIGHT_BRACE, 0);
 	};
 
 	query_list() {
@@ -980,13 +980,13 @@ class StartContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterStart(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitStart(this);
 		}
 	}
@@ -1007,7 +1007,7 @@ class Optional_idContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_optional_id;
+        this.ruleIndex = QMapParser.RULE_optional_id;
         this.text = null
         this._id = null; // IdContext
     }
@@ -1017,13 +1017,13 @@ class Optional_idContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterOptional_id(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitOptional_id(this);
 		}
 	}
@@ -1044,28 +1044,28 @@ class IdContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_id;
+        this.ruleIndex = QMapParser.RULE_id;
         this.text = null
         this._ID = null; // Token
         this._STRING = null; // Token
     }
 
 	ID() {
-	    return this.getToken(qMapParser.ID, 0);
+	    return this.getToken(QMapParser.ID, 0);
 	};
 
 	STRING() {
-	    return this.getToken(qMapParser.STRING, 0);
+	    return this.getToken(QMapParser.STRING, 0);
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterId(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitId(this);
 		}
 	}
@@ -1086,7 +1086,7 @@ class StmContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_stm;
+        this.ruleIndex = QMapParser.RULE_stm;
         this.node = null
         this._field = null; // FieldContext
         this._fn = null; // FnContext
@@ -1106,13 +1106,13 @@ class StmContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterStm(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitStm(this);
 		}
 	}
@@ -1133,13 +1133,13 @@ class ExcludeContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_exclude;
+        this.ruleIndex = QMapParser.RULE_exclude;
         this.node = null
         this._id = null; // IdContext
     }
 
 	EX_MARK() {
-	    return this.getToken(qMapParser.EX_MARK, 0);
+	    return this.getToken(QMapParser.EX_MARK, 0);
 	};
 
 	id() {
@@ -1147,13 +1147,13 @@ class ExcludeContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterExclude(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitExclude(this);
 		}
 	}
@@ -1174,17 +1174,17 @@ class Global_spreadContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_global_spread;
+        this.ruleIndex = QMapParser.RULE_global_spread;
         this.node = null
         this._id = null; // IdContext
     }
 
 	TRIPLE_DOT() {
-	    return this.getToken(qMapParser.TRIPLE_DOT, 0);
+	    return this.getToken(QMapParser.TRIPLE_DOT, 0);
 	};
 
 	AMPERSAND() {
-	    return this.getToken(qMapParser.AMPERSAND, 0);
+	    return this.getToken(QMapParser.AMPERSAND, 0);
 	};
 
 	id = function(i) {
@@ -1203,21 +1203,21 @@ class Global_spreadContext extends antlr4.ParserRuleContext {
 			i = null;
 		}
 	    if(i===null) {
-	        return this.getTokens(qMapParser.DOT);
+	        return this.getTokens(QMapParser.DOT);
 	    } else {
-	        return this.getToken(qMapParser.DOT, i);
+	        return this.getToken(QMapParser.DOT, i);
 	    }
 	};
 
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterGlobal_spread(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitGlobal_spread(this);
 		}
 	}
@@ -1238,13 +1238,13 @@ class Scoped_spreadContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_scoped_spread;
+        this.ruleIndex = QMapParser.RULE_scoped_spread;
         this.node = null
         this._id = null; // IdContext
     }
 
 	TRIPLE_DOT() {
-	    return this.getToken(qMapParser.TRIPLE_DOT, 0);
+	    return this.getToken(QMapParser.TRIPLE_DOT, 0);
 	};
 
 	id = function(i) {
@@ -1263,21 +1263,21 @@ class Scoped_spreadContext extends antlr4.ParserRuleContext {
 			i = null;
 		}
 	    if(i===null) {
-	        return this.getTokens(qMapParser.DOT);
+	        return this.getTokens(QMapParser.DOT);
 	    } else {
-	        return this.getToken(qMapParser.DOT, i);
+	        return this.getToken(QMapParser.DOT, i);
 	    }
 	};
 
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterScoped_spread(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitScoped_spread(this);
 		}
 	}
@@ -1298,7 +1298,7 @@ class SpreadContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_spread;
+        this.ruleIndex = QMapParser.RULE_spread;
         this.node = null
         this._global_spread = null; // Global_spreadContext
         this._scoped_spread = null; // Scoped_spreadContext
@@ -1313,13 +1313,13 @@ class SpreadContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterSpread(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitSpread(this);
 		}
 	}
@@ -1340,18 +1340,18 @@ class ParamContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_param;
+        this.ruleIndex = QMapParser.RULE_param;
         this.node = null
         this._ID = null; // Token
         this._stm = null; // StmContext
     }
 
 	AT() {
-	    return this.getToken(qMapParser.AT, 0);
+	    return this.getToken(QMapParser.AT, 0);
 	};
 
 	ID() {
-	    return this.getToken(qMapParser.ID, 0);
+	    return this.getToken(QMapParser.ID, 0);
 	};
 
 	stm() {
@@ -1359,13 +1359,13 @@ class ParamContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterParam(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitParam(this);
 		}
 	}
@@ -1386,7 +1386,7 @@ class ParamsContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_params;
+        this.ruleIndex = QMapParser.RULE_params;
         this.nodes = null
         this._param = null; // ParamContext
     }
@@ -1407,21 +1407,21 @@ class ParamsContext extends antlr4.ParserRuleContext {
 			i = null;
 		}
 	    if(i===null) {
-	        return this.getTokens(qMapParser.COMMA);
+	        return this.getTokens(QMapParser.COMMA);
 	    } else {
-	        return this.getToken(qMapParser.COMMA, i);
+	        return this.getToken(QMapParser.COMMA, i);
 	    }
 	};
 
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterParams(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitParams(this);
 		}
 	}
@@ -1442,7 +1442,7 @@ class QueryContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_query;
+        this.ruleIndex = QMapParser.RULE_query;
         this.node = null
         this._stm = null; // StmContext
         this._exclude = null; // ExcludeContext
@@ -1467,13 +1467,13 @@ class QueryContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterQuery(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitQuery(this);
 		}
 	}
@@ -1494,7 +1494,7 @@ class Query_listContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_query_list;
+        this.ruleIndex = QMapParser.RULE_query_list;
         this.nodes = null
         this._query = null; // QueryContext
     }
@@ -1515,21 +1515,21 @@ class Query_listContext extends antlr4.ParserRuleContext {
 			i = null;
 		}
 	    if(i===null) {
-	        return this.getTokens(qMapParser.COMMA);
+	        return this.getTokens(QMapParser.COMMA);
 	    } else {
-	        return this.getToken(qMapParser.COMMA, i);
+	        return this.getToken(QMapParser.COMMA, i);
 	    }
 	};
 
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterQuery_list(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitQuery_list(this);
 		}
 	}
@@ -1550,7 +1550,7 @@ class Obj_refContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_obj_ref;
+        this.ruleIndex = QMapParser.RULE_obj_ref;
         this.ids = null
         this._id = null; // IdContext
     }
@@ -1571,21 +1571,21 @@ class Obj_refContext extends antlr4.ParserRuleContext {
 			i = null;
 		}
 	    if(i===null) {
-	        return this.getTokens(qMapParser.DOT);
+	        return this.getTokens(QMapParser.DOT);
 	    } else {
-	        return this.getToken(qMapParser.DOT, i);
+	        return this.getToken(QMapParser.DOT, i);
 	    }
 	};
 
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterObj_ref(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitObj_ref(this);
 		}
 	}
@@ -1606,7 +1606,7 @@ class FieldContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_field;
+        this.ruleIndex = QMapParser.RULE_field;
         this.node = null
         this._obj_ref = null; // Obj_refContext
         this._query_list = null; // Query_listContext
@@ -1617,7 +1617,7 @@ class FieldContext extends antlr4.ParserRuleContext {
 	};
 
 	LEFT_BRACE() {
-	    return this.getToken(qMapParser.LEFT_BRACE, 0);
+	    return this.getToken(QMapParser.LEFT_BRACE, 0);
 	};
 
 	query_list() {
@@ -1625,17 +1625,17 @@ class FieldContext extends antlr4.ParserRuleContext {
 	};
 
 	RIGHT_BRACE() {
-	    return this.getToken(qMapParser.RIGHT_BRACE, 0);
+	    return this.getToken(QMapParser.RIGHT_BRACE, 0);
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterField(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitField(this);
 		}
 	}
@@ -1656,7 +1656,7 @@ class Field_renameContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_field_rename;
+        this.ruleIndex = QMapParser.RULE_field_rename;
         this.node = null
         this._id = null; // IdContext
         this._stm = null; // StmContext
@@ -1667,7 +1667,7 @@ class Field_renameContext extends antlr4.ParserRuleContext {
 	};
 
 	COLON() {
-	    return this.getToken(qMapParser.COLON, 0);
+	    return this.getToken(QMapParser.COLON, 0);
 	};
 
 	stm() {
@@ -1675,13 +1675,13 @@ class Field_renameContext extends antlr4.ParserRuleContext {
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterField_rename(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitField_rename(this);
 		}
 	}
@@ -1702,18 +1702,18 @@ class FnContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_fn;
+        this.ruleIndex = QMapParser.RULE_fn;
         this.node = null
         this._ID = null; // Token
         this._params = null; // ParamsContext
     }
 
 	ID() {
-	    return this.getToken(qMapParser.ID, 0);
+	    return this.getToken(QMapParser.ID, 0);
 	};
 
 	LEFT_PAREN() {
-	    return this.getToken(qMapParser.LEFT_PAREN, 0);
+	    return this.getToken(QMapParser.LEFT_PAREN, 0);
 	};
 
 	params() {
@@ -1721,25 +1721,25 @@ class FnContext extends antlr4.ParserRuleContext {
 	};
 
 	RIGHT_PAREN() {
-	    return this.getToken(qMapParser.RIGHT_PAREN, 0);
+	    return this.getToken(QMapParser.RIGHT_PAREN, 0);
 	};
 
 	LEFT_BRACKET() {
-	    return this.getToken(qMapParser.LEFT_BRACKET, 0);
+	    return this.getToken(QMapParser.LEFT_BRACKET, 0);
 	};
 
 	RIGHT_BRACKET() {
-	    return this.getToken(qMapParser.RIGHT_BRACKET, 0);
+	    return this.getToken(QMapParser.RIGHT_BRACKET, 0);
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterFn(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitFn(this);
 		}
 	}
@@ -1760,22 +1760,22 @@ class Client_functionContext extends antlr4.ParserRuleContext {
         }
         super(parent, invokingState);
         this.parser = parser;
-        this.ruleIndex = qMapParser.RULE_client_function;
+        this.ruleIndex = QMapParser.RULE_client_function;
         this.node = null
         this._ID = null; // Token
         this._params = null; // ParamsContext
     }
 
 	ID() {
-	    return this.getToken(qMapParser.ID, 0);
+	    return this.getToken(QMapParser.ID, 0);
 	};
 
 	EX_MARK() {
-	    return this.getToken(qMapParser.EX_MARK, 0);
+	    return this.getToken(QMapParser.EX_MARK, 0);
 	};
 
 	LEFT_PAREN() {
-	    return this.getToken(qMapParser.LEFT_PAREN, 0);
+	    return this.getToken(QMapParser.LEFT_PAREN, 0);
 	};
 
 	params() {
@@ -1783,25 +1783,25 @@ class Client_functionContext extends antlr4.ParserRuleContext {
 	};
 
 	RIGHT_PAREN() {
-	    return this.getToken(qMapParser.RIGHT_PAREN, 0);
+	    return this.getToken(QMapParser.RIGHT_PAREN, 0);
 	};
 
 	LEFT_BRACKET() {
-	    return this.getToken(qMapParser.LEFT_BRACKET, 0);
+	    return this.getToken(QMapParser.LEFT_BRACKET, 0);
 	};
 
 	RIGHT_BRACKET() {
-	    return this.getToken(qMapParser.RIGHT_BRACKET, 0);
+	    return this.getToken(QMapParser.RIGHT_BRACKET, 0);
 	};
 
 	enterRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.enterClient_function(this);
 		}
 	}
 
 	exitRule(listener) {
-	    if(listener instanceof qMapListener ) {
+	    if(listener instanceof QMapListener ) {
 	        listener.exitClient_function(this);
 		}
 	}
@@ -1812,20 +1812,20 @@ class Client_functionContext extends antlr4.ParserRuleContext {
 
 
 
-qMapParser.StartContext = StartContext; 
-qMapParser.Optional_idContext = Optional_idContext; 
-qMapParser.IdContext = IdContext; 
-qMapParser.StmContext = StmContext; 
-qMapParser.ExcludeContext = ExcludeContext; 
-qMapParser.Global_spreadContext = Global_spreadContext; 
-qMapParser.Scoped_spreadContext = Scoped_spreadContext; 
-qMapParser.SpreadContext = SpreadContext; 
-qMapParser.ParamContext = ParamContext; 
-qMapParser.ParamsContext = ParamsContext; 
-qMapParser.QueryContext = QueryContext; 
-qMapParser.Query_listContext = Query_listContext; 
-qMapParser.Obj_refContext = Obj_refContext; 
-qMapParser.FieldContext = FieldContext; 
-qMapParser.Field_renameContext = Field_renameContext; 
-qMapParser.FnContext = FnContext; 
-qMapParser.Client_functionContext = Client_functionContext; 
+QMapParser.StartContext = StartContext; 
+QMapParser.Optional_idContext = Optional_idContext; 
+QMapParser.IdContext = IdContext; 
+QMapParser.StmContext = StmContext; 
+QMapParser.ExcludeContext = ExcludeContext; 
+QMapParser.Global_spreadContext = Global_spreadContext; 
+QMapParser.Scoped_spreadContext = Scoped_spreadContext; 
+QMapParser.SpreadContext = SpreadContext; 
+QMapParser.ParamContext = ParamContext; 
+QMapParser.ParamsContext = ParamsContext; 
+QMapParser.QueryContext = QueryContext; 
+QMapParser.Query_listContext = Query_listContext; 
+QMapParser.Obj_refContext = Obj_refContext; 
+QMapParser.FieldContext = FieldContext; 
+QMapParser.Field_renameContext = Field_renameContext; 
+QMapParser.FnContext = FnContext; 
+QMapParser.Client_functionContext = Client_functionContext; 

@@ -1,4 +1,4 @@
-// Generated from /home/gbenm/code/pumkat/qmap/antlr4/qMap.g4 by ANTLR 4.9.3
+// Generated from /home/gbenm/code/pumkat/qmap/antlr4/QMap.g4 by ANTLR 4.9.3
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
@@ -114,9 +114,9 @@ const atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
 
 const decisionsToDFA = atn.decisionToState.map( (ds, index) => new antlr4.dfa.DFA(ds, index) );
 
-export default class qMapLexer extends antlr4.Lexer {
+export default class QMapLexer extends antlr4.Lexer {
 
-    static grammarFileName = "qMap.g4";
+    static grammarFileName = "QMap.g4";
     static channelNames = [ "DEFAULT_TOKEN_CHANNEL", "HIDDEN" ];
 	static modeNames = [ "DEFAULT_MODE" ];
 	static literalNames = [ null, "'@'", "'['", "']'", "'{'", "'}'", "'!'", 
@@ -142,25 +142,25 @@ export default class qMapLexer extends antlr4.Lexer {
     }
 }
 
-qMapLexer.EOF = antlr4.Token.EOF;
-qMapLexer.AT = 1;
-qMapLexer.LEFT_BRACKET = 2;
-qMapLexer.RIGHT_BRACKET = 3;
-qMapLexer.LEFT_BRACE = 4;
-qMapLexer.RIGHT_BRACE = 5;
-qMapLexer.EX_MARK = 6;
-qMapLexer.COLON = 7;
-qMapLexer.COMMA = 8;
-qMapLexer.TRIPLE_DOT = 9;
-qMapLexer.DOT = 10;
-qMapLexer.LEFT_PAREN = 11;
-qMapLexer.RIGHT_PAREN = 12;
-qMapLexer.AMPERSAND = 13;
-qMapLexer.STRING = 14;
-qMapLexer.ID = 15;
-qMapLexer.WS = 16;
-qMapLexer.BLOCK_COMMENT = 17;
-qMapLexer.LINE_COMMENT = 18;
+QMapLexer.EOF = antlr4.Token.EOF;
+QMapLexer.AT = 1;
+QMapLexer.LEFT_BRACKET = 2;
+QMapLexer.RIGHT_BRACKET = 3;
+QMapLexer.LEFT_BRACE = 4;
+QMapLexer.RIGHT_BRACE = 5;
+QMapLexer.EX_MARK = 6;
+QMapLexer.COLON = 7;
+QMapLexer.COMMA = 8;
+QMapLexer.TRIPLE_DOT = 9;
+QMapLexer.DOT = 10;
+QMapLexer.LEFT_PAREN = 11;
+QMapLexer.RIGHT_PAREN = 12;
+QMapLexer.AMPERSAND = 13;
+QMapLexer.STRING = 14;
+QMapLexer.ID = 15;
+QMapLexer.WS = 16;
+QMapLexer.BLOCK_COMMENT = 17;
+QMapLexer.LINE_COMMENT = 18;
 
 
 

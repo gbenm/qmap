@@ -1,5 +1,5 @@
-import qMapLexer from "./syntax/qMapLexer"
-import qMapParser from "./syntax/qMapParser"
+import QMapLexer from "./syntax/QMapLexer"
+import QMapParser from "./syntax/QMapParser"
 import antlr from "antlr4"
 import { QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
@@ -21,10 +21,10 @@ export function compile (query: string | undefined | null, config: Partial<Compi
 
   const errors: unknown[] = []
   const chars = new antlr.InputStream(query ?? "")
-  const lexer = new qMapLexer(chars)
+  const lexer = new QMapLexer(chars)
   const tokens = new antlr.CommonTokenStream(lexer)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parser = new qMapParser(tokens) as any
+  const parser = new QMapParser(tokens) as any
   parser.buildParseTrees = true
   parser.addErrorListener({
     syntaxError: (_: string, offendingSymbol: string, line: string, column: string, msg: string, error: Error) => {
