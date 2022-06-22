@@ -537,6 +537,67 @@ describe("apply", () => {
     })
   })
 
+  it ("spread", () => {
+    const qmap = qmapCreator()
+
+    const query = `{
+      user {
+        id, name
+      },
+      family {
+        ...user,
+        role
+      }
+    }`
+
+    const { apply, errors } = qmap(query)
+
+    expect(errors).toBeFalsy()
+
+    const input = {
+      user: {
+        id: 2,
+        name: "John",
+        age: 22
+      },
+      family: [
+        {
+          id: 3,
+          name: "John",
+          role: "father",
+          age: 49
+        },
+        {
+          id: 4,
+          name: "Julia",
+          role: "mother",
+          age: 48
+        }
+      ]
+    }
+
+    const expected = {
+      user: {
+        id: 2,
+        name: "John",
+      },
+      family: [
+        {
+          id: 3,
+          name: "John",
+          role: "father",
+        },
+        {
+          id: 4,
+          name: "Julia",
+          role: "mother",
+        }
+      ]
+    }
+
+    expect(apply(input)).toEqual(expected)
+  })
+
   it("complex", () => {
     const { apply, errors } = qmap(`{
       product {
