@@ -6,11 +6,7 @@ export function findInContext<T>(context: Nullable<QMapContext>, type: string, t
     return null
   }
 
-  if (context[type][target]) {
-    return context[type][target]
-  }
-
-  return findInContext<T>(context.extends, type, target)
+  return context[type][target] ?? findInContext<T>(context.extends, type, target)
 }
 
 export function findQuery(context: Nullable<QMapContext>, query: Nullable<string>): Nullable<QMapQuery> {
