@@ -10,11 +10,8 @@ optional_id: id?;
 
 id: ID | STRING;
 
-stm returns [node]
-    : field {$node = $field.node}
-    | fn { $node = $fn.node }
-    | client_function { $node = $client_function.node }
-;
+stm: field | fn | client_function;
+
 exclude returns [node]
     : EX_MARK id { $node = new astn.Exclude($id.text) }
 ;

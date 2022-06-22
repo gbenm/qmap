@@ -37,11 +37,8 @@ export default class QMapListener extends Listener {
       ctx.text = eval(terminal.getText())
     }
   }
-  enterStm(_ctx: ListenerContext): void {
-    //
-  }
-  exitStm(_ctx: ListenerContext): void {
-    //
+  exitStm(ctx: ListenerContext): void {
+    ctx.node = ctx.getChild(0).node
   }
   enterExclude(_ctx: ListenerContext): void {
     //
