@@ -1,0 +1,10 @@
+.*/
+*.ignore.*
+antlr4/
+junit/
+src/
+.*
+*.gif
+*.config.*
+*.json
+dist/tsconfig.tsbuildinfo
