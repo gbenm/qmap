@@ -1,4 +1,4 @@
-import { Exclude, Field, Rename, Root, Spread, Var } from "./astn"
+import { Exclude, Field, Function, Rename, Root, Spread, Var } from "./astn"
 import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
@@ -112,17 +112,40 @@ export default class QMapListener extends Listener {
     ctx.node = new Rename(id.text, stm.node)
   }
 
-  enterFn(_ctx: ListenerContext): void {
-    //
+  exitNormal_fn(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [id, _lparen, params] = ctx.children
+
+    ctx.node = new Function(id.getText(), params.nodes, false, false)
   }
-  exitFn(_ctx: ListenerContext): void {
-    //
+
+  exitMap_fn(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_lbracket, id, _lparen, params] = ctx.children
+
+    ctx.node = new Function(id.getText(), params.nodes, false, true)
   }
-  enterClient_function(_ctx: ListenerContext): void {
-    //
+
+  exitFn(ctx: ListenerContext): void {
+    ctx.node = ctx.getChild(0).node
   }
-  exitClient_function(_ctx: ListenerContext): void {
-    //
+
+  exitNormal_client_fn(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [id, _exMark, _lparen, params] = ctx.children
+
+    ctx.node = new Function(id.getText(), params.nodes, true, false)
+  }
+
+  exitMap_client_fn(ctx: ListenerContext): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_lbracket, id, _exMark, _lparen, params] = ctx.children
+
+    ctx.node = new Function(id.getText(), params.nodes, true, true)
+  }
+
+  exitClient_fn(ctx: ListenerContext): void {
+    ctx.node = ctx.getChild(0).node
   }
 }
 

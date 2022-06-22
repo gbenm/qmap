@@ -1,4 +1,4 @@
-// Generated from /home/gbenm/code/pumkat/qmap/antlr4/QMap.g4 by ANTLR 4.9.3
+// Generated from antlr4/QMap.g4 by ANTLR 4.9.3
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
@@ -149,6 +149,24 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by QMapParser#normal_fn.
+	enterNormal_fn(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#normal_fn.
+	exitNormal_fn(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#map_fn.
+	enterMap_fn(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#map_fn.
+	exitMap_fn(ctx) {
+	}
+
+
 	// Enter a parse tree produced by QMapParser#fn.
 	enterFn(ctx) {
 	}
@@ -158,12 +176,30 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
-	// Enter a parse tree produced by QMapParser#client_function.
-	enterClient_function(ctx) {
+	// Enter a parse tree produced by QMapParser#normal_client_fn.
+	enterNormal_client_fn(ctx) {
 	}
 
-	// Exit a parse tree produced by QMapParser#client_function.
-	exitClient_function(ctx) {
+	// Exit a parse tree produced by QMapParser#normal_client_fn.
+	exitNormal_client_fn(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#map_client_fn.
+	enterMap_client_fn(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#map_client_fn.
+	exitMap_client_fn(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#client_fn.
+	enterClient_fn(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#client_fn.
+	exitClient_fn(ctx) {
 	}
 
 

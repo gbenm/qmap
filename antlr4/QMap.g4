@@ -10,7 +10,7 @@ optional_id: id?;
 
 id: ID | STRING;
 
-stm returns[node]: field | fn | client_function;
+stm returns[node]: field | fn | client_fn;
 
 exclude returns[node]: EX_MARK id;
 
@@ -41,14 +41,13 @@ field returns [node]: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
 
 field_rename returns [node]: id COLON stm;
 
-fn returns [node]
-    : ID LEFT_PAREN params RIGHT_PAREN { $node = new astn.Function($ID.text, $params.nodes, false) }
-    | LEFT_BRACKET ID LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes, false, true) }
-;
-client_function returns [node]
-    : ID EX_MARK LEFT_PAREN params RIGHT_PAREN { $node = new astn.Function($ID.text, $params.nodes, true) }
-    | LEFT_BRACKET ID EX_MARK LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET { $node = new astn.Function($ID.text, $params.nodes, true, true) }
-;
+normal_fn returns[node]: ID LEFT_PAREN params RIGHT_PAREN;
+map_fn returns[node]: LEFT_BRACKET ID LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
+fn returns [node]: normal_fn | map_fn;
+
+normal_client_fn returns[node]: ID EX_MARK LEFT_PAREN params RIGHT_PAREN;
+map_client_fn returns[node]: LEFT_BRACKET ID EX_MARK LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
+client_fn returns [node]: normal_client_fn | map_client_fn;
 
 fragment DOUBLE_QUOTE: '"';
 fragment SINGLE_QUOTE: '\'';
