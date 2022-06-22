@@ -22,11 +22,13 @@ export default class QMapListener extends Listener {
       ctx.root = new Root(query.text)
     }
   }
+
   exitOptional_id(ctx: ListenerContext): void {
     const child = ctx.getChild(0)
 
     ctx.text = child?.text
   }
+
   exitId(ctx: ListenerContext): void {
     const terminal = ctx.getChild(0)
     const symbol = terminal.getSymbol()
@@ -37,13 +39,16 @@ export default class QMapListener extends Listener {
       ctx.text = eval(terminal.getText())
     }
   }
+
   exitStm(ctx: ListenerContext): void {
     ctx.node = ctx.getChild(0).node
   }
+
   exitExclude(ctx: ListenerContext): void {
     const id = ctx.getChild(1)
     ctx.node = new Exclude(id.getText())
   }
+
   enterGlobal_spread(_ctx: ListenerContext): void {
     //
   }
