@@ -35,11 +35,7 @@ query returns [node]
 
 query_list returns [nodes]: query (COMMA query)* COMMA?;
 
-obj_ref returns [ids]
-    : {const ids = []}
-    id {ids.push($id.text)} (DOT id {ids.push($id.text)})*
-    {$ids = ids}
-;
+obj_ref returns [ids]: id (DOT id)*;
 
 field returns [node]
     : obj_ref { $node = new astn.Field($obj_ref.ids, null) }

@@ -90,12 +90,10 @@ export default class QMapListener extends Listener {
     ctx.nodes = ignoreTerminals(ctx.children, astn => astn.node)
   }
 
-  enterObj_ref(_ctx: ListenerContext): void {
-    //
+  exitObj_ref(ctx: ListenerContext): void {
+    ctx.ids = ignoreTerminals(ctx.children, id => id.text)
   }
-  exitObj_ref(_ctx: ListenerContext): void {
-    //
-  }
+
   enterField(_ctx: ListenerContext): void {
     //
   }
