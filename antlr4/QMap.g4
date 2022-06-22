@@ -10,20 +10,19 @@ optional_id: id?;
 
 id: ID | STRING;
 
-stm: field | fn | client_function;
+stm returns[node]: field | fn | client_function;
 
-exclude: EX_MARK id;
+exclude returns[node]: EX_MARK id;
 
 global_spread: TRIPLE_DOT AMPERSAND id (DOT id)*;
 
 scoped_spread: TRIPLE_DOT id? (DOT id)*;
 
-spread: global_spread | scoped_spread;
+spread returns[node]: global_spread | scoped_spread;
 
-param returns [node]
-    : AT ID { $node = new astn.Var($ID.text) }
-    | stm { $node = $stm.node }
-;
+variable: AT ID;
+
+param returns [node]: variable | stm;
 
 params returns [nodes]
     : { const nodes = [] }

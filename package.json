@@ -36,7 +36,7 @@
     "test-junit": "JEST_JUNIT_OUTPUT_DIR='junit' jest --reporters='jest-junit'",
     "prebuild": "yarn lint && yarn test",
     "build": "yarn prebuild && tsc && yarn postbuild",
-    "postbuild": "yarn del dist/syntax/*.d.ts"
+    "postbuild": "yarn del dist/compiler/syntax/*.d.ts"
   },
   "devDependencies": {
     "@types/eslint": "^8.4.1",

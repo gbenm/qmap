@@ -1,4 +1,4 @@
-import { Exclude, Root, Spread } from "./astn"
+import { Exclude, Root, Spread, Var } from "./astn"
 import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
@@ -69,12 +69,15 @@ export default class QMapListener extends Listener {
     ctx.node = ctx.getChild(0).node
   }
 
-  enterParam(_ctx: ListenerContext): void {
-    //
+  exitVariable(ctx: ListenerContext): void {
+    const terminal = ctx.getChild(1)
+    ctx.node = new Var(terminal.getText())
   }
-  exitParam(_ctx: ListenerContext): void {
-    //
+
+  exitParam(ctx: ListenerContext): void {
+    ctx.node = ctx.getChild(0).node
   }
+
   enterParams(_ctx: ListenerContext): void {
     //
   }
