@@ -78,12 +78,10 @@ export default class QMapListener extends Listener {
     ctx.node = ctx.getChild(0).node
   }
 
-  enterParams(_ctx: ListenerContext): void {
-    //
+  exitParams(ctx: ListenerContext): void {
+    ctx.nodes = ctx.children.filter(astn => !astn.symbol).map(astn => astn.node)
   }
-  exitParams(_ctx: ListenerContext): void {
-    //
-  }
+
   enterQuery(_ctx: ListenerContext): void {
     //
   }

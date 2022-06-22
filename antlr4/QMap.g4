@@ -24,11 +24,7 @@ variable: AT ID;
 
 param returns [node]: variable | stm;
 
-params returns [nodes]
-    : { const nodes = [] }
-    (param { nodes.push($param.node) } (COMMA param { nodes.push($param.node) })*)
-    {$nodes = nodes}
-;
+params returns [nodes]: param (COMMA param)*;
 
 query returns [node]
     : stm {$node = $stm.node}
