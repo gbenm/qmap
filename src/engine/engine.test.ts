@@ -92,6 +92,28 @@ describe("includes", () => {
     expect(includes(["other"])).toBe(true)
   })
 
+  it("spread", () => {
+    const qmap = qmapCreator()
+
+    const query = `{
+      user {
+        id, name
+      },
+      family {
+        ...user
+      }
+    }`
+
+    const { includes, errors } = qmap(query)
+
+    expect(errors).toBeFalsy()
+
+    expect(includes(["user", "id"])).toBe(true)
+    expect(includes(["user", "name"])).toBe(true)
+    expect(includes(["family", "id"])).toBe(true)
+    expect(includes(["family", "name"])).toBe(true)
+  })
+
   describe("schemas", () => {
     const qmap = qmapCreator({
       schemas: `{
