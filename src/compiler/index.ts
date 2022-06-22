@@ -11,6 +11,11 @@ export * from "./astn"
 export * from "./query.types"
 export * from "./config"
 
+type Parser = {
+  buildParseTrees: boolean
+  addErrorListener: (a: unknown) => void
+} & QMapParser
+
 const defaultConfig: CompilerConfig = {
   mode: "compact",
   ignoreIndex: false
@@ -24,7 +29,7 @@ export function compile (query: string | undefined | null, config: Partial<Compi
   const lexer = new QMapLexer(chars)
   const tokens = new antlr.CommonTokenStream(lexer)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parser = new QMapParser(tokens) as any
+  const parser: Parser = new QMapParser(tokens) as any
   parser.buildParseTrees = true
   parser.addErrorListener({
     syntaxError: (_: string, offendingSymbol: string, line: string, column: string, msg: string, error: Error) => {
