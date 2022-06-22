@@ -1,4 +1,4 @@
-// Generated from antlr4/QMap.g4 by ANTLR 4.9.3
+// Generated from /home/gbenm/code/pumkat/qmap/antlr4/QMap.g4 by ANTLR 4.9.3
 // jshint ignore: start
 import antlr4 from 'antlr4';
 

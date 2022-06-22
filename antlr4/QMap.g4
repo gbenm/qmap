@@ -1,53 +1,49 @@
 grammar QMap;
 
-@parser::header {
-import * as astn from ".."
-}
-
 start: optional_id (LEFT_BRACE query_list? RIGHT_BRACE)?;
 
 optional_id: id?;
 
 id: ID | STRING;
 
-stm returns[node]: field | fn | client_fn;
+stm: field | fn | client_fn;
 
-exclude returns[node]: EX_MARK id;
+exclude: EX_MARK id;
 
 global_spread: TRIPLE_DOT AMPERSAND id (DOT id)*;
 
 scoped_spread: TRIPLE_DOT id? (DOT id)*;
 
-spread returns[node]: global_spread | scoped_spread;
+spread: global_spread | scoped_spread;
 
 variable: AT ID;
 
-param returns [node]: variable | stm;
+param: variable | stm;
 
-params returns [nodes]: param (COMMA param)*;
+params: param (COMMA param)*;
 
-query returns [node]
+query
     : stm
     | exclude
     | spread
     | field_rename
 ;
 
-query_list returns [nodes]: query (COMMA query)* COMMA?;
+query_list: query (COMMA query)* COMMA?;
 
-obj_ref returns [ids]: id (DOT id)*;
+obj_ref: id (DOT id)*;
 
-field returns [node]: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
+field: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
 
-field_rename returns [node]: id COLON stm;
+field_rename: id COLON stm;
 
-normal_fn returns[node]: ID LEFT_PAREN params RIGHT_PAREN;
-map_fn returns[node]: LEFT_BRACKET ID LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
-fn returns [node]: normal_fn | map_fn;
+normal_fn: ID LEFT_PAREN params RIGHT_PAREN;
+map_fn: LEFT_BRACKET ID LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
+fn: normal_fn | map_fn;
 
-normal_client_fn returns[node]: ID EX_MARK LEFT_PAREN params RIGHT_PAREN;
-map_client_fn returns[node]: LEFT_BRACKET ID EX_MARK LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
-client_fn returns [node]: normal_client_fn | map_client_fn;
+normal_client_fn: ID EX_MARK LEFT_PAREN params RIGHT_PAREN;
+map_client_fn: LEFT_BRACKET ID EX_MARK LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
+client_fn: normal_client_fn | map_client_fn;
 
 fragment DOUBLE_QUOTE: '"';
 fragment SINGLE_QUOTE: '\'';

@@ -1,10 +1,7 @@
-// Generated from antlr4/QMap.g4 by ANTLR 4.9.3
+// Generated from /home/gbenm/code/pumkat/qmap/antlr4/QMap.g4 by ANTLR 4.9.3
 // jshint ignore: start
 import antlr4 from 'antlr4';
 import QMapListener from './QMapListener.js';
-
-import * as astn from ".."
-
 
 const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
     "\u5964\u0003\u0014\u00b2\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004",
@@ -1111,7 +1108,6 @@ class StmContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_stm;
-        this.node = null
     }
 
 	field() {
@@ -1155,7 +1151,6 @@ class ExcludeContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_exclude;
-        this.node = null
     }
 
 	EX_MARK() {
@@ -1315,7 +1310,6 @@ class SpreadContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_spread;
-        this.node = null
     }
 
 	global_spread() {
@@ -1394,7 +1388,6 @@ class ParamContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_param;
-        this.node = null
     }
 
 	variable() {
@@ -1434,7 +1427,6 @@ class ParamsContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_params;
-        this.nodes = null
     }
 
 	param = function(i) {
@@ -1489,7 +1481,6 @@ class QueryContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_query;
-        this.node = null
     }
 
 	stm() {
@@ -1537,7 +1528,6 @@ class Query_listContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_query_list;
-        this.nodes = null
     }
 
 	query = function(i) {
@@ -1592,7 +1582,6 @@ class Obj_refContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_obj_ref;
-        this.ids = null
     }
 
 	id = function(i) {
@@ -1647,7 +1636,6 @@ class FieldContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_field;
-        this.node = null
     }
 
 	obj_ref() {
@@ -1695,7 +1683,6 @@ class Field_renameContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_field_rename;
-        this.node = null
     }
 
 	id() {
@@ -1739,7 +1726,6 @@ class Normal_fnContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_normal_fn;
-        this.node = null
     }
 
 	ID() {
@@ -1787,7 +1773,6 @@ class Map_fnContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_map_fn;
-        this.node = null
     }
 
 	LEFT_BRACKET() {
@@ -1843,7 +1828,6 @@ class FnContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_fn;
-        this.node = null
     }
 
 	normal_fn() {
@@ -1883,7 +1867,6 @@ class Normal_client_fnContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_normal_client_fn;
-        this.node = null
     }
 
 	ID() {
@@ -1935,7 +1918,6 @@ class Map_client_fnContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_map_client_fn;
-        this.node = null
     }
 
 	LEFT_BRACKET() {
@@ -1995,7 +1977,6 @@ class Client_fnContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = QMapParser.RULE_client_fn;
-        this.node = null
     }
 
 	normal_client_fn() {
