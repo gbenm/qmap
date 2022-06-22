@@ -1,6 +1,6 @@
 import { ASTNode } from "./ASTNode"
 import { CompilerConfig } from "./config"
-import { Json, QueryNode, QueryType } from "./query.types"
+import { CommonNamedQueryNode, Json, QueryNode, QueryType } from "./query.types"
 import { SymbolTable } from "./SymbolTable"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,4 +85,23 @@ export function buildDefinitionsFromASTNodes ({
   })
 
   return definitions
+}
+
+export function searchQueryNode(node: CommonNamedQueryNode, path: string[]): QueryNode | undefined {
+  if (path.length === 0) {
+    return node
+  }
+
+  const [key, ...rest] = path
+  const children = node.definitions
+    .map(node => node as CommonNamedQueryNode)
+    .filter(d => d.name === key || d.alias === key)
+
+  for (const child of children) {
+    const result = searchQueryNode(child, rest)
+
+    if (result) {
+      return result
+    }
+  }
 }

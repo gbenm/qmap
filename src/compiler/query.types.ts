@@ -60,9 +60,11 @@ export interface AccessQueryNode extends CommonQueryNode {
   keys: string[]
 }
 
+export type SpreadIds = [(string | symbol)?, ...string[]]
+
 export interface SpreadQueryNode {
   type: QueryType.SPREAD
-  keys: (string | symbol)[]
+  keys: SpreadIds
   node: QueryNode
 }
 
