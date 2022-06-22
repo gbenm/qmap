@@ -1,7 +1,9 @@
 import { Nullable } from "../../utils/types"
 import { QMapContext } from "../creator/types"
 
-export type QMap = ((query: Nullable<string>, options?: Nullable<QMapOptions>) => QMapExecutors) & QMapContext
+export interface QMap extends QMapContext {
+  (query: Nullable<string>, options?: Nullable<QMapOptions>): QMapExecutors
+}
 
 export interface QMapExecutors {
   errors: unknown[] | undefined
