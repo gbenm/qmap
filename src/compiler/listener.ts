@@ -82,18 +82,14 @@ export default class QMapListener extends Listener {
     ctx.nodes = ctx.children.filter(astn => !astn.symbol).map(astn => astn.node)
   }
 
-  enterQuery(_ctx: ListenerContext): void {
-    //
+  exitQuery(ctx: ListenerContext): void {
+    ctx.node = ctx.getChild(0).node
   }
-  exitQuery(_ctx: ListenerContext): void {
-    //
+
+  exitQuery_list(ctx: ListenerContext): void {
+    ctx.nodes = ignoreTerminals(ctx.children, astn => astn.node)
   }
-  enterQuery_list(_ctx: ListenerContext): void {
-    //
-  }
-  exitQuery_list(_ctx: ListenerContext): void {
-    //
-  }
+
   enterObj_ref(_ctx: ListenerContext): void {
     //
   }
@@ -124,4 +120,8 @@ export default class QMapListener extends Listener {
   exitClient_function(_ctx: ListenerContext): void {
     //
   }
+}
+
+function ignoreTerminals(children: any[], map: (child: any) => any) {
+  return children.filter(astn => !astn.symbol).map(map)
 }

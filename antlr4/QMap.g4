@@ -27,18 +27,13 @@ param returns [node]: variable | stm;
 params returns [nodes]: param (COMMA param)*;
 
 query returns [node]
-    : stm {$node = $stm.node}
-    | exclude {$node = $exclude.node}
-    | spread {$node = $spread.node}
-    | field_rename {$node = $field_rename.node}
+    : stm
+    | exclude
+    | spread
+    | field_rename
 ;
-query_list returns [nodes]
-    : {
-    const nodes = []
-    }
-    ( query {nodes.push($query.node)} (COMMA query {nodes.push($query.node)})* COMMA?)
-    {$nodes = nodes}
-;
+
+query_list returns [nodes]: query (COMMA query)* COMMA?;
 
 obj_ref returns [ids]
     : {const ids = []}
