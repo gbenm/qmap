@@ -65,12 +65,10 @@ export default class QMapListener extends Listener {
     ctx.node = new Spread(idASTNodes.filter(astn => !astn.symbol).map(astn => astn.text))
   }
 
-  enterSpread(_ctx: ListenerContext): void {
-    //
+  exitSpread(ctx: ListenerContext): void {
+    ctx.node = ctx.getChild(0).node
   }
-  exitSpread(_ctx: ListenerContext): void {
-    //
-  }
+
   enterParam(_ctx: ListenerContext): void {
     //
   }

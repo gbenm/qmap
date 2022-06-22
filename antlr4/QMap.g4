@@ -18,10 +18,7 @@ global_spread: TRIPLE_DOT AMPERSAND id (DOT id)*;
 
 scoped_spread: TRIPLE_DOT id? (DOT id)*;
 
-spread returns [node]
-    : global_spread { $node = $global_spread.node }
-    | scoped_spread { $node = $scoped_spread.node }
-;
+spread: global_spread | scoped_spread;
 
 param returns [node]
     : AT ID { $node = new astn.Var($ID.text) }
