@@ -1,5 +1,5 @@
-import qMapLexer from "../syntax/qMapLexer"
-import qMapParser from "../syntax/qMapParser"
+import qMapLexer from "./syntax/qMapLexer"
+import qMapParser from "./syntax/qMapParser"
 import antlr from "antlr4"
 import { QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
