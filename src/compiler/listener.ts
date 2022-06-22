@@ -18,8 +18,9 @@ export interface ListenerContext {
 
 export default class QMapListener extends Listener {
   exitStart(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [query, _, queryListASTNode] = ctx.children
+    const query = ctx.getChild(0)
+    const queryListASTNode = ctx.getChild(2)
+
     if (queryListASTNode) {
       ctx.root = new Root(query.text, queryListASTNode.nodes)
     } else {
@@ -45,7 +46,7 @@ export default class QMapListener extends Listener {
   }
 
   exitStm(ctx: ListenerContext): void {
-    ctx.node = ctx.getChild(0).node
+    forwardNode(ctx)
   }
 
   exitExclude(ctx: ListenerContext): void {
@@ -54,22 +55,21 @@ export default class QMapListener extends Listener {
   }
 
   exitGlobal_spread(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_0, _1, ...idATSNodes] = ctx.children
-    const ids = idATSNodes.filter(astn => !astn.symbol).map(astn => astn.text)
+    const idNodes = ctx.children.slice(2)
+    const ids = ignoreTerminals(idNodes, astn => astn.text)
 
     ctx.node = new Spread([rootScope, ...ids])
   }
 
   exitScoped_spread(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, ...idASTNodes] = ctx.children
+    const idNodes = ctx.children.splice(1)
+    const ids = ignoreTerminals(idNodes, astn => astn.text)
 
-    ctx.node = new Spread(idASTNodes.filter(astn => !astn.symbol).map(astn => astn.text))
+    ctx.node = new Spread(ids)
   }
 
   exitSpread(ctx: ListenerContext): void {
-    ctx.node = ctx.getChild(0).node
+    forwardNode(ctx)
   }
 
   exitVariable(ctx: ListenerContext): void {
@@ -78,15 +78,15 @@ export default class QMapListener extends Listener {
   }
 
   exitParam(ctx: ListenerContext): void {
-    ctx.node = ctx.getChild(0).node
+    forwardNode(ctx)
   }
 
   exitParams(ctx: ListenerContext): void {
-    ctx.nodes = ctx.children.filter(astn => !astn.symbol).map(astn => astn.node)
+    ctx.nodes = ignoreTerminals(ctx.children, astn => astn.node)
   }
 
   exitQuery(ctx: ListenerContext): void {
-    ctx.node = ctx.getChild(0).node
+    forwardNode(ctx)
   }
 
   exitQuery_list(ctx: ListenerContext): void {
@@ -98,8 +98,8 @@ export default class QMapListener extends Listener {
   }
 
   exitField(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [objRef, _lbrace, queryList] = ctx.children
+    const objRef = ctx.getChild(0)
+    const queryList = ctx.getChild(2)
 
     if (queryList) {
       ctx.node = new Field(objRef.ids, queryList.nodes)
@@ -109,50 +109,54 @@ export default class QMapListener extends Listener {
   }
 
   exitField_rename(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [id, _colon, stm] = ctx.children
+    const id = ctx.getChild(0)
+    const stm = ctx.getChild(2)
 
     ctx.node = new Rename(id.text, stm.node)
   }
 
   exitNormal_fn(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [id, _lparen, params] = ctx.children
+    const id = ctx.getChild(0)
+    const params = ctx.getChild(2)
 
     ctx.node = new Function(id.getText(), params.nodes, false, false)
   }
 
   exitMap_fn(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_lbracket, id, _lparen, params] = ctx.children
+    const id = ctx.getChild(1)
+    const params = ctx.getChild(3)
 
     ctx.node = new Function(id.getText(), params.nodes, false, true)
   }
 
   exitFn(ctx: ListenerContext): void {
-    ctx.node = ctx.getChild(0).node
+    forwardNode(ctx)
   }
 
   exitNormal_client_fn(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [id, _exMark, _lparen, params] = ctx.children
+    const id = ctx.getChild(0)
+    const params = ctx.getChild(3)
 
     ctx.node = new Function(id.getText(), params.nodes, true, false)
   }
 
   exitMap_client_fn(ctx: ListenerContext): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_lbracket, id, _exMark, _lparen, params] = ctx.children
+    const id = ctx.getChild(1)
+    const params = ctx.getChild(4)
 
     ctx.node = new Function(id.getText(), params.nodes, true, true)
   }
 
   exitClient_fn(ctx: ListenerContext): void {
-    ctx.node = ctx.getChild(0).node
+    forwardNode(ctx)
   }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ignoreTerminals(children: any[], map: (child: any) => any) {
   return children.filter(astn => !astn.symbol).map(map)
+}
+
+function forwardNode(ctx: ListenerContext, key = "node") {
+  ctx[key] = ctx.getChild(0)[key]
 }
