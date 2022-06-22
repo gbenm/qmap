@@ -1,9 +1,11 @@
 import QMapLexer from "./syntax/QMapLexer"
 import QMapParser from "./syntax/QMapParser"
+import QMapListener from "./listener"
 import antlr from "antlr4"
 import { QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
 import { mergeObjects } from "./utils"
+import { Root } from "./astn"
 
 export * from "./ASTNode"
 export * from "./SymbolTable"
@@ -11,10 +13,15 @@ export * from "./astn"
 export * from "./query.types"
 export * from "./config"
 
-type Parser = {
+interface Parser extends QMapParser {
   buildParseTrees: boolean
   addErrorListener: (a: unknown) => void
-} & QMapParser
+  addParseListener: (l: unknown) => void
+}
+
+interface StartContext extends ReturnType<QMapParser["start"]> {
+  root: Root
+}
 
 const defaultConfig: CompilerConfig = {
   mode: "compact",
@@ -39,10 +46,11 @@ export function compile (query: string | undefined | null, config: Partial<Compi
       }
     }
   })
+  parser.addParseListener(new QMapListener())
 
   try {
-    const tree = parser.start()
-    const root = tree.root.generate(config) as RootQueryNode
+    const tree = parser.start() as StartContext
+    const root = tree.root.generate(config as CompilerConfig) as RootQueryNode
 
     root.errors = errors
 

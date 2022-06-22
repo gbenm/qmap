@@ -4,20 +4,11 @@ grammar QMap;
 import * as astn from ".."
 }
 
-start returns [root]
-    : optional_id { $root = new astn.Root($optional_id.text, null) } (LEFT_BRACE
-        (query_list {$root = new astn.Root($optional_id.text, $query_list.nodes) })?
-    RIGHT_BRACE)?
-;
+start: optional_id (LEFT_BRACE query_list? RIGHT_BRACE)?;
 
-optional_id returns [text]
-    : (id {$text = $id.text})?
-    ;
+optional_id: id?;
 
-id returns [text]
-    : ID { $text = $ID.text }
-    | STRING { $text = eval($STRING.text) }
-;
+id: ID | STRING;
 
 stm returns [node]
     : field {$node = $field.node}
