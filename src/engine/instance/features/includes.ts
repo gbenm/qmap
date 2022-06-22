@@ -1,7 +1,7 @@
-import { RootQueryNode } from "../../../compiler"
+import { RootQueryNode, QMapIndex } from "../../../compiler"
 import { Nullable } from "../../../utils/types"
 import { QMapContext, QMapQuery } from "../../creator/types"
-import { QMapIncludesOptions, QMapIndex } from "../types"
+import { QMapIncludesOptions } from "../types"
 import { findSchema } from "../utils"
 
 type IncludesContext = {

@@ -1,10 +1,10 @@
 import { ASTNode } from "./ASTNode"
 import { CompilerConfig } from "./config"
-import { CommonNamedQueryNode, Json, QueryNode, QueryType } from "./query.types"
+import { CommonNamedQueryNode, QMapIndex, QueryNode, QueryType } from "./query.types"
 import { SymbolTable } from "./SymbolTable"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getValue(obj: any, keys: string[], getter = (value: any, key: string) => value[key]): Json {
+export function getValue<R = QMapIndex>(obj: any, keys: string[], getter = (value: any, key: string) => value[key]): R {
   let value = obj
 
   keys.forEach((key) => {

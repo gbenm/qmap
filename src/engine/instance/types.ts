@@ -12,16 +12,6 @@ export interface QMapExecutors {
   includes: (path: string[], overrideOptions?: Nullable<QMapIncludesOptions>) => boolean
 }
 
-export interface QMapIndex {
-  index: {
-    [key: string]: QMapIndex
-  },
-  all: boolean
-  exclude?: {
-    [key: string]: boolean
-  }
-}
-
 export interface QMapVars {
   [key: string]: unknown
 }

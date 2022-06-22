@@ -1,5 +1,4 @@
-import { QueryNode } from "../../compiler"
-import { QMapIndex } from "../instance/types"
+import { QueryNode, QMapIndex } from "../../compiler"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type QMapFunction = (...args: any[]) => any

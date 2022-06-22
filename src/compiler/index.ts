@@ -49,7 +49,9 @@ export function compile (query: string | undefined | null, config: Partial<Compi
   return {
     type: QueryType.ROOT,
     definitions: [],
-    descriptor: {},
+    descriptor: {
+      index: {}
+    },
     errors
    }
 }

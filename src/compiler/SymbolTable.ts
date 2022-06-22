@@ -1,4 +1,4 @@
-import { Json, QueryNode } from "./query.types"
+import { QMapIndex, QueryNode } from "./query.types"
 import { getValue, mergeObjects } from "./utils"
 
 export const rootScope = Symbol("__root__")
@@ -15,7 +15,7 @@ export interface SymbolTable {
   copyIndexFrom(...path: string[]): void
   addToIndex(special: symbol): void
   addToIndex(query: string, ...queries: string[]): void
-  generateIndex(): Json
+  generateIndex(): QMapIndex
 }
 
 export type ScopeTable = {
@@ -45,7 +45,7 @@ export class SymbolTableImpl implements SymbolTable {
   private constructor (
     private stack: Scope[],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private queryDescriptor: any,
+    private queryDescriptor: QMapIndex,
     private currentPath: string[],
     private ignoreIndex: boolean
   ) {
@@ -145,7 +145,7 @@ export class SymbolTableImpl implements SymbolTable {
     return new SymbolTableImpl(this.stack, this.queryDescriptor, [...this.currentPath, name, ...path], this.ignoreIndex)
   }
 
-  generateIndex(): Json {
+  generateIndex(): QMapIndex {
     return this.queryDescriptor
   }
 

@@ -12,10 +12,17 @@ export enum QueryType {
   HIDE = "hide",
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Json = { [key: string | symbol]: any }
-
 export type QueryNode = CommonNamedQueryNode | CommonFunctionQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
+
+export interface QMapIndex {
+  index: {
+    [key: string]: QMapIndex
+  },
+  all?: boolean
+  exclude?: {
+    [key: string]: boolean
+  }
+}
 
 export interface CommonQueryNode {
   type: QueryType
@@ -83,13 +90,13 @@ export interface HideQueryNode {
   type: QueryType.HIDE
   name: string
   definitions: QueryNode[]
-  index: Json
+  index: QMapIndex
 }
 
 export interface RootQueryNode {
   type: QueryType.ROOT
   definitions: QueryNode[]
   query?: string
-  descriptor: Json
+  descriptor: QMapIndex
   errors: unknown[]
 }
