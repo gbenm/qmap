@@ -100,7 +100,8 @@ describe("includes", () => {
         id, name
       },
       family {
-        ...user
+        ...user,
+        role
       }
     }`
 
@@ -112,6 +113,8 @@ describe("includes", () => {
     expect(includes(["user", "name"])).toBe(true)
     expect(includes(["family", "id"])).toBe(true)
     expect(includes(["family", "name"])).toBe(true)
+    expect(includes(["family", "role"])).toBe(true)
+    expect(includes(["family", "any"])).toBe(false)
   })
 
   describe("schemas", () => {
