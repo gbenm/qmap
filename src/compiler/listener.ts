@@ -8,8 +8,11 @@ export interface Parser {
 
 export interface ListenerContext {
   parser: Parser
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   children: any[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getChild(index: number): any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any
 }
 
@@ -149,6 +152,7 @@ export default class QMapListener extends Listener {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ignoreTerminals(children: any[], map: (child: any) => any) {
   return children.filter(astn => !astn.symbol).map(map)
 }
