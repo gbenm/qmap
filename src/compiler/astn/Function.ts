@@ -19,7 +19,7 @@ export class Function implements ASTNode {
     private name: string,
     private args: ASTNode[],
     private clientFn: boolean,
-    private byItem: boolean = false
+    private arrayPosition?: number
   ) { }
 
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
@@ -31,7 +31,7 @@ export class Function implements ASTNode {
       name: this.name,
       alias: generateNameFromNodes(definitions),
       definitions,
-      byItem: this.byItem
+      arrayPosition: this.arrayPosition
     }
   }
 

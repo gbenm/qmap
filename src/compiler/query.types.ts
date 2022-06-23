@@ -40,7 +40,7 @@ export interface AllQueryNode {
 
 
 export interface CommonFunctionQueryNode extends CommonNamedQueryNode {
-  byItem: boolean
+  arrayPosition?: number
   alias: string
 }
 

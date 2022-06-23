@@ -71,9 +71,9 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
       break
     case QueryType.FUNCTION:
       fn = context.getFn(def.name)
-      if ((def as FunctionQueryNode).byItem) {
+      if (Number.isInteger(def["arrayPosition"])) {
         resultItem = _apply(context, def.definitions, [], target)
-        resultItem = resultItem[0].map((item) => fn(item, ...resultItem.slice(1)))
+        resultItem = resultItem[def["arrayPosition"]].map((item: unknown) => fn(...resultItem.slice(0, def["arrayPosition"]), item, ...resultItem.slice(def["arrayPosition"] + 1)))
       } else [
         resultItem = fn(..._apply(context, def.definitions, [], target))
       ]

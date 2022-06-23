@@ -95,6 +95,24 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by QMapParser#aparam.
+	enterAparam(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#aparam.
+	exitAparam(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#aparams.
+	enterAparams(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#aparams.
+	exitAparams(ctx) {
+	}
+
+
 	// Enter a parse tree produced by QMapParser#params.
 	enterParams(ctx) {
 	}

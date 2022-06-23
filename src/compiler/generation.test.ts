@@ -14,19 +14,19 @@ function checkFunctionQueryNode(node: QueryNode, {
   alias,
   consumer,
   clientFn = false,
-  byItem = false
+  arrayPosition
 }: {
   name: string,
   alias: string,
   clientFn?: boolean,
-  byItem?: boolean,
+  arrayPosition?: number,
   consumer: (definitions: QueryNode[]) => void
 }) {
   const expected = {
     type: clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
     name,
     alias,
-    byItem
+    arrayPosition
   }
 
   expect(node).toMatchObject(expected)
@@ -1136,7 +1136,7 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "students",
-        byItem: true,
+        arrayPosition: 0,
         consumer(definitions) {
           expect(definitions.length).toBe(1)
           checkSelectQueryNode(definitions[0], { name: "students" })
@@ -1284,7 +1284,7 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "students",
-        byItem: true,
+        arrayPosition: 0,
         clientFn: true,
         consumer(definitions) {
           expect(definitions.length).toBe(1)

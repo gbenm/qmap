@@ -19,7 +19,9 @@ spread: global_spread | scoped_spread;
 variable: AT ID;
 
 param: variable | stm;
+aparam: AT LEFT_BRACKET param RIGHT_BRACKET;
 
+aparams: (param (COMMA param)* COMMA)? aparam (COMMA param (COMMA param)*)?;
 params: param (COMMA param)*;
 
 query
@@ -37,11 +39,11 @@ field: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
 
 field_rename: id COLON stm;
 
-normal_fn: ID LEFT_PAREN params RIGHT_PAREN;
+normal_fn: ID LEFT_PAREN (params | aparams) RIGHT_PAREN;
 map_fn: LEFT_BRACKET ID LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
 fn: normal_fn | map_fn;
 
-normal_client_fn: ID EX_MARK LEFT_PAREN params RIGHT_PAREN;
+normal_client_fn: ID EX_MARK LEFT_PAREN (params | aparams) RIGHT_PAREN;
 map_client_fn: LEFT_BRACKET ID EX_MARK LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
 client_fn: normal_client_fn | map_client_fn;
 

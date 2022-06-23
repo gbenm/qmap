@@ -81,6 +81,20 @@ export default class QMapListener extends Listener {
     forwardNode(ctx)
   }
 
+  exitAparam(ctx: ListenerContext): void {
+    ctx.isArray = true
+    ctx.node = ctx.getChild(2).node
+  }
+
+  exitAparams(ctx: ListenerContext): void {
+    ctx.nodes = ignoreTerminals(ctx.children, (astn, i) => {
+      if (astn.isArray) {
+        ctx.arrayPosition = i
+      }
+      return astn.node
+    })
+  }
+
   exitParams(ctx: ListenerContext): void {
     ctx.nodes = ignoreTerminals(ctx.children, astn => astn.node)
   }
@@ -119,14 +133,14 @@ export default class QMapListener extends Listener {
     const id = ctx.getChild(0)
     const params = ctx.getChild(2)
 
-    ctx.node = new Function(id.getText(), params.nodes, false, false)
+    ctx.node = new Function(id.getText(), params.nodes, false, params.arrayPosition)
   }
 
   exitMap_fn(ctx: ListenerContext): void {
     const id = ctx.getChild(1)
     const params = ctx.getChild(3)
 
-    ctx.node = new Function(id.getText(), params.nodes, false, true)
+    ctx.node = new Function(id.getText(), params.nodes, false, 0)
   }
 
   exitFn(ctx: ListenerContext): void {
@@ -137,14 +151,14 @@ export default class QMapListener extends Listener {
     const id = ctx.getChild(0)
     const params = ctx.getChild(3)
 
-    ctx.node = new Function(id.getText(), params.nodes, true, false)
+    ctx.node = new Function(id.getText(), params.nodes, true, params.arrayPosition)
   }
 
   exitMap_client_fn(ctx: ListenerContext): void {
     const id = ctx.getChild(1)
     const params = ctx.getChild(4)
 
-    ctx.node = new Function(id.getText(), params.nodes, true, true)
+    ctx.node = new Function(id.getText(), params.nodes, true, 0)
   }
 
   exitClient_fn(ctx: ListenerContext): void {
@@ -153,7 +167,7 @@ export default class QMapListener extends Listener {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ignoreTerminals(children: any[], map: (child: any) => any) {
+function ignoreTerminals(children: any[], map: (child: any, i: number) => any) {
   return children.filter(astn => !astn.symbol).map(map)
 }
 
