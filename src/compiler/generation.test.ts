@@ -1144,6 +1144,80 @@ describe("functions", () => {
       })
     })
 
+    it ("enhancement by item", () => {
+      const query = `{
+        upperCase(@[students]),
+        concat(@[students], salt),
+        concat(salt, @[students]),
+        concat(salt, @[students], salt)
+      }`
+
+      const { definitions, errors } = compile(query)
+      expect(errors).toEqual([])
+
+      expect(definitions.length).toBe(4)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "students",
+        arrayPosition: 0,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], {
+            name: "students"
+          })
+        },
+      })
+
+      checkFunctionQueryNode(definitions[1], {
+        name: "concat",
+        alias: "students_salt",
+        arrayPosition: 0,
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+          checkSelectQueryNode(definitions[0], {
+            name: "students"
+          })
+          checkSelectQueryNode(definitions[1], {
+            name: "salt"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[2], {
+        name: "concat",
+        alias: "salt_students",
+        arrayPosition: 1,
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+          checkSelectQueryNode(definitions[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(definitions[1], {
+            name: "students"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[3], {
+        name: "concat",
+        alias: "salt_students_salt",
+        arrayPosition: 1,
+        consumer(definitions) {
+          expect(definitions.length).toBe(3)
+          checkSelectQueryNode(definitions[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(definitions[1], {
+            name: "students"
+          })
+          checkSelectQueryNode(definitions[2], {
+            name: "salt"
+          })
+        }
+      })
+    })
+
     it("variables", () => {
       const query = "{ take(students, @count) }"
       const { definitions } = compile(query)
@@ -1289,6 +1363,84 @@ describe("functions", () => {
         consumer(definitions) {
           expect(definitions.length).toBe(1)
           checkSelectQueryNode(definitions[0], { name: "students" })
+        }
+      })
+    })
+
+    it ("enhancement by item", () => {
+      const query = `{
+        upperCase!(@[students]),
+        concat!(@[students], salt),
+        concat!(salt, @[students]),
+        concat!(salt, @[students], salt)
+      }`
+
+      const { definitions, errors } = compile(query)
+      expect(errors).toEqual([])
+
+      expect(definitions.length).toBe(4)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "students",
+        clientFn: true,
+        arrayPosition: 0,
+        consumer(definitions) {
+          expect(definitions.length).toBe(1)
+          checkSelectQueryNode(definitions[0], {
+            name: "students"
+          })
+        },
+      })
+
+      checkFunctionQueryNode(definitions[1], {
+        name: "concat",
+        alias: "students_salt",
+        clientFn: true,
+        arrayPosition: 0,
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+          checkSelectQueryNode(definitions[0], {
+            name: "students"
+          })
+          checkSelectQueryNode(definitions[1], {
+            name: "salt"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[2], {
+        name: "concat",
+        alias: "salt_students",
+        clientFn: true,
+        arrayPosition: 1,
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+          checkSelectQueryNode(definitions[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(definitions[1], {
+            name: "students"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[3], {
+        name: "concat",
+        alias: "salt_students_salt",
+        clientFn: true,
+        arrayPosition: 1,
+        consumer(definitions) {
+          expect(definitions.length).toBe(3)
+          checkSelectQueryNode(definitions[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(definitions[1], {
+            name: "students"
+          })
+          checkSelectQueryNode(definitions[2], {
+            name: "salt"
+          })
         }
       })
     })
