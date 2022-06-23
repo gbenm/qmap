@@ -10,9 +10,10 @@ export enum QueryType {
   RENAME = "rename",
   VAR = "variable",
   HIDE = "hide",
+  PRIMITIVE = "primitive"
 }
 
-export type QueryNode = CommonNamedQueryNode | CommonFunctionQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
+export type QueryNode = PrimitiveNode | CommonNamedQueryNode | CommonFunctionQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
 
 export interface QMapIndex {
   index: {
@@ -31,6 +32,12 @@ export interface CommonQueryNode {
 }
 
 export interface CommonNamedQueryNode extends CommonQueryNode {
+  name: string
+}
+
+export interface PrimitiveNode {
+  type: QueryType.PRIMITIVE
+  val: unknown
   name: string
 }
 

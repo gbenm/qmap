@@ -16,7 +16,11 @@ scoped_spread: TRIPLE_DOT id? (DOT id)*;
 
 spread: global_spread | scoped_spread;
 
-variable: AT ID;
+primitive_val: STRING | NUMBER | BOOL;
+primitive: AT LEFT_BRACE primitive_val RIGHT_BRACE;
+exvar: AT ID;
+
+variable: exvar | primitive;
 
 param: variable | stm;
 aparam: AT LEFT_BRACKET param RIGHT_BRACKET;
@@ -69,7 +73,9 @@ AMPERSAND: '&';
 STRING: (SINGLE_QUOTE SINGLE_QUOTE_STR_CHAR*? SINGLE_QUOTE)
  | (DOUBLE_QUOTE DLOUBE_QUOTE_STR_CHAR*? DOUBLE_QUOTE);
 
-ID: ([a-zA-Z0-9_$]+);
+BOOL: 'true' | 'false';
+NUMBER: [+-]?[0-9]+('.'[0-9]+)?;
+ID: [a-zA-Z_$][a-zA-Z0-9_$]*;
 
 WS: [ \t\n\r]+ -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;

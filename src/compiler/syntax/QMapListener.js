@@ -77,6 +77,33 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by QMapParser#primitive_val.
+	enterPrimitive_val(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#primitive_val.
+	exitPrimitive_val(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#primitive.
+	enterPrimitive(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#primitive.
+	exitPrimitive(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#exvar.
+	enterExvar(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#exvar.
+	exitExvar(ctx) {
+	}
+
+
 	// Enter a parse tree produced by QMapParser#variable.
 	enterVariable(ctx) {
 	}

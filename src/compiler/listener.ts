@@ -1,4 +1,4 @@
-import { Exclude, Field, Function, Rename, Root, Spread, Var } from "./astn"
+import { Exclude, Field, Function, Primitive, Rename, Root, Spread, Var } from "./astn"
 import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
@@ -72,9 +72,22 @@ export default class QMapListener extends Listener {
     forwardNode(ctx)
   }
 
-  exitVariable(ctx: ListenerContext): void {
+  exitExvar(ctx: ListenerContext): void {
     const terminal = ctx.getChild(1)
     ctx.node = new Var(terminal.getText())
+  }
+
+  exitPrimitive_val(ctx: ListenerContext): void {
+    const terminal = ctx.getChild(0)
+    ctx.node = new Primitive(eval(terminal.getText()))
+  }
+
+  exitPrimitive(ctx: ListenerContext): void {
+    ctx.node = ctx.getChild(2).node
+  }
+
+  exitVariable(ctx: ListenerContext): void {
+    forwardNode(ctx)
   }
 
   exitParam(ctx: ListenerContext): void {

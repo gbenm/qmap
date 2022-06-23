@@ -334,7 +334,7 @@ es considerado un error.
 - Si el contenido de la llave es un arreglo, la selección es aplicada
 a los elementos.
 - Las claves sin comillas son valores que cumplen con la expresión regular
-`[a-zA-Z0-9_$]+`.
+`[a-zA-Z_$][a-zA-Z0-9_$]*`.
 - Si una clave no cumple con la expresión regular anterior, se debe declarar
 entre comillas (`""`), por ejemplo `"value 1"`.
 
