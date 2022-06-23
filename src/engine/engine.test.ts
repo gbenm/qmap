@@ -369,6 +369,9 @@ describe("apply", () => {
       },
       add(a: number, b: number) {
         return a + b
+      },
+      label(s: unknown) {
+        return `: ${s}`
       }
     }
   })
@@ -537,6 +540,28 @@ describe("apply", () => {
 
     expect(result).toEqual({
       names: ["A!", "B!", "C!"]
+    })
+  })
+
+  it ("enhancement map function", () => {
+    const { apply, errors } = qmap(`{
+      labels: concat(name, @[label(@[ids])])
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      name: "pedro",
+      ids: [1,2,3,4]
+    })
+
+    expect(result).toEqual({
+      labels: [
+        "pedro: 1",
+        "pedro: 2",
+        "pedro: 3",
+        "pedro: 4"
+      ]
     })
   })
 
