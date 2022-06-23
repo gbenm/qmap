@@ -1,4 +1,4 @@
-import { AccessQueryNode, FunctionQueryNode, QueryNode, QueryType, RenameQueryNode, RootQueryNode, VarQueryNode } from "../../../compiler"
+import { AccessQueryNode, FunctionQueryNode, PrimitiveNode, QueryNode, QueryType, RenameQueryNode, RootQueryNode, VarQueryNode } from "../../../compiler"
 import { isNullable, mergeObjects } from "../../../compiler/utils"
 import { Nullable } from "../../../utils/types"
 import { QMapContext, QMapFunction, QMapQuery } from "../../creator/types"
@@ -109,6 +109,13 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
 
       result.push(context.getVar((def as VarQueryNode).name))
     break
+    case QueryType.PRIMITIVE:
+      if (!Array.isArray(result)) {
+        throw new Error("Cannot apply primitive to non-array result")
+      }
+
+      result.push((def as PrimitiveNode).val)
+      break
   }
   return result
 }
