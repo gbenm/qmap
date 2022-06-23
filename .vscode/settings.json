@@ -6,5 +6,8 @@
         "outputDir": "../src/compiler/syntax",
         "listeners": true
     },
-    "antlr4.referencesCodeLens.enabled": false
+    "antlr4.referencesCodeLens.enabled": false,
+    "jest.autoRun": {
+      "onStartup": "all-tests"
+    }
 }

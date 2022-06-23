@@ -9,6 +9,14 @@ function mustNotHaveAlias(node: QueryNode) {
   expect(node["alias"]).toBeFalsy()
 }
 
+function checkPrimitiveNode(node: QueryNode, val: unknown) {
+  expect(node).toEqual({
+    type: QueryType.PRIMITIVE,
+    val,
+    name: typeof val
+  })
+}
+
 function checkFunctionQueryNode(node: QueryNode, {
   name,
   alias,
@@ -1462,6 +1470,34 @@ describe("functions", () => {
             name: "count"
           })
         }
+      })
+    })
+
+    it("primitive variables", () => {
+      const query = `{
+        foo(@{"text"}, @{20}, @{3.5}, @{true}, @{false})
+      }`
+
+      const { definitions, errors, descriptor } = compile(query)
+
+      expect(errors).toEqual([])
+      expect(definitions.length).toBe(1)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "foo",
+        alias: "string_number_number_boolean_boolean",
+        consumer(definitions) {
+          expect(definitions.length).toBe(5)
+          checkPrimitiveNode(definitions[0], "text")
+          checkPrimitiveNode(definitions[1], 20)
+          checkPrimitiveNode(definitions[2], 3.5)
+          checkPrimitiveNode(definitions[3], true)
+          checkPrimitiveNode(definitions[4], false)
+        }
+      })
+
+      expect(descriptor).toEqual({
+        index: {}
       })
     })
   })
