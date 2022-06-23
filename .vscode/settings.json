@@ -8,6 +8,6 @@
     },
     "antlr4.referencesCodeLens.enabled": false,
     "jest.autoRun": {
-      "onStartup": "all-tests"
+      "onStartup": ["all-tests"]
     }
 }
