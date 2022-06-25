@@ -403,6 +403,26 @@ describe("apply", () => {
     })
   })
 
+  it ("function with primitive variables", () => {
+    const { apply, errors } = qmap(`{
+      labels: concat(name, @{": "}, @[ids]),
+      values: currency(@[add(@[ids], @{10})])
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      name: "john",
+      ids: [1, 2, 3],
+    })
+
+    console.log(result)
+    expect(result).toEqual({
+      labels: ["john: 1", "john: 2", "john: 3"],
+      values: ["$11.00", "$12.00", "$13.00"]
+    })
+  })
+
   it ("nested select", () => {
     const { apply, errors } = qmap(`{
       balance,
