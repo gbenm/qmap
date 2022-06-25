@@ -121,7 +121,7 @@ function _apply(context: ExecutionContext, definitions: QueryNode[], result: any
   return result
 }
 
-export function apply(this: ApplyContext, target: any, overrideOptions?: Nullable<QMapOptions>): any {
+export function apply<R = any>(this: ApplyContext, target: any, overrideOptions?: Nullable<QMapOptions>): R {
   if (overrideOptions) {
     if (overrideOptions.schema) {
       this.schema = findSchema(this.context, overrideOptions.schema)
@@ -129,7 +129,7 @@ export function apply(this: ApplyContext, target: any, overrideOptions?: Nullabl
     if (overrideOptions.variables) {
       this.variables = mergeObjects(overrideOptions.variables, this.variables)
     }
-    return apply.call(this, target)
+    return apply.call(this, target) as R
   }
 
   const executionContext: ExecutionContext = {
