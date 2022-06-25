@@ -416,7 +416,6 @@ describe("apply", () => {
       ids: [1, 2, 3],
     })
 
-    console.log(result)
     expect(result).toEqual({
       labels: ["john: 1", "john: 2", "john: 3"],
       values: ["$11.00", "$12.00", "$13.00"]
