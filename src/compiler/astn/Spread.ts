@@ -1,4 +1,4 @@
-import { ASTNode, SymbolTable, rootScope, QueryNode, CommonNamedQueryNode, QueryType, CompilerConfig, SpreadIds } from ".."
+import { ASTNode, SymbolTable, rootScope, QueryNode, QueryType, CompilerConfig, SpreadIds, NamedQueryNode } from ".."
 import { allQuery } from "../SymbolTable"
 import { searchQueryNode } from "../utils"
 
@@ -47,7 +47,7 @@ export class Spread implements ASTNode {
       throw new Error(`Cannot find ${primaryId} in root scope`)
     }
 
-    const queryNode = searchQueryNode(node as CommonNamedQueryNode, otherIds)
+    const queryNode = searchQueryNode(node as NamedQueryNode, otherIds)
 
     if (!queryNode) {
       throw new Error(`Cannot find ${ids.join(".")} in root scope`)
@@ -65,7 +65,7 @@ export class Spread implements ASTNode {
       throw new Error(`Cannot find ${primaryId} in scope`)
     }
 
-    const queryNode = searchQueryNode(node as CommonNamedQueryNode, otherIds)
+    const queryNode = searchQueryNode(node as NamedQueryNode, otherIds)
 
     if (!queryNode) {
       throw new Error(`Cannot find ${this.ids.join(".")} in scope`)

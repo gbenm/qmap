@@ -1,4 +1,4 @@
-import { ASTNode, SymbolTable, QueryNode, CompilerConfig, QueryType } from ".."
+import { ASTNode, SymbolTable, QueryNode, CompilerConfig, QueryType, SelectQueryNode } from ".."
 import { buildDefinitionsFromASTNodes } from "../utils"
 import { Spread } from "./Spread"
 
@@ -21,7 +21,7 @@ export class Field implements ASTNode {
     }
 
     if (otherIds.length === 0) {
-      const selectNode = {
+      const selectNode: SelectQueryNode = {
         type: QueryType.SELECT,
         name: primaryId,
         definitions

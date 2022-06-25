@@ -13,7 +13,9 @@ export enum QueryType {
   PRIMITIVE = "primitive"
 }
 
-export type QueryNode = PrimitiveNode | CommonNamedQueryNode | CommonFunctionQueryNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
+export type QueryNode = PrimitiveNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
+
+export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
 export interface QMapIndex {
   index: {

@@ -1,6 +1,6 @@
 import { ASTNode } from "./ASTNode"
 import { CompilerConfig } from "./config"
-import { CommonNamedQueryNode, QMapIndex, QueryNode, QueryType } from "./query.types"
+import { NamedQueryNode, QMapIndex, QueryNode, QueryType } from "./query.types"
 import { SymbolTable } from "./SymbolTable"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,7 +78,7 @@ export function buildDefinitionsFromASTNodes ({
     if (queryNode.type == QueryType.ALL) {
       definitions.unshift(queryNode)
     } else if (queryNode.type === QueryType.SPREAD && config.mode === "compact") {
-      definitions.push(...queryNode["node"].definitions)
+      definitions.push(...queryNode.node["definitions"])
     } else {
       definitions.push(queryNode)
     }
@@ -87,14 +87,14 @@ export function buildDefinitionsFromASTNodes ({
   return definitions
 }
 
-export function searchQueryNode(node: CommonNamedQueryNode, path: string[]): QueryNode | undefined {
+export function searchQueryNode<T extends NamedQueryNode>(node: T, path: string[]): QueryNode | undefined {
   if (path.length === 0) {
     return node
   }
 
   const [key, ...rest] = path
   const children = node.definitions
-    .map(node => node as CommonNamedQueryNode)
+    .map(node => node as NamedQueryNode)
     .filter(d => d.name === key || d.alias === key)
 
   for (const child of children) {
