@@ -1,4 +1,4 @@
-import { AccessQueryNode, FunctionQueryNode, PrimitiveNode, QueryNode, QueryType, SelectQueryNode, VarQueryNode } from "../../../../compiler"
+import { AccessQueryNode, FunctionQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../../compiler"
 import { isNullable, mergeObjects } from "../../../../compiler/utils"
 import { Nullable } from "../../../../utils/types"
 import { QMapOptions } from "../../types"
