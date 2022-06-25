@@ -1,9 +1,9 @@
-import { RootQueryNode } from "../../../../compiler"
+import { QueryNode, RootQueryNode } from "../../../../compiler"
 import { Nullable } from "../../../../utils/types"
 import { QMapContext, QMapFunction, QMapQuery } from "../../../creator/types"
 import { QMapVars } from "../../types"
 
-export type ApplyContext = {
+export interface ApplyContext {
   root: RootQueryNode
   context: QMapContext
   query: Nullable<QMapQuery>
@@ -11,7 +11,14 @@ export type ApplyContext = {
   variables: Nullable<QMapVars>
 }
 
-export type ExecutionContext = {
+export interface ExecutionContext {
   getVar: (name: string) => unknown
   getFn: (name: string) => QMapFunction
+}
+
+export interface ApplyDefinitionContext<T extends QueryNode> {
+  context: ExecutionContext
+  result: any
+  def: T
+  target: any
 }

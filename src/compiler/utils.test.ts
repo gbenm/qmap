@@ -1,4 +1,4 @@
-import { CommonNamedQueryNode, QueryType } from "./query.types"
+import { CommonNamedQueryNode, QueryNode, QueryType } from "./query.types"
 import {
   getValue,
   mergeObjects,
@@ -73,20 +73,20 @@ describe("Utils", () => {
   })
 
   it("search node", () => {
-    const nameQueryNode = {
+    const nameQueryNode: QueryNode = {
       type: QueryType.SELECT,
       name: "name",
       definitions: []
     }
 
-    const familyQueryNode = {
+    const familyQueryNode: QueryNode = {
       type: QueryType.SELECT,
       name: "Family",
       alias: "family",
       definitions: []
     }
 
-    const personNode = {
+    const personNode: QueryNode = {
       type: QueryType.SELECT,
       name: "person",
       definitions: [
@@ -95,7 +95,7 @@ describe("Utils", () => {
       ]
     }
 
-    const node: CommonNamedQueryNode = {
+    const node: QueryNode = {
       type: QueryType.SELECT,
       name: "test",
       definitions: [ personNode ]
