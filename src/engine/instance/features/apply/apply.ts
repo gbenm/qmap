@@ -1,25 +1,12 @@
-import { AccessQueryNode, FunctionQueryNode, PrimitiveNode, QueryNode, QueryType, RenameQueryNode, RootQueryNode, VarQueryNode } from "../../../compiler"
-import { isNullable, mergeObjects } from "../../../compiler/utils"
-import { Nullable } from "../../../utils/types"
-import { QMapContext, QMapFunction, QMapQuery } from "../../creator/types"
-import { QMapOptions, QMapVars } from "../types"
-import { findFunction, findSchema } from "../utils"
-
-type ApplyContext = {
-  root: RootQueryNode
-  context: QMapContext
-  query: Nullable<QMapQuery>
-  schema: Nullable<QMapQuery>
-  variables: Nullable<QMapVars>
-}
-
-type ExecutionContext = {
-  getVar: (name: string) => unknown
-  getFn: (name: string) => QMapFunction
-}
+import { AccessQueryNode, FunctionQueryNode, PrimitiveNode, QueryNode, QueryType, RenameQueryNode, VarQueryNode } from "../../../../compiler"
+import { isNullable, mergeObjects } from "../../../../compiler/utils"
+import { Nullable } from "../../../../utils/types"
+import { QMapFunction } from "../../../creator/types"
+import { QMapOptions } from "../../types"
+import { findFunction, findSchema } from "../../utils"
+import { ApplyContext, ExecutionContext } from "./types"
 
 function getResultItemFromAccessNode({context, definitions, keys, target}: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: ExecutionContext, keys: string[], definitions: QueryNode[], target: any
 }) {
   if (keys.length === 0) {
@@ -39,10 +26,8 @@ function getResultItemFromAccessNode({context, definitions, keys, target}: {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function applyDefinition(context: ExecutionContext, result: any, def: QueryNode, target: any): any {
   let fn: QMapFunction
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let resultItem: any
   switch (def.type) {
     case QueryType.ACCESS:
@@ -120,7 +105,6 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
   return result
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function _apply(context: ExecutionContext, definitions: QueryNode[], result: any, target: any): any {
   if (definitions.length === 0) {
     return target ?? null
@@ -137,7 +121,6 @@ function _apply(context: ExecutionContext, definitions: QueryNode[], result: any
   return result
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function apply(this: ApplyContext, target: any, overrideOptions?: Nullable<QMapOptions>): any {
   if (overrideOptions) {
     if (overrideOptions.schema) {
@@ -164,8 +147,8 @@ export function apply(this: ApplyContext, target: any, overrideOptions?: Nullabl
     }
   }
 
-  const getApplyFn = (query) => query?  _apply.bind(null, executionContext, query.definitions) : (_, target) => target
-  const getResult = (target, apply) => Array.isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
+  const getApplyFn = (query: any) => query?  _apply.bind(null, executionContext, query.definitions) : (_, target) => target
+  const getResult = (target: any, apply: any) => Array.isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
 
   const overSchema = getResult(target, getApplyFn(this.schema))
   const overQuery = getResult(overSchema, getApplyFn(this.query))
