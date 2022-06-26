@@ -21,6 +21,7 @@ function checkFunctionQueryNode(node: QueryNode, {
   name,
   alias,
   consumer,
+  checkReturn,
   clientFn = false,
   arrayPosition
 }: {
@@ -28,7 +29,8 @@ function checkFunctionQueryNode(node: QueryNode, {
   alias: string,
   clientFn?: boolean,
   arrayPosition?: number,
-  consumer: (definitions: QueryNode[]) => void
+  consumer: (args: QueryNode[]) => void,
+  checkReturn?: (definitions: QueryNode[]) => void
 }) {
   const expected = {
     type: clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
@@ -39,6 +41,9 @@ function checkFunctionQueryNode(node: QueryNode, {
 
   expect(node).toMatchObject(expected)
   getArgs(node as FnQueryNode, consumer)
+
+  const defaultReturnChecker = (defs: QueryNode[]) => expect(defs).toEqual([])
+  getDefinitions(node, checkReturn ?? defaultReturnChecker)
 }
 
 function checkSelectQueryNode(node: QueryNode, {
@@ -97,9 +102,9 @@ function getDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) =
   consumer(node["definitions"])
 }
 
-function getArgs (node: FnQueryNode, consumer: (definitions: QueryNode[]) => void) {
-  expect(node["args"]).toBeTruthy()
-  consumer(node["args"])
+function getArgs (node: FnQueryNode, consumer: (args: QueryNode[]) => void) {
+  expect(node.args).toBeTruthy()
+  consumer(node.args)
 }
 
 function forEachDefinition(node: QueryNode, visitor: (node: QueryNode, index: number, nodes: QueryNode[]) => void) {
@@ -1036,6 +1041,58 @@ describe("spread", () => {
 })
 
 describe("functions", () => {
+  it("query", () => {
+    const query = `/*qmap*/{
+      take(products, @{3}) {
+        ...,
+        toUpperCase(name)
+      }
+    }`
+
+    const { definitions, descriptor, errors } = compile(query)
+
+    expect(errors).toEqual([])
+
+    expect(definitions.length).toBe(1)
+
+    checkFunctionQueryNode(definitions[0], {
+      name: "take",
+      alias: "products_number",
+      consumer(args) {
+        expect(args.length).toBe(2)
+        checkSelectQueryNode(args[0], {
+          name: "products",
+        })
+        checkPrimitiveNode(args[1], 3)
+      },
+      checkReturn(defs) {
+        expect(defs.length).toBe(2)
+        expect(defs[0]).toEqual({
+          type: QueryType.ALL
+        })
+        checkFunctionQueryNode(defs[1], {
+          name: "toUpperCase",
+          alias: "name",
+          consumer(args) {
+            expect(args.length).toBe(1)
+            checkSelectQueryNode(args[0], {
+              name: "name",
+            })
+          },
+        })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        products: {
+          index: {},
+          all: true
+        }
+      }
+    })
+  })
+
   describe("normal", () => {
     it("simple", () => {
       const query = "{ upperCase(name) }"
