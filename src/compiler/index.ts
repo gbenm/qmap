@@ -4,7 +4,7 @@ import QMapListener from "./listener"
 import antlr from "antlr4"
 import { QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
-import { mergeObjects } from "./utils"
+import { mergeObjects } from "../utils"
 import { Root } from "./astn"
 
 export * from "./ASTNode"

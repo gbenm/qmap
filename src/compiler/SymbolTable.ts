@@ -1,5 +1,5 @@
 import { QMapIndex, QueryNode } from "./query.types"
-import { getValue, mergeObjects } from "./utils"
+import { getValue, mergeObjects } from "../utils"
 
 export const rootScope = Symbol("__root__")
 export const allQuery = Symbol("__all__")
@@ -54,7 +54,7 @@ export class SymbolTableImpl implements SymbolTable {
 
   private getValue (path: string[]) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return getValue(this.queryDescriptor, path, (obj: any, key: string) => {
+    return getValue<QMapIndex>(this.queryDescriptor, path, (obj: any, key: string) => {
       if (!obj.index[key]) {
         obj.index[key] = {
           index: {}

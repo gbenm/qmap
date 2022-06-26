@@ -1,7 +1,7 @@
-import { QueryNode, RootQueryNode } from "../../../../compiler"
-import { Nullable } from "../../../../utils/types"
-import { QMapContext, QMapFunction, QMapQuery } from "../../../creator/types"
-import { QMapVars } from "../../types"
+import { QueryNode, RootQueryNode } from "../../../compiler"
+import { Nullable } from "../../../utils/types"
+import { QMapContext, QMapFunction, QMapQuery } from "../../creator/types"
+import { QMapVars } from "../types"
 
 export interface ApplyContext {
   root: RootQueryNode
