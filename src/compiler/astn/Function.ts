@@ -24,13 +24,14 @@ export class Function implements ASTNode {
 
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     const table = parentTable.createScope()
-    const definitions = this.args.map(arg => arg.generate(config, table))
+    const args = this.args.map(arg => arg.generate(config, table))
 
     return {
       type: this.clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
       name: this.name,
-      alias: generateNameFromNodes(definitions),
-      definitions,
+      alias: generateNameFromNodes(args),
+      args,
+      definitions: [],
       arrayPosition: this.arrayPosition
     }
   }

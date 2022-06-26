@@ -53,6 +53,7 @@ export interface AllQueryNode {
 export interface CommonFunctionQueryNode extends CommonNamedQueryNode {
   arrayPosition?: number
   alias: string
+  args: QueryNode[]
 }
 
 export interface FunctionQueryNode extends CommonFunctionQueryNode {
