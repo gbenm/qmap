@@ -146,14 +146,14 @@ export default class QMapListener extends Listener {
     const id = ctx.getChild(0)
     const params = ctx.getChild(2)
 
-    ctx.node = new Function(id.getText(), params.nodes, false, params.arrayPosition)
+    ctx.node = new Function(id.getText(), params.nodes, [], false, params.arrayPosition)
   }
 
   exitMap_fn(ctx: ListenerContext): void {
     const id = ctx.getChild(1)
     const params = ctx.getChild(3)
 
-    ctx.node = new Function(id.getText(), params.nodes, false, 0)
+    ctx.node = new Function(id.getText(), params.nodes, [], false, 0)
   }
 
   exitFn(ctx: ListenerContext): void {
@@ -164,14 +164,14 @@ export default class QMapListener extends Listener {
     const id = ctx.getChild(0)
     const params = ctx.getChild(3)
 
-    ctx.node = new Function(id.getText(), params.nodes, true, params.arrayPosition)
+    ctx.node = new Function(id.getText(), params.nodes, [], true, params.arrayPosition)
   }
 
   exitMap_client_fn(ctx: ListenerContext): void {
     const id = ctx.getChild(1)
     const params = ctx.getChild(4)
 
-    ctx.node = new Function(id.getText(), params.nodes, true, 0)
+    ctx.node = new Function(id.getText(), params.nodes, [], true, 0)
   }
 
   exitClient_fn(ctx: ListenerContext): void {

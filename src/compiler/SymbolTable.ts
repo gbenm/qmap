@@ -6,7 +6,7 @@ export const allQuery = Symbol("__all__")
 export const excludeQuery = Symbol("__exclude__")
 
 export interface SymbolTable {
-  createScope(name?: symbol): SymbolTable
+  createScope(name?: symbol, ignoreIndex?: boolean): SymbolTable
   add(name: string, value: QueryNode): void
   lookup(name: string, scope?: symbol): [QueryNode | undefined, string[]] | []
 
@@ -44,7 +44,6 @@ export class SymbolTableImpl implements SymbolTable {
 
   private constructor (
     private stack: Scope[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private queryDescriptor: QMapIndex,
     private currentPath: string[],
     private ignoreIndex: boolean
@@ -53,7 +52,6 @@ export class SymbolTableImpl implements SymbolTable {
   }
 
   private getValue (path: string[]) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return getValue<QMapIndex>(this.queryDescriptor, path, (obj: any, key: string) => {
       if (!obj.index[key]) {
         obj.index[key] = {
@@ -158,7 +156,7 @@ export class SymbolTableImpl implements SymbolTable {
     return new SymbolTableImpl(scopes, { index: {} }, [], ignoreIndex)
   }
 
-  createScope(name?: symbol): SymbolTable {
+  createScope(name?: symbol, ignoreIndex?: boolean): SymbolTable {
     const scopeName = name || generateScopeUniqueId()
     const scope = {
       name: scopeName,
@@ -167,7 +165,7 @@ export class SymbolTableImpl implements SymbolTable {
     }
     const stack = [scope, ...this.stack]
 
-    return new SymbolTableImpl(stack, this.queryDescriptor, this.currentPath, this.ignoreIndex)
+    return new SymbolTableImpl(stack, this.queryDescriptor, this.currentPath, ignoreIndex || this.ignoreIndex)
   }
 
   private _lookup(name: string, scope?: symbol): Scope | undefined {

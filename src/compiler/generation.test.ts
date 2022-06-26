@@ -1038,7 +1038,9 @@ describe("functions", () => {
   describe("normal", () => {
     it("simple", () => {
       const query = "{ upperCase(name) }"
-      const { definitions, descriptor } = compile(query)
+      const { definitions, descriptor, errors } = compile(query)
+
+      expect(errors).toEqual([])
 
       expect(definitions.length).toBe(1)
       checkFunctionQueryNode(definitions[0], {
