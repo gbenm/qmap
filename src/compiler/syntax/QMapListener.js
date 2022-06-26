@@ -41,6 +41,15 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by QMapParser#fn_stm.
+	enterFn_stm(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#fn_stm.
+	exitFn_stm(ctx) {
+	}
+
+
 	// Enter a parse tree produced by QMapParser#exclude.
 	enterExclude(ctx) {
 	}

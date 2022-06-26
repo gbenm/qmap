@@ -1,4 +1,4 @@
-import { Exclude, Field, Function, Primitive, Rename, Root, Spread, Var } from "./astn"
+import { Exclude, Field, Function as FunctionNode, Primitive, Rename, Root, Spread, Var } from "./astn"
 import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
@@ -47,6 +47,17 @@ export default class QMapListener extends Listener {
 
   exitStm(ctx: ListenerContext): void {
     forwardNode(ctx)
+  }
+
+  exitFn_stm(ctx: ListenerContext): void {
+    const fn: FunctionNode = ctx.getChild(0).node
+    const queryList = ctx.getChild(2)
+
+    if (queryList) {
+      fn.setQueryList(queryList.nodes)
+    }
+
+    ctx.node = fn
   }
 
   exitExclude(ctx: ListenerContext): void {
@@ -146,14 +157,14 @@ export default class QMapListener extends Listener {
     const id = ctx.getChild(0)
     const params = ctx.getChild(2)
 
-    ctx.node = new Function(id.getText(), params.nodes, [], false, params.arrayPosition)
+    ctx.node = new FunctionNode(id.getText(), params.nodes, [], false, params.arrayPosition)
   }
 
   exitMap_fn(ctx: ListenerContext): void {
     const id = ctx.getChild(1)
     const params = ctx.getChild(3)
 
-    ctx.node = new Function(id.getText(), params.nodes, [], false, 0)
+    ctx.node = new FunctionNode(id.getText(), params.nodes, [], false, 0)
   }
 
   exitFn(ctx: ListenerContext): void {
@@ -164,14 +175,14 @@ export default class QMapListener extends Listener {
     const id = ctx.getChild(0)
     const params = ctx.getChild(3)
 
-    ctx.node = new Function(id.getText(), params.nodes, [], true, params.arrayPosition)
+    ctx.node = new FunctionNode(id.getText(), params.nodes, [], true, params.arrayPosition)
   }
 
   exitMap_client_fn(ctx: ListenerContext): void {
     const id = ctx.getChild(1)
     const params = ctx.getChild(4)
 
-    ctx.node = new Function(id.getText(), params.nodes, [], true, 0)
+    ctx.node = new FunctionNode(id.getText(), params.nodes, [], true, 0)
   }
 
   exitClient_fn(ctx: ListenerContext): void {

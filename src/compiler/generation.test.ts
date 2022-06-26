@@ -271,8 +271,9 @@ describe("fields", () => {
     })
 
     it("with query", () => {
-      const { definitions, descriptor } = compile("{ transaction.product { name } }")
+      const { definitions, descriptor, errors } = compile("{ transaction.product { name } }")
 
+      expect(errors).toEqual([])
       expect(definitions.length).toBe(1)
 
       const selectQueryNode: SelectQueryNode = {

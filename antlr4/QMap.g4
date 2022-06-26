@@ -6,7 +6,9 @@ optional_id: id?;
 
 id: ID | STRING;
 
-stm: field | fn | client_fn;
+stm: field | fn_stm;
+
+fn_stm: (fn | client_fn) (LEFT_BRACE query_list RIGHT_BRACE)?;
 
 exclude: EX_MARK id;
 
