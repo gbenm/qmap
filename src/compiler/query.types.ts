@@ -17,6 +17,8 @@ export type QueryNode = PrimitiveNode | AllQueryNode | ExcludeQueryNode | Select
 
 export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
+export type FnQueryNode = QueryNode & CommonFunctionQueryNode
+
 export interface QMapIndex {
   index: {
     [key: string]: QMapIndex

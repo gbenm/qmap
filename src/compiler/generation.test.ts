@@ -1,5 +1,5 @@
 import { compile, QueryType } from "."
-import { AccessQueryNode, QueryNode, SelectQueryNode } from "./query.types"
+import { AccessQueryNode, FnQueryNode, QueryNode, SelectQueryNode } from "./query.types"
 
 function mustNotHaveName(node: QueryNode) {
   expect(node["name"]).toBeFalsy()
@@ -38,7 +38,7 @@ function checkFunctionQueryNode(node: QueryNode, {
   }
 
   expect(node).toMatchObject(expected)
-  getDefinitions(node, consumer)
+  getArgs(node as FnQueryNode, consumer)
 }
 
 function checkSelectQueryNode(node: QueryNode, {
@@ -95,6 +95,11 @@ function checkAccessQueryNode(node: QueryNode, {
 function getDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) => void) {
   expect(node["definitions"]).toBeTruthy()
   consumer(node["definitions"])
+}
+
+function getArgs (node: FnQueryNode, consumer: (definitions: QueryNode[]) => void) {
+  expect(node["args"]).toBeTruthy()
+  consumer(node["args"])
 }
 
 function forEachDefinition(node: QueryNode, visitor: (node: QueryNode, index: number, nodes: QueryNode[]) => void) {
@@ -1039,9 +1044,9 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "name",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "name" })
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "name" })
         }
       })
 
@@ -1060,9 +1065,9 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "person_name",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkAccessQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkAccessQueryNode(args[0], {
             keys: ["person", "name"],
           })
         }
@@ -1086,9 +1091,9 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "person",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
             name: "person",
             consumer(definitions) {
               expect(definitions.length).toBe(1)
@@ -1116,14 +1121,14 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "person",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkFunctionQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkFunctionQueryNode(args[0], {
             name: "getName",
             alias: "person",
-            consumer(definitions) {
-              expect(definitions.length).toBe(1)
-              checkSelectQueryNode(definitions[0], { name: "person" })
+            consumer(args) {
+              expect(args.length).toBe(1)
+              checkSelectQueryNode(args[0], { name: "person" })
             }
           })
         }
@@ -1145,9 +1150,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "students",
         arrayPosition: 0,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "students" })
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "students" })
         }
       })
     })
@@ -1169,9 +1174,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "students",
         arrayPosition: 0,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
             name: "students"
           })
         },
@@ -1181,12 +1186,12 @@ describe("functions", () => {
         name: "concat",
         alias: "students_salt",
         arrayPosition: 0,
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
             name: "students"
           })
-          checkSelectQueryNode(definitions[1], {
+          checkSelectQueryNode(args[1], {
             name: "salt"
           })
         }
@@ -1196,12 +1201,12 @@ describe("functions", () => {
         name: "concat",
         alias: "salt_students",
         arrayPosition: 1,
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
             name: "salt"
           })
-          checkSelectQueryNode(definitions[1], {
+          checkSelectQueryNode(args[1], {
             name: "students"
           })
         }
@@ -1211,15 +1216,15 @@ describe("functions", () => {
         name: "concat",
         alias: "salt_students_salt",
         arrayPosition: 1,
-        consumer(definitions) {
-          expect(definitions.length).toBe(3)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(3)
+          checkSelectQueryNode(args[0], {
             name: "salt"
           })
-          checkSelectQueryNode(definitions[1], {
+          checkSelectQueryNode(args[1], {
             name: "students"
           })
-          checkSelectQueryNode(definitions[2], {
+          checkSelectQueryNode(args[2], {
             name: "salt"
           })
         }
@@ -1234,10 +1239,10 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "take",
         alias: "students_count",
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], { name: "students" })
-          expect(definitions[1]).toMatchObject({
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], { name: "students" })
+          expect(args[1]).toMatchObject({
             type: QueryType.VAR,
             name: "count"
           })
@@ -1257,9 +1262,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "name",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "name" })
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "name" })
         }
       })
 
@@ -1279,9 +1284,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "person_name",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkAccessQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkAccessQueryNode(args[0], {
             keys: ["person", "name"],
           })
         }
@@ -1306,9 +1311,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "person",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
             name: "person",
             consumer(definitions) {
               expect(definitions.length).toBe(1)
@@ -1337,15 +1342,15 @@ describe("functions", () => {
         name: "upperCase",
         alias: "person",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkFunctionQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkFunctionQueryNode(args[0], {
             name: "getName",
             alias: "person",
             clientFn: true,
-            consumer(definitions) {
-              expect(definitions.length).toBe(1)
-              checkSelectQueryNode(definitions[0], { name: "person" })
+            consumer(args) {
+              expect(args.length).toBe(1)
+              checkSelectQueryNode(args[0], { name: "person" })
             }
           })
         }
@@ -1368,9 +1373,9 @@ describe("functions", () => {
         alias: "students",
         arrayPosition: 0,
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "students" })
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "students" })
         }
       })
     })
@@ -1393,9 +1398,9 @@ describe("functions", () => {
         alias: "students",
         clientFn: true,
         arrayPosition: 0,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
             name: "students"
           })
         },
@@ -1406,12 +1411,12 @@ describe("functions", () => {
         alias: "students_salt",
         clientFn: true,
         arrayPosition: 0,
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
             name: "students"
           })
-          checkSelectQueryNode(definitions[1], {
+          checkSelectQueryNode(args[1], {
             name: "salt"
           })
         }
@@ -1422,12 +1427,12 @@ describe("functions", () => {
         alias: "salt_students",
         clientFn: true,
         arrayPosition: 1,
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
             name: "salt"
           })
-          checkSelectQueryNode(definitions[1], {
+          checkSelectQueryNode(args[1], {
             name: "students"
           })
         }
@@ -1438,15 +1443,15 @@ describe("functions", () => {
         alias: "salt_students_salt",
         clientFn: true,
         arrayPosition: 1,
-        consumer(definitions) {
-          expect(definitions.length).toBe(3)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(3)
+          checkSelectQueryNode(args[0], {
             name: "salt"
           })
-          checkSelectQueryNode(definitions[1], {
+          checkSelectQueryNode(args[1], {
             name: "students"
           })
-          checkSelectQueryNode(definitions[2], {
+          checkSelectQueryNode(args[2], {
             name: "salt"
           })
         }
@@ -1462,10 +1467,10 @@ describe("functions", () => {
         name: "take",
         alias: "students_count",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], { name: "students" })
-          expect(definitions[1]).toMatchObject({
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], { name: "students" })
+          expect(args[1]).toMatchObject({
             type: QueryType.VAR,
             name: "count"
           })
@@ -1486,13 +1491,13 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "foo",
         alias: "string_number_number_boolean_boolean",
-        consumer(definitions) {
-          expect(definitions.length).toBe(5)
-          checkPrimitiveNode(definitions[0], "text")
-          checkPrimitiveNode(definitions[1], 20)
-          checkPrimitiveNode(definitions[2], 3.5)
-          checkPrimitiveNode(definitions[3], true)
-          checkPrimitiveNode(definitions[4], false)
+        consumer(args) {
+          expect(args.length).toBe(5)
+          checkPrimitiveNode(args[0], "text")
+          checkPrimitiveNode(args[1], 20)
+          checkPrimitiveNode(args[2], 3.5)
+          checkPrimitiveNode(args[3], true)
+          checkPrimitiveNode(args[4], false)
         }
       })
 
@@ -1580,9 +1585,9 @@ describe("rename", () => {
     checkFunctionQueryNode(definitions[0], {
       name: "concat",
       alias: "full_name",
-      consumer(definitions) {
-        expect(definitions.length).toBe(2)
-        const [first_name, last_name] = definitions
+      consumer(args) {
+        expect(args.length).toBe(2)
+        const [first_name, last_name] = args
         checkSelectQueryNode(first_name, { name: "fist_name" })
         checkSelectQueryNode(last_name, { name: "last_name" })
       }
@@ -1605,9 +1610,9 @@ describe("rename", () => {
       name: "concat",
       alias: "full_name",
       clientFn: true,
-      consumer(definitions) {
-        expect(definitions.length).toBe(2)
-        const [first_name, last_name] = definitions
+      consumer(args) {
+        expect(args.length).toBe(2)
+        const [first_name, last_name] = args
         checkSelectQueryNode(first_name, { name: "fist_name" })
         checkSelectQueryNode(last_name, { name: "last_name" })
       }
