@@ -158,14 +158,9 @@ function applyFunctionDefinition({ context, def, result, target }: ApplyDefiniti
 }
 
 function applySelectDefinition({ context, def, result, target }: ApplyDefinitionContext<SelectQueryNode>) {
-  let resultItem: any
   const value = target[def.name]
 
-  if(Array.isArray(value)) {
-    resultItem = value.map((item) => _apply(context, def.definitions, {}, item))
-  } else {
-    resultItem = _apply(context, def.definitions, {}, value)
-  }
+  const resultItem = applyWithNew(context, def.definitions, value)
 
   if (Array.isArray(result)) {
     result.push(resultItem)
