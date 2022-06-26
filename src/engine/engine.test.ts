@@ -372,6 +372,12 @@ describe("apply", () => {
       },
       label(s: unknown) {
         return `: ${s}`
+      },
+      addSalt(o: object) {
+        return {
+          ...o,
+          salt: "salt"
+        }
       }
     }
   })
@@ -400,6 +406,44 @@ describe("apply", () => {
       id_name: "1JOHN",
       ids_quantity: [1, 2, 3],
       ids_offset_quantity: ["$101.00", "$102.00", "$103.00"],
+    })
+  })
+
+  it ("function's return", () => {
+    const { apply, errors} = qmap(`{
+      products: take(products, @{3}) {
+        id,
+        upperCase(name)
+      },
+      provider: addSalt(provider) {
+        name,
+        upperCase(salt)
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      products: (new Array(5).fill(0)).map((_, i) => ({
+        id: i,
+        name: `product ${i}`,
+        price: 10
+      })),
+      provider: {
+        id: 1,
+        name: "Test INC",
+      }
+    })
+
+    expect(result).toEqual({
+      products: (new Array(3).fill(0)).map((_, i) => ({
+        id: i,
+        name: `PRODUCT ${i}`,
+      })),
+      provider: {
+        name: "Test INC",
+        salt: "SALT"
+      }
     })
   })
 

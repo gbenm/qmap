@@ -138,7 +138,7 @@ function applyFunctionDefinition({ context, def, result, target }: ApplyDefiniti
   const arrayPosition = def.arrayPosition as number
 
   if (Number.isInteger(arrayPosition)) {
-    resultItem = _apply(context, def.definitions, [], target)
+    resultItem = _apply(context, def.args, [], target)
 
     const firstArgs = resultItem.slice(0, arrayPosition)
     const lastArgs = resultItem.slice(arrayPosition + 1)
@@ -146,9 +146,10 @@ function applyFunctionDefinition({ context, def, result, target }: ApplyDefiniti
     resultItem = resultItem[arrayPosition]
       .map((item: unknown) => fn(...firstArgs, item, ...lastArgs))
   } else [
-    resultItem = fn(..._apply(context, def.definitions, [], target))
+    resultItem = fn(..._apply(context, def.args, [], target))
   ]
 
+  resultItem = applyWithNew(context, def.definitions, resultItem)
   if (Array.isArray(result)) {
     result.push(resultItem)
   } else {
@@ -157,18 +158,19 @@ function applyFunctionDefinition({ context, def, result, target }: ApplyDefiniti
 }
 
 function applySelectDefinition({ context, def, result, target }: ApplyDefinitionContext<SelectQueryNode>) {
-  let resultItem: any
   const value = target[def.name]
 
-  if(Array.isArray(value)) {
-    resultItem = value.map((item) => _apply(context, def.definitions, {}, item))
-  } else {
-    resultItem = _apply(context, def.definitions, {}, value)
-  }
+  const resultItem = applyWithNew(context, def.definitions, value)
 
   if (Array.isArray(result)) {
     result.push(resultItem)
   } else {
     result[def.alias ?? def.name] = resultItem
   }
+}
+
+function applyWithNew(context: ExecutionContext, definitions: QueryNode[], target: any) {
+  return Array.isArray(target)
+    ? target.map((item) => _apply(context, definitions, {}, item))
+    : _apply(context, definitions, {}, target)
 }
