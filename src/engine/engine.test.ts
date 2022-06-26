@@ -83,6 +83,30 @@ describe("includes", () => {
     expect(includes(["product", "any"])).toBe(false)
   })
 
+  it ("function's return doesn't affect index", () => {
+    const qmap = qmapCreator()
+
+    const { includes, errors } = qmap(`{
+      loadProduct(products.id, @{3}) {
+        id,
+        name,
+        provider {
+          id,
+          upperCase(name)
+        }
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    expect(includes(["products"])).toBe(true)
+    expect(includes(["products", "id"])).toBe(true)
+    expect(includes(["products", "name"])).toBe(false)
+    expect(includes(["products", "provider"])).toBe(false)
+    expect(includes(["products", "provider", "id"])).toBe(false)
+    expect(includes(["products", "provider", "name"])).toBe(false)
+  })
+
   it("exclude", () => {
     const qmap = qmapCreator()
 
