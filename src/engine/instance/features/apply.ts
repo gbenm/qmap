@@ -149,6 +149,7 @@ function applyFunctionDefinition({ context, def, result, target }: ApplyDefiniti
     resultItem = fn(..._apply(context, def.args, [], target))
   ]
 
+  resultItem = applyWithNew(context, def.definitions, resultItem)
   if (Array.isArray(result)) {
     result.push(resultItem)
   } else {
@@ -171,4 +172,10 @@ function applySelectDefinition({ context, def, result, target }: ApplyDefinition
   } else {
     result[def.alias ?? def.name] = resultItem
   }
+}
+
+function applyWithNew(context: ExecutionContext, definitions: QueryNode[], target: any) {
+  return Array.isArray(target)
+    ? target.map((item) => _apply(context, definitions, {}, item))
+    : _apply(context, definitions, {}, target)
 }
