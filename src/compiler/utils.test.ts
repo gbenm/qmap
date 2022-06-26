@@ -1,4 +1,4 @@
-import { CommonNamedQueryNode, QueryNode, QueryType } from "./query.types"
+import { QueryNode, QueryType } from "./query.types"
 import {
   getValue,
   mergeObjects,
