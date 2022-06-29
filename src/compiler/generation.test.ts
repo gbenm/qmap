@@ -1041,55 +1041,156 @@ describe("spread", () => {
 })
 
 describe("functions", () => {
-  it("query", () => {
-    const query = `/*qmap*/{
-      take(products, @{3}) {
-        ...,
-        toUpperCase(name)
-      }
-    }`
+  describe("query", () => {
+    function checkGen(definitions: QueryNode[], errors: unknown[]) {
+      expect(errors).toEqual([])
 
-    const { definitions, descriptor, errors } = compile(query)
+      expect(definitions.length).toBe(1)
 
-    expect(errors).toEqual([])
+      checkFunctionQueryNode(definitions[0], {
+        name: "take",
+        alias: "products_number",
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
+            name: "products",
+          })
+          checkPrimitiveNode(args[1], 3)
+        },
+        checkReturn(defs) {
+          expect(defs.length).toBe(2)
+          expect(defs[0]).toEqual({
+            type: QueryType.ALL
+          })
+          checkFunctionQueryNode(defs[1], {
+            name: "toUpperCase",
+            alias: "name",
+            consumer(args) {
+              expect(args.length).toBe(1)
+              checkSelectQueryNode(args[0], {
+                name: "name",
+              })
+            },
+          })
+        }
+      })
+    }
 
-    expect(definitions.length).toBe(1)
+    it ("without index", () => {
+      const query = `/*qmap*/{
+        take(products, @{3}) {
+          ...,
+          toUpperCase(name)
+        }
+      }`
 
-    checkFunctionQueryNode(definitions[0], {
-      name: "take",
-      alias: "products_number",
-      consumer(args) {
-        expect(args.length).toBe(2)
-        checkSelectQueryNode(args[0], {
-          name: "products",
-        })
-        checkPrimitiveNode(args[1], 3)
-      },
-      checkReturn(defs) {
-        expect(defs.length).toBe(2)
-        expect(defs[0]).toEqual({
-          type: QueryType.ALL
-        })
-        checkFunctionQueryNode(defs[1], {
-          name: "toUpperCase",
-          alias: "name",
-          consumer(args) {
-            expect(args.length).toBe(1)
-            checkSelectQueryNode(args[0], {
-              name: "name",
-            })
-          },
-        })
-      }
+      const { definitions, descriptor, errors } = compile(query)
+
+      checkGen(definitions, errors)
+
+      expect(descriptor).toEqual({
+        index: {
+          products: {
+            index: {},
+            all: true
+          }
+        }
+      })
     })
 
-    expect(descriptor).toEqual({
-      index: {
-        products: {
-          index: {},
-          all: true
+    it ("with implicit index", () => {
+      const query = `/*qmap*/{
+        take(products, @{3}) #{
+          ...,
+          toUpperCase(name)
         }
-      }
+      }`
+
+      const { definitions, descriptor, errors } = compile(query)
+
+      checkGen(definitions, errors)
+
+      expect(descriptor).toEqual({
+        index: {
+          products: {
+            index: {
+              name: {
+                index: {},
+                all: true
+              }
+            },
+            all: true
+          }
+        }
+      })
+    })
+
+    describe ("with explicit index", () => {
+      it ("single", () => {
+        const query = `/*qmap*/{
+          take(products, @{3}) #single {
+            ...,
+            toUpperCase(name)
+          }
+        }`
+
+        const { definitions, descriptor, errors } = compile(query)
+
+        checkGen(definitions, errors)
+
+        expect(descriptor).toEqual({
+          index: {
+            single: {
+              index: {
+                name: {
+                  index: {},
+                  all: true
+                }
+              },
+              all: true
+            },
+            products: {
+              index: {},
+              all: true
+            }
+          }
+        })
+      })
+
+      it ("multiple", () => {
+        const query = `/*qmap*/{
+          take(products, @{3}) #multiple.keys {
+            ...,
+            toUpperCase(name)
+          }
+        }`
+
+        const { definitions, descriptor, errors } = compile(query)
+
+        checkGen(definitions, errors)
+
+        expect(descriptor).toEqual({
+          index: {
+            multiple: {
+              index: {
+                keys: {
+                  index: {
+                    name: {
+                      index: {},
+                      all: true
+                    }
+                  },
+                  all: true
+                }
+              },
+            },
+            products: {
+              index: {},
+              all: true
+            }
+          }
+        })
+      })
     })
   })
 
