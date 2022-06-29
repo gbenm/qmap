@@ -1,6 +1,6 @@
 import { ASTNode } from ".."
 import { CompilerConfig } from "../config"
-import { NamedQueryNode, QueryNode, QueryType } from "../query.types"
+import { QueryNode, QueryType } from "../query.types"
 import { SymbolTable } from "../SymbolTable"
 
 function generateNameFromNodes (nodes: QueryNode[]): string {
