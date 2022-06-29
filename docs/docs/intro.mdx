@@ -1,0 +1,125 @@
+---
+sidebar_position: 1
+---
+# Intro
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+Manipule JSONs y transforme los datos a su parecer.
+
+## Características principales
+- Selección sobre los datos
+  ```javascript
+  const query = `{
+    id,
+    name
+  }` // el resultado sólo incluye "id" y "name"
+  ```
+- Acceso a campos internos (permite volver al JSON más plano)
+  ```javascript
+  const query = `{
+    product.name
+  }`
+  // el resultado { product_name: "..." }
+  ```
+- Funciones personalizadas
+  ```javascript
+  const query = `{
+    upperCase(name)
+  }` // "upperCase" debe declararse
+  ```
+- Reutilización de declaraciones
+  ```javascript
+  const query = `{
+    user {
+      id, name, age
+    },
+    doctor {
+      ...user,
+      hospital
+    }
+  }`
+  ```
+- Niveles de Acceso
+  ```javascript
+  const query = `{ name, secrect }`
+  qmap(query, {
+    schema: "master"
+  }) // el resultado final evitará que obtenga datos que no se permitan desde "master"
+  ```
+- Queries preescritas
+  ```javascript
+  const query = `compact_product {
+    id,
+    name
+  }` // se aplica "compact_product" primero
+  ```
+- Renombrar
+  ```javascript
+  const query = `{
+    product: EXTRA_LARGE_KEY
+  }`
+  ```
+- Obtener todo, pero modificando ciertas cosas
+  - No es necesario que haga una selección de todo
+  - Puede excluir cuándo se haga más sencillo esta operación
+    ```javascript
+    const query = `{
+      ...,
+      !details
+    }` // el resultado incluye "todo" excepto "details"
+    ```
+
+
+## Getting Started
+
+### Instalación
+
+<Tabs>
+  <TabItem value="npm" label="NPM">
+
+  ```bash
+  npm install @qmap/engine
+  ```
+
+  </TabItem>
+  <TabItem value="yarn" label="Yarn">
+
+  ```bash
+  yarn add @qmap/engine
+  ```
+
+  </TabItem>
+</Tabs>
+
+### Quick start
+
+- Cree una instancia de `qmap`
+  ```javascript
+  import { qmapCreator } from "@qmap/engine"
+
+  const qmap = qmapCreator()
+  ```
+- Compile la `query`
+  ```javascript
+  const query = `{
+    id, name
+  }`
+
+  const { apply } = qmap(query)
+  ```
+- Ejecute la `query`
+  ```javascript
+  const result = apply({
+    id: 1,
+    name: "qmap",
+    type: "package"
+  })
+
+  // result = { id: 1, name: "qmap" }
+  ```
+
+## Siguiente pasos
+
+- [Creación de instancias QMAP](./create-instance)
