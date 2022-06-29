@@ -43,7 +43,7 @@ debe ser un identificador válido, no es permitido utilizar
     })
     ```
 
-:::note
+:::info
 Las variables se declaran con un `@` al inicio, seguido de un identificador.
 **No** puede usar comillas `""`
 :::

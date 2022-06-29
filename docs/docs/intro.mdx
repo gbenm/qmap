@@ -9,27 +9,27 @@ import TabItem from '@theme/TabItem';
 Manipule JSONs y transforme los datos a su parecer.
 
 ## Características principales
-- Selección sobre los datos
+- [Selección](./queries/select) sobre los datos
   ```javascript
   const query = `{
     id,
     name
   }` // el resultado sólo incluye "id" y "name"
   ```
-- Acceso a campos internos (permite volver al JSON más plano)
+- [Acceso](./queries/access) a campos internos (permite volver al JSON más plano)
   ```javascript
   const query = `{
     product.name
   }`
   // el resultado { product_name: "..." }
   ```
-- Funciones personalizadas
+- [Funciones](./queries/functions) personalizadas
   ```javascript
   const query = `{
     upperCase(name)
   }` // "upperCase" debe declararse
   ```
-- Reutilización de declaraciones
+- [Reutilización](./queries/spread) de declaraciones
   ```javascript
   const query = `{
     user {
@@ -41,29 +41,29 @@ Manipule JSONs y transforme los datos a su parecer.
     }
   }`
   ```
-- Niveles de Acceso
+- Niveles de Acceso ([schemas](./create-instance#schemas))
   ```javascript
   const query = `{ name, secrect }`
   qmap(query, {
     schema: "master"
   }) // el resultado final evitará que obtenga datos que no se permitan desde "master"
   ```
-- Queries preescritas
+- [Queries](./create-instance#queries) preescritas
   ```javascript
   const query = `compact_product {
     id,
     name
   }` // se aplica "compact_product" primero
   ```
-- Renombrar
+- [Renombrar](./queries/rename)
   ```javascript
   const query = `{
     product: EXTRA_LARGE_KEY
   }`
   ```
 - Obtener todo, pero modificando ciertas cosas
-  - No es necesario que haga una selección de todo
-  - Puede excluir cuándo se haga más sencillo esta operación
+  - No es necesario que haga una selección de [todo](./queries/all)
+  - Puede [excluir](./queries/exclude) cuándo se haga más sencillo esta operación
     ```javascript
     const query = `{
       ...,
@@ -123,3 +123,5 @@ Manipule JSONs y transforme los datos a su parecer.
 ## Siguiente pasos
 
 - [Creación de instancias QMAP](./create-instance)
+- [La instancia](./instance)
+- [Queries disponibles](./category/queries)

@@ -2,9 +2,9 @@
 sidebar_position: 3
 ---
 
-# La instacia
+# La instancia
 Es devuelta por `qmapCreator` y se encarga de compilar la
-query y devolver funciones de ayudar.
+query y devolver funciones de ayuda.
 
 ## Args
 ```javascript
@@ -94,7 +94,7 @@ primero en el indice de `schemas`, luego en el de `queries`
 y por último sobre la query actual.
 :::
 
-:::info
+:::note
 La intención de esta función es que se puedan realizar
 operaciones de forma condicional, por ejemplo agregar
 un join si es necesario (ayuda a cambiar el enfoque

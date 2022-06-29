@@ -13,6 +13,7 @@ const config = {
   tagline: "JSON manipulation engine",
   url: "https://gbenm.github.io",
   baseUrl: "/qmap/",
+  trailingSlash: false,
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
@@ -42,13 +43,6 @@ const config = {
           editUrl:
             `${githubURL}/tree/main/docs/`,
         },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            `${githubURL}/tree/main/docs/`,
-        },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
@@ -72,7 +66,6 @@ const config = {
             position: "left",
             label: "Docs",
           },
-          {to: "/blog', label: 'Blog', position: 'left"},
           {
             href: githubURL,
             label: "GitHub",

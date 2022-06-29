@@ -57,7 +57,7 @@ usuario, sino en que es lo que se quiere, por lo que los
 condicionales pueden cambiar su enfoque de **"el rol tiene
 acceso a"**, a **"se van incluir en lo consultado?"**,
 la librería se encarga de filtrar la información según lo
-declarado (véase [función includes](./instance/#includes-function)).
+declarado (véase [función includes](./instance/#includes)).
 
 ```javascript
 import { qmapCreator } from "@qmap/engine"
