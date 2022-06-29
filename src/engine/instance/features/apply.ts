@@ -170,6 +170,10 @@ function applySelectDefinition({ context, def, result, target }: ApplyDefinition
 }
 
 function applyWithNew(context: ExecutionContext, definitions: QueryNode[], target: any) {
+  if (definitions.length === 0) {
+    return target
+  }
+
   return Array.isArray(target)
     ? target.map((item) => _apply(context, definitions, {}, item))
     : _apply(context, definitions, {}, target)
