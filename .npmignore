@@ -2,6 +2,7 @@
 *.ignore.*
 antlr4/
 junit/
+docs/
 src/
 .*
 *.gif
