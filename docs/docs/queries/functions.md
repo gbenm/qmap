@@ -27,10 +27,8 @@ debe ser un identificador válido, no es permitido utilizar
         upperCase(fullname(first_name, last_name)),
     }`
     ```
--   Pueden utilizar variables (los primitivos no se permiten,
-    si necesita mandar información externa, utilice variables,
-    tampoco es permitido utilizar `""` para el nombre de variables) estas
-    se mandan através de `qmap` o `apply`
+-   Pueden utilizar variables (no es permitido utilizar `""` para el nombre
+    de variables) estas se mandan através de `qmap` o `apply`
     ```typescript
     const query = `{
         take(members, @quantity)
@@ -47,6 +45,17 @@ debe ser un identificador válido, no es permitido utilizar
 Las variables se declaran con un `@` al inicio, seguido de un identificador.
 **No** puede usar comillas `""`
 :::
+
+-   Puede utilizar números, strings y booleans utilizando la notación `@{*}`
+    (únicamente es válido para las funciones).
+    ```typescript
+    const query = `{
+        take(members, @{3}),
+        parents: filterBy(members, @{"isParent"}, @{true})
+    }`
+
+    qmap(query)
+    ```
 
 -   Pueden usarse dentro de la selección, sin embargo esto limita la información
     que puede utilizar a la que existe dentro de la clave en el JSON
