@@ -8,7 +8,9 @@ id: ID | STRING;
 
 stm: field | fn_stm;
 
-fn_stm: (fn | client_fn) (LEFT_BRACE query_list RIGHT_BRACE)?;
+index_ref: HASH obj_ref?;
+fn_return: LEFT_BRACE query_list RIGHT_BRACE;
+fn_stm: (fn | client_fn) (index_ref? fn_return)?;
 
 exclude: EX_MARK id;
 
@@ -60,6 +62,7 @@ fragment DLOUBE_QUOTE_STR_CHAR: ~["]|ESCAPE|'\\'?'\r'?'\n';
 fragment SINGLE_QUOTE_STR_CHAR: ~[']|ESCAPE|'\\'?'\r'?'\n';
 
 AT: '@';
+HASH: '#';
 LEFT_BRACKET: '[';
 RIGHT_BRACKET: ']';
 LEFT_BRACE: '{';

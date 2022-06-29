@@ -49,12 +49,31 @@ export default class QMapListener extends Listener {
     forwardNode(ctx)
   }
 
+  exitIndex_ref(ctx: ListenerContext): void {
+    forwardNode(ctx, {
+      index: 1,
+      key: "ids",
+      byDefault: []
+    })
+  }
+
+  exitFn_return(ctx: ListenerContext): void {
+    forwardNode(ctx, {
+      index: 1,
+      key: "nodes"
+    })
+  }
+
   exitFn_stm(ctx: ListenerContext): void {
     const fn: FunctionNode = ctx.getChild(0).node
-    const queryList = ctx.getChild(2)
+    const indexRef = ctx.getChild(1)
+    const queryList = ctx.getChild(2) ?? indexRef
 
     if (queryList) {
       fn.setQueryList(queryList.nodes)
+      if (Array.isArray(indexRef.ids)) {
+        fn.definitionsIndexRef = indexRef.ids
+      }
     }
 
     ctx.node = fn
@@ -195,6 +214,6 @@ function ignoreTerminals(children: any[], map: (child: any, i: number) => any) {
   return children.filter(astn => !astn.symbol).map(map)
 }
 
-function forwardNode(ctx: ListenerContext, key = "node") {
-  ctx[key] = ctx.getChild(0)[key]
+function forwardNode(ctx: ListenerContext, {key = "node", index = 0, byDefault = null}: {key?: string, index?: number, byDefault?: any} = {key: "node", index: 0}) {
+  ctx[key] = ctx.getChild(index)?.[key] ?? byDefault
 }
