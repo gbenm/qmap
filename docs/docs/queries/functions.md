@@ -212,6 +212,54 @@ su función de esta manera:
 
 ```javascript
 const query = `{
+    upperCase(@[products.name])
+}`
+
+const input = {
+  products: [
+    { name: "pencil" },
+    { name: "paper" },
+  ],
+}
+
+const result = {
+  products_name: [ 'PENCIL', 'PAPER' ]
+}
+```
+
+Al encerrar el argumento que es el array en `@[]` se indica
+que se debe aplicar a cada elemento (sólo puede haber uno de estos).
+
+:::info
+Los demás argumentos deben ser valores globales, es decir,
+que estén en el scope de la clave en el JSON de entrada
+o bien ser variables. Aunque los demás valores sean
+arreglos serán tratados como argumentos únicos
+:::
+
+1. Puede utilizar la composición (se pueden componer funciones
+por elemento y normales):
+
+```javascript
+const query = `{
+    take(currency(@[ add(@[ids], offset) ]), @quantity)
+}`
+
+const input = {
+    offset: 100,
+    ids: [1, 2, 3, 4, 5],
+}
+
+const result = {
+  ids_offset_quantity: [ '$101.00', '$102.00', '$103.00' ]
+}
+```
+
+Alternativamente se puede encerrar la función en `[]` para indicar
+que es una función map.
+
+```javascript
+const query = `{
     [ upperCase(products.name) ]
 }`
 
@@ -227,31 +275,7 @@ const result = {
 }
 ```
 
-Al encerrar la función en corchetes `[]` se indica
-que se debe aplicar a cada elemento en el arreglo.
-
-1. Puede utilizar la composición (se pueden componer funciones
-por elemento y normales):
-
-```javascript
-const query = `{
-    take([ currency([ add(ids, offset) ]) ], @quantity)
-}`
-
-const input = {
-    offset: 100,
-    ids: [1, 2, 3, 4, 5],
-}
-
-const result = {
-  ids_offset_quantity: [ '$101.00', '$102.00', '$103.00' ]
-}
-```
-
 :::info
 Con la notación `[]` se asume que el primer argumento es
-array, los demás deben ser valores globales, es decir,
-que estén en el scope de la clave en el JSON de entrada
-o bien ser variables. Aunque los demás valores sean
-arreglos serán tratados como argumentos únicos.
+el array.
 :::
