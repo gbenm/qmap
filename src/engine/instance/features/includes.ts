@@ -27,11 +27,15 @@ function _includes(query: QMapQuery, target: string[]) {
     }
   }
 
+  if (descriptor?.index[key]) {
+    return true
+  }
+
   if (descriptor?.all) {
     return !descriptor?.exclude?.[key]
   }
 
-  return !!descriptor?.index[key]
+  return false
 }
 
 export function includes(this: IncludesContext, target: string[], overrideOptions?: Nullable<QMapIncludesOptions>): boolean {
