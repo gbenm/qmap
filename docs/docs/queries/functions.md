@@ -86,6 +86,124 @@ Las variables se declaran con un `@` al inicio, seguido de un identificador.
     posteriormente agregar asíncronas.
 
 
+## Retorno de la función
+Se puede modificar el retorno de una función. Puede ser
+de útilidad cuándo tiene un enfoque de optimización o
+estético.
+
+:::caution
+Las modificaciones al retorno de la función no
+afecta el [índice](../instance#includes).
+:::
+
+### Optimización
+Al ejecutar un select sobre un array este se aplica por
+cada elemento, por ejemplo si la función tiene el propósito
+de reducir la cantidad de elementos
+
+```javascript
+function execute(query) {
+    const { apply } = qmap(query)
+
+    apply(input)
+}
+
+execute(`{
+    take(products { name }, @{10})
+}`) // 214.7 ms en promedio (300,000 items)
+
+// vs
+
+execute(`{
+    take(products, @{10}) { name }
+}`) // 0.1 ms en promedio (300,000 items)
+```
+
+Esto sucede porque no es lo mismo seleccionar el "name" de 300,000
+items y tomar 10 a tomar 10 de 300,000 y seleccionar sólo el "name".
+
+### Estético
+```javascript
+const query = `{
+    take(products { name, provider { name } }, @{10})
+}`
+
+// vs
+
+const query2 = `{
+    take(products, @{10}) {
+        name,
+        provider {
+            name
+        }
+    }
+}`
+```
+
+### Forzar modificación del índice
+El problema radica en que las operaciones sobre el retorno de
+la función no afectan el [índice](../instance#includes) (el que le
+permite saber si se debe incluir la información), por lo que resulta
+incluyendo todo.
+
+Se puede activar la modificación del índice al anteponer `#` en las
+llaves (esto permite modificar el índice sobre el primer argumento
+que **debe ser** una selección o un acceso)
+
+```javascript
+const query = `{
+    take(products, @{2}) #{
+        name
+    }
+}`
+```
+
+Sin embargo lo anterior sigue incluyendo todo debido a que `products` no tiene
+cuerpo. El truco consiste en utilizar [exclude](./exclude) que aunque el cuerpo
+no incluya el objetivo a eliminar, este servirá para eliminarlo del índice.
+
+```javascript
+const query = `{
+    take(products, @{2}) #{
+        !provider
+        name
+    }
+}`
+```
+:::note
+Esto únicamente tiene sentido si se va utilizar el índice de esta selección para
+realizar una operación condicional, por ejemplo `provider` podría significar
+un join con la tabla de Proveedores si es que se usa una RDBMS
+:::
+
+#### Sobre otro índice
+Se puede colocar una ruta relativa (en el campo actual) después del `#` y antes de `{}`
+para especificar en dónde van las modificaciones del índice. De forma explicita quedaría:
+
+```javascript
+const query = `{
+    take(products, @{2}) #products {
+        !provider
+        name
+    }
+}`
+```
+
+Por ejemplo si el índice a modificar es sobre el segundo argumento:
+
+```javascript
+const query = `{
+    foo(arg1, other.place) #other.place {
+        !user,
+        name
+    }
+}`
+```
+
+Lo anterior agregaría al índice del segundo argumento el `exclude` del
+"user"
+
+
 ## Funciones map
 Por defecto las funciones toman el objeto, es decir
 que se ejecutaría una sola vez y como argumento tendría el array,
