@@ -1,4 +1,4 @@
-import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
+import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
 import { isNullable, mergeObjects } from "../../../utils"
 import { Nullable } from "../../../utils/types"
 import { QMapOptions } from "../types"
@@ -88,6 +88,9 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
       break
     case QueryType.RENAME:
       result[def.alias] = applyDefinition(context, result, def.node, target)
+      break
+    case QueryType.NEW_OBJECT:
+      applyNewObjectDefinition({ context, result, def, target })
       break
     case QueryType.SELECT:
       applySelectDefinition({ context, result, def, target })
@@ -186,6 +189,12 @@ function applySelectDefinition({ context, def, result, target }: ApplyDefinition
   } else {
     result[def.alias ?? def.name] = resultItem
   }
+}
+
+function applyNewObjectDefinition({ context, def, result, target }: ApplyDefinitionContext<NewObjectQueryNode>) {
+  const resultItem = applyWithNew(context, def.definitions, target)
+
+  result[def.alias] = resultItem
 }
 
 function applyWithNew(context: ExecutionContext, definitions: QueryNode[], target: any) {
