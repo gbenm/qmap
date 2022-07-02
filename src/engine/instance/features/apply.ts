@@ -1,4 +1,4 @@
-import { AccessQueryNode, FunctionQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
+import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
 import { isNullable, mergeObjects } from "../../../utils"
 import { Nullable } from "../../../utils/types"
 import { QMapOptions } from "../types"
@@ -28,15 +28,21 @@ export function apply<R = any>(this: ApplyContext, target: any, overrideOptions?
       }
 
       return fn
-    }
+    },
+    globalTarget: target
   }
 
-  const getApplyFn = (query: any) => query?  _apply.bind(null, executionContext, query.definitions) : (_, target) => target
+  const getApplyFn = (query: any) => query?  setupApply.bind(null, executionContext, query.definitions) : (_, target) => target
   const getResult = (target: any, apply: any) => Array.isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
 
   const overSchema = getResult(target, getApplyFn(this.schema))
   const overQuery = getResult(overSchema, getApplyFn(this.query))
   return getResult(overQuery, getApplyFn(this.root))
+}
+
+function setupApply(context: ExecutionContext, definitions: QueryNode[], result: any, target: any): any {
+  context.globalTarget = target
+  return _apply(context, definitions, result, target)
 }
 
 function getResultItemFromAccessNode({context, definitions, keys, target}: {
@@ -63,6 +69,9 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
   switch (def.type) {
     case QueryType.ACCESS:
       applyAccessDefinition({ context, result, def, target })
+      break
+    case QueryType.GLOBAL_ACCESS:
+      applyGlobalAccessDefinition({ context, result, def, target })
       break
     case QueryType.ALL:
       result = {...target}
@@ -117,7 +126,8 @@ function _apply(context: ExecutionContext, definitions: QueryNode[], result: any
 
   return result
 }
-function applyAccessDefinition({ context, def, result, target }: ApplyDefinitionContext<AccessQueryNode>) {
+
+function applyAccessDefinition({ context, def, result, target }: ApplyDefinitionContext<CommonAccessQueryNode & QueryNode>) {
   const resultItem = getResultItemFromAccessNode({
     context,
     definitions: def.definitions,
@@ -130,6 +140,15 @@ function applyAccessDefinition({ context, def, result, target }: ApplyDefinition
   } else {
     result[def.alias] = resultItem
   }
+}
+
+function applyGlobalAccessDefinition({ context, def, result }: ApplyDefinitionContext<GlobalAccessQueryNode>) {
+  applyAccessDefinition({
+    context,
+    def,
+    result,
+    target: context.globalTarget
+  })
 }
 
 function applyFunctionDefinition({ context, def, result, target }: ApplyDefinitionContext<FunctionQueryNode>) {
