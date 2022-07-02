@@ -449,115 +449,6 @@ describe("apply", () => {
     }
   })
 
-  it ("function", () => {
-    const { apply, errors } = qmap(`{
-      upperCase(name),
-      upperCase(concat(id, name)),
-      take(ids, @quantity),
-      take( [currency( [add(ids, @offset)] )], @quantity)
-    }`)
-
-    expect(errors).toBeFalsy()
-
-    const result = apply({
-      id: 1,
-      name: "John",
-      ids: [1, 2, 3, 4, 5],
-    }, { variables: {
-      quantity: 3,
-      offset: 100,
-    } })
-
-    expect(result).toEqual({
-      name: "JOHN",
-      id_name: "1JOHN",
-      ids_quantity: [1, 2, 3],
-      ids_offset_quantity: ["$101.00", "$102.00", "$103.00"],
-    })
-  })
-
-  it ("function's return", () => {
-    const { apply, errors} = qmap(`{
-      products: take(products, @{3}) {
-        id,
-        upperCase(name)
-      },
-      provider: addSalt(provider) {
-        name,
-        upperCase(salt)
-      }
-    }`)
-
-    expect(errors).toBeFalsy()
-
-    const result = apply({
-      products: (new Array(5).fill(0)).map((_, i) => ({
-        id: i,
-        name: `product ${i}`,
-        price: 10
-      })),
-      provider: {
-        id: 1,
-        name: "Test INC",
-      }
-    })
-
-    expect(result).toEqual({
-      products: (new Array(3).fill(0)).map((_, i) => ({
-        id: i,
-        name: `PRODUCT ${i}`,
-      })),
-      provider: {
-        name: "Test INC",
-        salt: "SALT"
-      }
-    })
-  })
-
-  it ("function with primitive variables", () => {
-    const { apply, errors } = qmap(`{
-      labels: concat(name, @{": "}, @[ids]),
-      values: currency(@[add(@[ids], @{10})])
-    }`)
-
-    expect(errors).toBeFalsy()
-
-    const result = apply({
-      name: "john",
-      ids: [1, 2, 3],
-    })
-
-    expect(result).toEqual({
-      labels: ["john: 1", "john: 2", "john: 3"],
-      values: ["$11.00", "$12.00", "$13.00"]
-    })
-  })
-
-  it ("function with global access", () => {
-    const input = {
-      globalID: 100,
-      product: {
-        name: "qmap"
-      }
-    }
-
-    const { apply, errors } = qmap(`{
-      product {
-        label: concat(name, &.globalID)
-      }
-    }`)
-
-    expect(errors).toBeFalsy()
-
-    const result = apply(input)
-
-    expect(result).toEqual({
-      product: {
-        label: "qmap100"
-      }
-    })
-  })
-
   it ("nested select", () => {
     const { apply, errors } = qmap(`{
       balance,
@@ -597,6 +488,22 @@ describe("apply", () => {
         { user: { id: 5, name: "john" } },
         { user: { id: 3, name: "john 2" } },
       ]
+    })
+  })
+
+  it ("rename", () => {
+    const { apply, errors } = qmap(`{
+      id: ID
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      ID: 10
+    })
+
+    expect(result).toEqual({
+      id: 10
     })
   })
 
@@ -741,6 +648,115 @@ describe("apply", () => {
         }
       },
     ])
+  })
+
+  it ("function", () => {
+    const { apply, errors } = qmap(`{
+      upperCase(name),
+      upperCase(concat(id, name)),
+      take(ids, @quantity),
+      take( [currency( [add(ids, @offset)] )], @quantity)
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      id: 1,
+      name: "John",
+      ids: [1, 2, 3, 4, 5],
+    }, { variables: {
+      quantity: 3,
+      offset: 100,
+    } })
+
+    expect(result).toEqual({
+      name: "JOHN",
+      id_name: "1JOHN",
+      ids_quantity: [1, 2, 3],
+      ids_offset_quantity: ["$101.00", "$102.00", "$103.00"],
+    })
+  })
+
+  it ("function's return", () => {
+    const { apply, errors} = qmap(`{
+      products: take(products, @{3}) {
+        id,
+        upperCase(name)
+      },
+      provider: addSalt(provider) {
+        name,
+        upperCase(salt)
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      products: (new Array(5).fill(0)).map((_, i) => ({
+        id: i,
+        name: `product ${i}`,
+        price: 10
+      })),
+      provider: {
+        id: 1,
+        name: "Test INC",
+      }
+    })
+
+    expect(result).toEqual({
+      products: (new Array(3).fill(0)).map((_, i) => ({
+        id: i,
+        name: `PRODUCT ${i}`,
+      })),
+      provider: {
+        name: "Test INC",
+        salt: "SALT"
+      }
+    })
+  })
+
+  it ("function with primitive variables", () => {
+    const { apply, errors } = qmap(`{
+      labels: concat(name, @{": "}, @[ids]),
+      values: currency(@[add(@[ids], @{10})])
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      name: "john",
+      ids: [1, 2, 3],
+    })
+
+    expect(result).toEqual({
+      labels: ["john: 1", "john: 2", "john: 3"],
+      values: ["$11.00", "$12.00", "$13.00"]
+    })
+  })
+
+  it ("function with global access", () => {
+    const input = {
+      globalID: 100,
+      product: {
+        name: "qmap"
+      }
+    }
+
+    const { apply, errors } = qmap(`{
+      product {
+        label: concat(name, &.globalID)
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply(input)
+
+    expect(result).toEqual({
+      product: {
+        label: "qmap100"
+      }
+    })
   })
 
   it ("for each - function", () => {
