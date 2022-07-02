@@ -45,6 +45,27 @@ describe("includes", () => {
     expect(includes(["name"])).toBe(false)
   })
 
+  it("new object", () => {
+    const qmap = qmapCreator()
+
+    const { includes } = qmap(`/*qmap*/{
+      transaction {
+        product: {
+          &.provider,
+          product_id,
+          product_name
+        }
+      }
+    }`)
+
+    expect(includes(["transaction"])).toBe(true)
+    expect(includes(["transaction", "product"])).toBe(false)
+    expect(includes(["transaction", "product_id"])).toBe(true)
+    expect(includes(["transaction", "product_name"])).toBe(true)
+    expect(includes(["provider"])).toBe(true)
+    expect(includes(["provider", "any"])).toBe(true)
+  })
+
   it("access", () => {
     const qmap = qmapCreator()
 
