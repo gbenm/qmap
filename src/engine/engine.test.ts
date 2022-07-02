@@ -48,7 +48,7 @@ describe("includes", () => {
   it("new object", () => {
     const qmap = qmapCreator()
 
-    const { includes } = qmap(`/*qmap*/{
+    const { includes } = qmap(`{
       transaction {
         product: {
           &.provider,
