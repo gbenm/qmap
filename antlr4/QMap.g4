@@ -37,6 +37,7 @@ query
     | exclude
     | spread
     | field_rename
+    | new_object
 ;
 
 query_list: query (COMMA query)* COMMA?;
@@ -47,6 +48,7 @@ field_scoped: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
 field_global: AMPERSAND DOT field_scoped;
 field: field_global | field_scoped;
 
+new_object: id COLON LEFT_BRACE query_list RIGHT_BRACE;
 field_rename: id COLON stm;
 
 normal_fn: ID LEFT_PAREN (params | aparams) RIGHT_PAREN;

@@ -230,6 +230,15 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by QMapParser#new_object.
+	enterNew_object(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#new_object.
+	exitNew_object(ctx) {
+	}
+
+
 	// Enter a parse tree produced by QMapParser#field_rename.
 	enterField_rename(ctx) {
 	}

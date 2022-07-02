@@ -1,6 +1,7 @@
 export enum QueryType {
   ROOT = "root",
   SELECT = "select",
+  NEW_OBJECT = "new-object",
   FUNCTION = "function",
   CLIENT_FUNCTION = "client_function",
   ACCESS = "access",
@@ -14,7 +15,20 @@ export enum QueryType {
   PRIMITIVE = "primitive"
 }
 
-export type QueryNode = PrimitiveNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | GlobalAccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
+export type QueryNode = PrimitiveNode
+  | AllQueryNode
+  | ExcludeQueryNode
+  | SelectQueryNode
+  | FunctionQueryNode
+  | ClientFunctionQueryNode
+  | AccessQueryNode
+  | GlobalAccessQueryNode
+  | RootQueryNode
+  | SpreadQueryNode
+  | RenameQueryNode
+  | VarQueryNode
+  | HideQueryNode
+  | NewObjectQueryNode
 
 export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
@@ -72,6 +86,11 @@ export interface ExcludeQueryNode {
 
 export interface SelectQueryNode extends CommonNamedQueryNode {
   type: QueryType.SELECT
+}
+
+export interface NewObjectQueryNode extends CommonQueryNode {
+  type: QueryType.NEW_OBJECT
+  alias: string
 }
 
 export interface CommonAccessQueryNode extends CommonQueryNode {

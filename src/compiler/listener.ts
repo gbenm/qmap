@@ -1,4 +1,4 @@
-import { Exclude, Field, Function as FunctionNode, Primitive, Rename, Root, Spread, Var } from "./astn"
+import { Exclude, Field, Function as FunctionNode, NewObject, Primitive, Rename, Root, Spread, Var } from "./astn"
 import { rootScope } from "./SymbolTable"
 import Listener from "./syntax/QMapListener"
 
@@ -177,6 +177,13 @@ export default class QMapListener extends Listener {
 
   exitField(ctx: ListenerContext): void {
     forwardNode(ctx)
+  }
+
+  exitNew_object(ctx: ListenerContext): void {
+    const name = ctx.getChild(0).text
+    const nodes = ctx.getChild(3).nodes
+
+    ctx.node = new NewObject(name, nodes)
   }
 
   exitField_rename(ctx: ListenerContext): void {
