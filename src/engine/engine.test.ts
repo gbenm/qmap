@@ -512,6 +512,31 @@ describe("apply", () => {
     })
   })
 
+  it ("function with global access", () => {
+    const input = {
+      globalID: 100,
+      product: {
+        name: "qmap"
+      }
+    }
+
+    const { apply, errors } = qmap(`{
+      product {
+        label: concat(name, &.globalID)
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply(input)
+
+    expect(result).toEqual({
+      product: {
+        label: "qmap100"
+      }
+    })
+  })
+
   it ("nested select", () => {
     const { apply, errors } = qmap(`{
       balance,
