@@ -76,10 +76,11 @@ function checkSelectQueryNode(node: QueryNode, {
 function checkAccessQueryNode(node: QueryNode, {
   keys,
   alias,
+  isGlobal = false,
   consumer
-}: { keys: string[], alias?: string, consumer?: (definitions: QueryNode[]) => void }) {
+}: { keys: string[], alias?: string, isGlobal?: boolean, consumer?: (definitions: QueryNode[]) => void }) {
   const expected = {
-    type: QueryType.ACCESS,
+    type: isGlobal? QueryType.GLOBAL_ACCESS : QueryType.ACCESS,
     alias: alias || keys.join("_"),
     keys,
   }
@@ -425,6 +426,55 @@ describe("fields", () => {
                 email: { index: {} }
               }
             }
+          }
+        }
+      })
+    })
+
+    it("global", () => {
+      const query = `/*qmap*/{
+        product {
+          id: &.product_id,
+          name: &.product_name
+        }
+      }`
+
+      const { descriptor, definitions, errors } = compile(query)
+
+      expect(errors).toEqual([])
+
+      expect(definitions.length).toBe(1)
+      checkSelectQueryNode(definitions[0], {
+        name: "product",
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+
+          checkAccessQueryNode(definitions[0], {
+            keys: ["product_id"],
+            alias: "id",
+            isGlobal: true
+          })
+
+          checkAccessQueryNode(definitions[1], {
+            keys: ["product_name"],
+            alias: "name",
+            isGlobal: true
+          })
+        }
+      })
+
+      expect(descriptor).toEqual({
+        index: {
+          product: {
+            index: {},
+          },
+          product_id: {
+            index: {},
+            all: true
+          },
+          product_name: {
+            index: {},
+            all: true
           }
         }
       })
