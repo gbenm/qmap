@@ -4,7 +4,7 @@ import antlr4 from 'antlr4';
 import QMapListener from './QMapListener.js';
 
 const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
-    "\u5964\u0003\u0017\u0101\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004",
+    "\u5964\u0003\u0017\u0104\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004",
     "\u0004\t\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t",
     "\u0007\u0004\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004",
     "\f\t\f\u0004\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010",
@@ -18,152 +18,154 @@ const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
     "N\n\u0005\u0003\u0006\u0003\u0006\u0005\u0006R\n\u0006\u0003\u0007\u0003",
     "\u0007\u0003\u0007\u0003\u0007\u0003\b\u0003\b\u0005\bZ\n\b\u0003\b",
     "\u0005\b]\n\b\u0003\b\u0005\b`\n\b\u0003\t\u0003\t\u0003\t\u0003\n\u0003",
-    "\n\u0003\n\u0003\n\u0003\n\u0007\nj\n\n\f\n\u000e\nm\u000b\n\u0003\u000b",
-    "\u0003\u000b\u0005\u000bq\n\u000b\u0003\u000b\u0003\u000b\u0007\u000b",
-    "u\n\u000b\f\u000b\u000e\u000bx\u000b\u000b\u0003\f\u0003\f\u0005\f|",
-    "\n\f\u0003\r\u0003\r\u0003\u000e\u0003\u000e\u0003\u000e\u0003\u000e",
-    "\u0003\u000e\u0003\u000f\u0003\u000f\u0003\u000f\u0003\u0010\u0003\u0010",
-    "\u0005\u0010\u008a\n\u0010\u0003\u0011\u0003\u0011\u0005\u0011\u008e",
-    "\n\u0011\u0003\u0012\u0003\u0012\u0003\u0012\u0003\u0012\u0003\u0012",
-    "\u0003\u0013\u0003\u0013\u0003\u0013\u0007\u0013\u0098\n\u0013\f\u0013",
-    "\u000e\u0013\u009b\u000b\u0013\u0003\u0013\u0003\u0013\u0005\u0013\u009f",
-    "\n\u0013\u0003\u0013\u0003\u0013\u0003\u0013\u0003\u0013\u0003\u0013",
-    "\u0007\u0013\u00a6\n\u0013\f\u0013\u000e\u0013\u00a9\u000b\u0013\u0005",
-    "\u0013\u00ab\n\u0013\u0003\u0014\u0003\u0014\u0003\u0014\u0007\u0014",
-    "\u00b0\n\u0014\f\u0014\u000e\u0014\u00b3\u000b\u0014\u0003\u0015\u0003",
-    "\u0015\u0003\u0015\u0003\u0015\u0005\u0015\u00b9\n\u0015\u0003\u0016",
-    "\u0003\u0016\u0003\u0016\u0007\u0016\u00be\n\u0016\f\u0016\u000e\u0016",
-    "\u00c1\u000b\u0016\u0003\u0016\u0005\u0016\u00c4\n\u0016\u0003\u0017",
-    "\u0003\u0017\u0003\u0017\u0007\u0017\u00c9\n\u0017\f\u0017\u000e\u0017",
-    "\u00cc\u000b\u0017\u0003\u0018\u0003\u0018\u0003\u0018\u0003\u0018\u0003",
-    "\u0018\u0005\u0018\u00d3\n\u0018\u0003\u0019\u0003\u0019\u0003\u0019",
-    "\u0003\u0019\u0003\u001a\u0003\u001a\u0003\u001a\u0003\u001a\u0005\u001a",
-    "\u00dd\n\u001a\u0003\u001a\u0003\u001a\u0003\u001b\u0003\u001b\u0003",
-    "\u001b\u0003\u001b\u0003\u001b\u0003\u001b\u0003\u001b\u0003\u001c\u0003",
-    "\u001c\u0005\u001c\u00ea\n\u001c\u0003\u001d\u0003\u001d\u0003\u001d",
-    "\u0003\u001d\u0003\u001d\u0005\u001d\u00f1\n\u001d\u0003\u001d\u0003",
-    "\u001d\u0003\u001e\u0003\u001e\u0003\u001e\u0003\u001e\u0003\u001e\u0003",
-    "\u001e\u0003\u001e\u0003\u001e\u0003\u001f\u0003\u001f\u0005\u001f\u00ff",
-    "\n\u001f\u0003\u001f\u0002\u0002 \u0002\u0004\u0006\b\n\f\u000e\u0010",
-    "\u0012\u0014\u0016\u0018\u001a\u001c\u001e \"$&(*,.02468:<\u0002\u0004",
-    "\u0004\u0002\u0011\u0011\u0014\u0014\u0003\u0002\u0011\u0013\u0002\u0100",
-    "\u0002>\u0003\u0002\u0002\u0002\u0004G\u0003\u0002\u0002\u0002\u0006",
-    "I\u0003\u0002\u0002\u0002\bM\u0003\u0002\u0002\u0002\nO\u0003\u0002",
-    "\u0002\u0002\fS\u0003\u0002\u0002\u0002\u000eY\u0003\u0002\u0002\u0002",
-    "\u0010a\u0003\u0002\u0002\u0002\u0012d\u0003\u0002\u0002\u0002\u0014",
-    "n\u0003\u0002\u0002\u0002\u0016{\u0003\u0002\u0002\u0002\u0018}\u0003",
-    "\u0002\u0002\u0002\u001a\u007f\u0003\u0002\u0002\u0002\u001c\u0084\u0003",
-    "\u0002\u0002\u0002\u001e\u0089\u0003\u0002\u0002\u0002 \u008d\u0003",
-    "\u0002\u0002\u0002\"\u008f\u0003\u0002\u0002\u0002$\u009e\u0003\u0002",
-    "\u0002\u0002&\u00ac\u0003\u0002\u0002\u0002(\u00b8\u0003\u0002\u0002",
-    "\u0002*\u00ba\u0003\u0002\u0002\u0002,\u00c5\u0003\u0002\u0002\u0002",
-    ".\u00cd\u0003\u0002\u0002\u00020\u00d4\u0003\u0002\u0002\u00022\u00d8",
-    "\u0003\u0002\u0002\u00024\u00e0\u0003\u0002\u0002\u00026\u00e9\u0003",
-    "\u0002\u0002\u00028\u00eb\u0003\u0002\u0002\u0002:\u00f4\u0003\u0002",
-    "\u0002\u0002<\u00fe\u0003\u0002\u0002\u0002>D\u0005\u0004\u0003\u0002",
-    "?A\u0007\u0007\u0002\u0002@B\u0005*\u0016\u0002A@\u0003\u0002\u0002",
-    "\u0002AB\u0003\u0002\u0002\u0002BC\u0003\u0002\u0002\u0002CE\u0007\b",
-    "\u0002\u0002D?\u0003\u0002\u0002\u0002DE\u0003\u0002\u0002\u0002E\u0003",
-    "\u0003\u0002\u0002\u0002FH\u0005\u0006\u0004\u0002GF\u0003\u0002\u0002",
-    "\u0002GH\u0003\u0002\u0002\u0002H\u0005\u0003\u0002\u0002\u0002IJ\t",
-    "\u0002\u0002\u0002J\u0007\u0003\u0002\u0002\u0002KN\u0005.\u0018\u0002",
-    "LN\u0005\u000e\b\u0002MK\u0003\u0002\u0002\u0002ML\u0003\u0002\u0002",
-    "\u0002N\t\u0003\u0002\u0002\u0002OQ\u0007\u0004\u0002\u0002PR\u0005",
-    ",\u0017\u0002QP\u0003\u0002\u0002\u0002QR\u0003\u0002\u0002\u0002R\u000b",
-    "\u0003\u0002\u0002\u0002ST\u0007\u0007\u0002\u0002TU\u0005*\u0016\u0002",
-    "UV\u0007\b\u0002\u0002V\r\u0003\u0002\u0002\u0002WZ\u00056\u001c\u0002",
-    "XZ\u0005<\u001f\u0002YW\u0003\u0002\u0002\u0002YX\u0003\u0002\u0002",
-    "\u0002Z_\u0003\u0002\u0002\u0002[]\u0005\n\u0006\u0002\\[\u0003\u0002",
-    "\u0002\u0002\\]\u0003\u0002\u0002\u0002]^\u0003\u0002\u0002\u0002^`",
-    "\u0005\f\u0007\u0002_\\\u0003\u0002\u0002\u0002_`\u0003\u0002\u0002",
-    "\u0002`\u000f\u0003\u0002\u0002\u0002ab\u0007\t\u0002\u0002bc\u0005",
-    "\u0006\u0004\u0002c\u0011\u0003\u0002\u0002\u0002de\u0007\f\u0002\u0002",
-    "ef\u0007\u0010\u0002\u0002fk\u0005\u0006\u0004\u0002gh\u0007\r\u0002",
-    "\u0002hj\u0005\u0006\u0004\u0002ig\u0003\u0002\u0002\u0002jm\u0003\u0002",
-    "\u0002\u0002ki\u0003\u0002\u0002\u0002kl\u0003\u0002\u0002\u0002l\u0013",
-    "\u0003\u0002\u0002\u0002mk\u0003\u0002\u0002\u0002np\u0007\f\u0002\u0002",
-    "oq\u0005\u0006\u0004\u0002po\u0003\u0002\u0002\u0002pq\u0003\u0002\u0002",
-    "\u0002qv\u0003\u0002\u0002\u0002rs\u0007\r\u0002\u0002su\u0005\u0006",
-    "\u0004\u0002tr\u0003\u0002\u0002\u0002ux\u0003\u0002\u0002\u0002vt\u0003",
-    "\u0002\u0002\u0002vw\u0003\u0002\u0002\u0002w\u0015\u0003\u0002\u0002",
-    "\u0002xv\u0003\u0002\u0002\u0002y|\u0005\u0012\n\u0002z|\u0005\u0014",
-    "\u000b\u0002{y\u0003\u0002\u0002\u0002{z\u0003\u0002\u0002\u0002|\u0017",
-    "\u0003\u0002\u0002\u0002}~\t\u0003\u0002\u0002~\u0019\u0003\u0002\u0002",
-    "\u0002\u007f\u0080\u0007\u0003\u0002\u0002\u0080\u0081\u0007\u0007\u0002",
-    "\u0002\u0081\u0082\u0005\u0018\r\u0002\u0082\u0083\u0007\b\u0002\u0002",
-    "\u0083\u001b\u0003\u0002\u0002\u0002\u0084\u0085\u0007\u0003\u0002\u0002",
-    "\u0085\u0086\u0007\u0014\u0002\u0002\u0086\u001d\u0003\u0002\u0002\u0002",
-    "\u0087\u008a\u0005\u001c\u000f\u0002\u0088\u008a\u0005\u001a\u000e\u0002",
-    "\u0089\u0087\u0003\u0002\u0002\u0002\u0089\u0088\u0003\u0002\u0002\u0002",
-    "\u008a\u001f\u0003\u0002\u0002\u0002\u008b\u008e\u0005\u001e\u0010\u0002",
-    "\u008c\u008e\u0005\b\u0005\u0002\u008d\u008b\u0003\u0002\u0002\u0002",
-    "\u008d\u008c\u0003\u0002\u0002\u0002\u008e!\u0003\u0002\u0002\u0002",
-    "\u008f\u0090\u0007\u0003\u0002\u0002\u0090\u0091\u0007\u0005\u0002\u0002",
-    "\u0091\u0092\u0005 \u0011\u0002\u0092\u0093\u0007\u0006\u0002\u0002",
-    "\u0093#\u0003\u0002\u0002\u0002\u0094\u0099\u0005 \u0011\u0002\u0095",
-    "\u0096\u0007\u000b\u0002\u0002\u0096\u0098\u0005 \u0011\u0002\u0097",
-    "\u0095\u0003\u0002\u0002\u0002\u0098\u009b\u0003\u0002\u0002\u0002\u0099",
-    "\u0097\u0003\u0002\u0002\u0002\u0099\u009a\u0003\u0002\u0002\u0002\u009a",
-    "\u009c\u0003\u0002\u0002\u0002\u009b\u0099\u0003\u0002\u0002\u0002\u009c",
-    "\u009d\u0007\u000b\u0002\u0002\u009d\u009f\u0003\u0002\u0002\u0002\u009e",
-    "\u0094\u0003\u0002\u0002\u0002\u009e\u009f\u0003\u0002\u0002\u0002\u009f",
-    "\u00a0\u0003\u0002\u0002\u0002\u00a0\u00aa\u0005\"\u0012\u0002\u00a1",
-    "\u00a2\u0007\u000b\u0002\u0002\u00a2\u00a7\u0005 \u0011\u0002\u00a3",
-    "\u00a4\u0007\u000b\u0002\u0002\u00a4\u00a6\u0005 \u0011\u0002\u00a5",
-    "\u00a3\u0003\u0002\u0002\u0002\u00a6\u00a9\u0003\u0002\u0002\u0002\u00a7",
-    "\u00a5\u0003\u0002\u0002\u0002\u00a7\u00a8\u0003\u0002\u0002\u0002\u00a8",
-    "\u00ab\u0003\u0002\u0002\u0002\u00a9\u00a7\u0003\u0002\u0002\u0002\u00aa",
-    "\u00a1\u0003\u0002\u0002\u0002\u00aa\u00ab\u0003\u0002\u0002\u0002\u00ab",
-    "%\u0003\u0002\u0002\u0002\u00ac\u00b1\u0005 \u0011\u0002\u00ad\u00ae",
-    "\u0007\u000b\u0002\u0002\u00ae\u00b0\u0005 \u0011\u0002\u00af\u00ad",
-    "\u0003\u0002\u0002\u0002\u00b0\u00b3\u0003\u0002\u0002\u0002\u00b1\u00af",
-    "\u0003\u0002\u0002\u0002\u00b1\u00b2\u0003\u0002\u0002\u0002\u00b2\'",
-    "\u0003\u0002\u0002\u0002\u00b3\u00b1\u0003\u0002\u0002\u0002\u00b4\u00b9",
-    "\u0005\b\u0005\u0002\u00b5\u00b9\u0005\u0010\t\u0002\u00b6\u00b9\u0005",
-    "\u0016\f\u0002\u00b7\u00b9\u00050\u0019\u0002\u00b8\u00b4\u0003\u0002",
-    "\u0002\u0002\u00b8\u00b5\u0003\u0002\u0002\u0002\u00b8\u00b6\u0003\u0002",
-    "\u0002\u0002\u00b8\u00b7\u0003\u0002\u0002\u0002\u00b9)\u0003\u0002",
-    "\u0002\u0002\u00ba\u00bf\u0005(\u0015\u0002\u00bb\u00bc\u0007\u000b",
-    "\u0002\u0002\u00bc\u00be\u0005(\u0015\u0002\u00bd\u00bb\u0003\u0002",
-    "\u0002\u0002\u00be\u00c1\u0003\u0002\u0002\u0002\u00bf\u00bd\u0003\u0002",
-    "\u0002\u0002\u00bf\u00c0\u0003\u0002\u0002\u0002\u00c0\u00c3\u0003\u0002",
-    "\u0002\u0002\u00c1\u00bf\u0003\u0002\u0002\u0002\u00c2\u00c4\u0007\u000b",
-    "\u0002\u0002\u00c3\u00c2\u0003\u0002\u0002\u0002\u00c3\u00c4\u0003\u0002",
-    "\u0002\u0002\u00c4+\u0003\u0002\u0002\u0002\u00c5\u00ca\u0005\u0006",
-    "\u0004\u0002\u00c6\u00c7\u0007\r\u0002\u0002\u00c7\u00c9\u0005\u0006",
-    "\u0004\u0002\u00c8\u00c6\u0003\u0002\u0002\u0002\u00c9\u00cc\u0003\u0002",
-    "\u0002\u0002\u00ca\u00c8\u0003\u0002\u0002\u0002\u00ca\u00cb\u0003\u0002",
-    "\u0002\u0002\u00cb-\u0003\u0002\u0002\u0002\u00cc\u00ca\u0003\u0002",
-    "\u0002\u0002\u00cd\u00d2\u0005,\u0017\u0002\u00ce\u00cf\u0007\u0007",
-    "\u0002\u0002\u00cf\u00d0\u0005*\u0016\u0002\u00d0\u00d1\u0007\b\u0002",
-    "\u0002\u00d1\u00d3\u0003\u0002\u0002\u0002\u00d2\u00ce\u0003\u0002\u0002",
-    "\u0002\u00d2\u00d3\u0003\u0002\u0002\u0002\u00d3/\u0003\u0002\u0002",
-    "\u0002\u00d4\u00d5\u0005\u0006\u0004\u0002\u00d5\u00d6\u0007\n\u0002",
-    "\u0002\u00d6\u00d7\u0005\b\u0005\u0002\u00d71\u0003\u0002\u0002\u0002",
-    "\u00d8\u00d9\u0007\u0014\u0002\u0002\u00d9\u00dc\u0007\u000e\u0002\u0002",
-    "\u00da\u00dd\u0005&\u0014\u0002\u00db\u00dd\u0005$\u0013\u0002\u00dc",
-    "\u00da\u0003\u0002\u0002\u0002\u00dc\u00db\u0003\u0002\u0002\u0002\u00dd",
-    "\u00de\u0003\u0002\u0002\u0002\u00de\u00df\u0007\u000f\u0002\u0002\u00df",
-    "3\u0003\u0002\u0002\u0002\u00e0\u00e1\u0007\u0005\u0002\u0002\u00e1",
-    "\u00e2\u0007\u0014\u0002\u0002\u00e2\u00e3\u0007\u000e\u0002\u0002\u00e3",
-    "\u00e4\u0005&\u0014\u0002\u00e4\u00e5\u0007\u000f\u0002\u0002\u00e5",
-    "\u00e6\u0007\u0006\u0002\u0002\u00e65\u0003\u0002\u0002\u0002\u00e7",
-    "\u00ea\u00052\u001a\u0002\u00e8\u00ea\u00054\u001b\u0002\u00e9\u00e7",
-    "\u0003\u0002\u0002\u0002\u00e9\u00e8\u0003\u0002\u0002\u0002\u00ea7",
-    "\u0003\u0002\u0002\u0002\u00eb\u00ec\u0007\u0014\u0002\u0002\u00ec\u00ed",
-    "\u0007\t\u0002\u0002\u00ed\u00f0\u0007\u000e\u0002\u0002\u00ee\u00f1",
-    "\u0005&\u0014\u0002\u00ef\u00f1\u0005$\u0013\u0002\u00f0\u00ee\u0003",
-    "\u0002\u0002\u0002\u00f0\u00ef\u0003\u0002\u0002\u0002\u00f1\u00f2\u0003",
-    "\u0002\u0002\u0002\u00f2\u00f3\u0007\u000f\u0002\u0002\u00f39\u0003",
-    "\u0002\u0002\u0002\u00f4\u00f5\u0007\u0005\u0002\u0002\u00f5\u00f6\u0007",
-    "\u0014\u0002\u0002\u00f6\u00f7\u0007\t\u0002\u0002\u00f7\u00f8\u0007",
-    "\u000e\u0002\u0002\u00f8\u00f9\u0005&\u0014\u0002\u00f9\u00fa\u0007",
-    "\u000f\u0002\u0002\u00fa\u00fb\u0007\u0006\u0002\u0002\u00fb;\u0003",
-    "\u0002\u0002\u0002\u00fc\u00ff\u00058\u001d\u0002\u00fd\u00ff\u0005",
-    ":\u001e\u0002\u00fe\u00fc\u0003\u0002\u0002\u0002\u00fe\u00fd\u0003",
-    "\u0002\u0002\u0002\u00ff=\u0003\u0002\u0002\u0002\u001eADGMQY\\_kpv",
-    "{\u0089\u008d\u0099\u009e\u00a7\u00aa\u00b1\u00b8\u00bf\u00c3\u00ca",
-    "\u00d2\u00dc\u00e9\u00f0\u00fe"].join("");
+    "\n\u0003\n\u0005\nh\n\n\u0003\n\u0003\n\u0003\n\u0007\nm\n\n\f\n\u000e",
+    "\np\u000b\n\u0003\u000b\u0003\u000b\u0005\u000bt\n\u000b\u0003\u000b",
+    "\u0003\u000b\u0007\u000bx\n\u000b\f\u000b\u000e\u000b{\u000b\u000b\u0003",
+    "\f\u0003\f\u0005\f\u007f\n\f\u0003\r\u0003\r\u0003\u000e\u0003\u000e",
+    "\u0003\u000e\u0003\u000e\u0003\u000e\u0003\u000f\u0003\u000f\u0003\u000f",
+    "\u0003\u0010\u0003\u0010\u0005\u0010\u008d\n\u0010\u0003\u0011\u0003",
+    "\u0011\u0005\u0011\u0091\n\u0011\u0003\u0012\u0003\u0012\u0003\u0012",
+    "\u0003\u0012\u0003\u0012\u0003\u0013\u0003\u0013\u0003\u0013\u0007\u0013",
+    "\u009b\n\u0013\f\u0013\u000e\u0013\u009e\u000b\u0013\u0003\u0013\u0003",
+    "\u0013\u0005\u0013\u00a2\n\u0013\u0003\u0013\u0003\u0013\u0003\u0013",
+    "\u0003\u0013\u0003\u0013\u0007\u0013\u00a9\n\u0013\f\u0013\u000e\u0013",
+    "\u00ac\u000b\u0013\u0005\u0013\u00ae\n\u0013\u0003\u0014\u0003\u0014",
+    "\u0003\u0014\u0007\u0014\u00b3\n\u0014\f\u0014\u000e\u0014\u00b6\u000b",
+    "\u0014\u0003\u0015\u0003\u0015\u0003\u0015\u0003\u0015\u0005\u0015\u00bc",
+    "\n\u0015\u0003\u0016\u0003\u0016\u0003\u0016\u0007\u0016\u00c1\n\u0016",
+    "\f\u0016\u000e\u0016\u00c4\u000b\u0016\u0003\u0016\u0005\u0016\u00c7",
+    "\n\u0016\u0003\u0017\u0003\u0017\u0003\u0017\u0007\u0017\u00cc\n\u0017",
+    "\f\u0017\u000e\u0017\u00cf\u000b\u0017\u0003\u0018\u0003\u0018\u0003",
+    "\u0018\u0003\u0018\u0003\u0018\u0005\u0018\u00d6\n\u0018\u0003\u0019",
+    "\u0003\u0019\u0003\u0019\u0003\u0019\u0003\u001a\u0003\u001a\u0003\u001a",
+    "\u0003\u001a\u0005\u001a\u00e0\n\u001a\u0003\u001a\u0003\u001a\u0003",
+    "\u001b\u0003\u001b\u0003\u001b\u0003\u001b\u0003\u001b\u0003\u001b\u0003",
+    "\u001b\u0003\u001c\u0003\u001c\u0005\u001c\u00ed\n\u001c\u0003\u001d",
+    "\u0003\u001d\u0003\u001d\u0003\u001d\u0003\u001d\u0005\u001d\u00f4\n",
+    "\u001d\u0003\u001d\u0003\u001d\u0003\u001e\u0003\u001e\u0003\u001e\u0003",
+    "\u001e\u0003\u001e\u0003\u001e\u0003\u001e\u0003\u001e\u0003\u001f\u0003",
+    "\u001f\u0005\u001f\u0102\n\u001f\u0003\u001f\u0002\u0002 \u0002\u0004",
+    "\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e ",
+    "\"$&(*,.02468:<\u0002\u0004\u0004\u0002\u0011\u0011\u0014\u0014\u0003",
+    "\u0002\u0011\u0013\u0002\u0104\u0002>\u0003\u0002\u0002\u0002\u0004",
+    "G\u0003\u0002\u0002\u0002\u0006I\u0003\u0002\u0002\u0002\bM\u0003\u0002",
+    "\u0002\u0002\nO\u0003\u0002\u0002\u0002\fS\u0003\u0002\u0002\u0002\u000e",
+    "Y\u0003\u0002\u0002\u0002\u0010a\u0003\u0002\u0002\u0002\u0012d\u0003",
+    "\u0002\u0002\u0002\u0014q\u0003\u0002\u0002\u0002\u0016~\u0003\u0002",
+    "\u0002\u0002\u0018\u0080\u0003\u0002\u0002\u0002\u001a\u0082\u0003\u0002",
+    "\u0002\u0002\u001c\u0087\u0003\u0002\u0002\u0002\u001e\u008c\u0003\u0002",
+    "\u0002\u0002 \u0090\u0003\u0002\u0002\u0002\"\u0092\u0003\u0002\u0002",
+    "\u0002$\u00a1\u0003\u0002\u0002\u0002&\u00af\u0003\u0002\u0002\u0002",
+    "(\u00bb\u0003\u0002\u0002\u0002*\u00bd\u0003\u0002\u0002\u0002,\u00c8",
+    "\u0003\u0002\u0002\u0002.\u00d0\u0003\u0002\u0002\u00020\u00d7\u0003",
+    "\u0002\u0002\u00022\u00db\u0003\u0002\u0002\u00024\u00e3\u0003\u0002",
+    "\u0002\u00026\u00ec\u0003\u0002\u0002\u00028\u00ee\u0003\u0002\u0002",
+    "\u0002:\u00f7\u0003\u0002\u0002\u0002<\u0101\u0003\u0002\u0002\u0002",
+    ">D\u0005\u0004\u0003\u0002?A\u0007\u0007\u0002\u0002@B\u0005*\u0016",
+    "\u0002A@\u0003\u0002\u0002\u0002AB\u0003\u0002\u0002\u0002BC\u0003\u0002",
+    "\u0002\u0002CE\u0007\b\u0002\u0002D?\u0003\u0002\u0002\u0002DE\u0003",
+    "\u0002\u0002\u0002E\u0003\u0003\u0002\u0002\u0002FH\u0005\u0006\u0004",
+    "\u0002GF\u0003\u0002\u0002\u0002GH\u0003\u0002\u0002\u0002H\u0005\u0003",
+    "\u0002\u0002\u0002IJ\t\u0002\u0002\u0002J\u0007\u0003\u0002\u0002\u0002",
+    "KN\u0005.\u0018\u0002LN\u0005\u000e\b\u0002MK\u0003\u0002\u0002\u0002",
+    "ML\u0003\u0002\u0002\u0002N\t\u0003\u0002\u0002\u0002OQ\u0007\u0004",
+    "\u0002\u0002PR\u0005,\u0017\u0002QP\u0003\u0002\u0002\u0002QR\u0003",
+    "\u0002\u0002\u0002R\u000b\u0003\u0002\u0002\u0002ST\u0007\u0007\u0002",
+    "\u0002TU\u0005*\u0016\u0002UV\u0007\b\u0002\u0002V\r\u0003\u0002\u0002",
+    "\u0002WZ\u00056\u001c\u0002XZ\u0005<\u001f\u0002YW\u0003\u0002\u0002",
+    "\u0002YX\u0003\u0002\u0002\u0002Z_\u0003\u0002\u0002\u0002[]\u0005\n",
+    "\u0006\u0002\\[\u0003\u0002\u0002\u0002\\]\u0003\u0002\u0002\u0002]",
+    "^\u0003\u0002\u0002\u0002^`\u0005\f\u0007\u0002_\\\u0003\u0002\u0002",
+    "\u0002_`\u0003\u0002\u0002\u0002`\u000f\u0003\u0002\u0002\u0002ab\u0007",
+    "\t\u0002\u0002bc\u0005\u0006\u0004\u0002c\u0011\u0003\u0002\u0002\u0002",
+    "de\u0007\f\u0002\u0002eg\u0007\u0010\u0002\u0002fh\u0007\r\u0002\u0002",
+    "gf\u0003\u0002\u0002\u0002gh\u0003\u0002\u0002\u0002hi\u0003\u0002\u0002",
+    "\u0002in\u0005\u0006\u0004\u0002jk\u0007\r\u0002\u0002km\u0005\u0006",
+    "\u0004\u0002lj\u0003\u0002\u0002\u0002mp\u0003\u0002\u0002\u0002nl\u0003",
+    "\u0002\u0002\u0002no\u0003\u0002\u0002\u0002o\u0013\u0003\u0002\u0002",
+    "\u0002pn\u0003\u0002\u0002\u0002qs\u0007\f\u0002\u0002rt\u0005\u0006",
+    "\u0004\u0002sr\u0003\u0002\u0002\u0002st\u0003\u0002\u0002\u0002ty\u0003",
+    "\u0002\u0002\u0002uv\u0007\r\u0002\u0002vx\u0005\u0006\u0004\u0002w",
+    "u\u0003\u0002\u0002\u0002x{\u0003\u0002\u0002\u0002yw\u0003\u0002\u0002",
+    "\u0002yz\u0003\u0002\u0002\u0002z\u0015\u0003\u0002\u0002\u0002{y\u0003",
+    "\u0002\u0002\u0002|\u007f\u0005\u0012\n\u0002}\u007f\u0005\u0014\u000b",
+    "\u0002~|\u0003\u0002\u0002\u0002~}\u0003\u0002\u0002\u0002\u007f\u0017",
+    "\u0003\u0002\u0002\u0002\u0080\u0081\t\u0003\u0002\u0002\u0081\u0019",
+    "\u0003\u0002\u0002\u0002\u0082\u0083\u0007\u0003\u0002\u0002\u0083\u0084",
+    "\u0007\u0007\u0002\u0002\u0084\u0085\u0005\u0018\r\u0002\u0085\u0086",
+    "\u0007\b\u0002\u0002\u0086\u001b\u0003\u0002\u0002\u0002\u0087\u0088",
+    "\u0007\u0003\u0002\u0002\u0088\u0089\u0007\u0014\u0002\u0002\u0089\u001d",
+    "\u0003\u0002\u0002\u0002\u008a\u008d\u0005\u001c\u000f\u0002\u008b\u008d",
+    "\u0005\u001a\u000e\u0002\u008c\u008a\u0003\u0002\u0002\u0002\u008c\u008b",
+    "\u0003\u0002\u0002\u0002\u008d\u001f\u0003\u0002\u0002\u0002\u008e\u0091",
+    "\u0005\u001e\u0010\u0002\u008f\u0091\u0005\b\u0005\u0002\u0090\u008e",
+    "\u0003\u0002\u0002\u0002\u0090\u008f\u0003\u0002\u0002\u0002\u0091!",
+    "\u0003\u0002\u0002\u0002\u0092\u0093\u0007\u0003\u0002\u0002\u0093\u0094",
+    "\u0007\u0005\u0002\u0002\u0094\u0095\u0005 \u0011\u0002\u0095\u0096",
+    "\u0007\u0006\u0002\u0002\u0096#\u0003\u0002\u0002\u0002\u0097\u009c",
+    "\u0005 \u0011\u0002\u0098\u0099\u0007\u000b\u0002\u0002\u0099\u009b",
+    "\u0005 \u0011\u0002\u009a\u0098\u0003\u0002\u0002\u0002\u009b\u009e",
+    "\u0003\u0002\u0002\u0002\u009c\u009a\u0003\u0002\u0002\u0002\u009c\u009d",
+    "\u0003\u0002\u0002\u0002\u009d\u009f\u0003\u0002\u0002\u0002\u009e\u009c",
+    "\u0003\u0002\u0002\u0002\u009f\u00a0\u0007\u000b\u0002\u0002\u00a0\u00a2",
+    "\u0003\u0002\u0002\u0002\u00a1\u0097\u0003\u0002\u0002\u0002\u00a1\u00a2",
+    "\u0003\u0002\u0002\u0002\u00a2\u00a3\u0003\u0002\u0002\u0002\u00a3\u00ad",
+    "\u0005\"\u0012\u0002\u00a4\u00a5\u0007\u000b\u0002\u0002\u00a5\u00aa",
+    "\u0005 \u0011\u0002\u00a6\u00a7\u0007\u000b\u0002\u0002\u00a7\u00a9",
+    "\u0005 \u0011\u0002\u00a8\u00a6\u0003\u0002\u0002\u0002\u00a9\u00ac",
+    "\u0003\u0002\u0002\u0002\u00aa\u00a8\u0003\u0002\u0002\u0002\u00aa\u00ab",
+    "\u0003\u0002\u0002\u0002\u00ab\u00ae\u0003\u0002\u0002\u0002\u00ac\u00aa",
+    "\u0003\u0002\u0002\u0002\u00ad\u00a4\u0003\u0002\u0002\u0002\u00ad\u00ae",
+    "\u0003\u0002\u0002\u0002\u00ae%\u0003\u0002\u0002\u0002\u00af\u00b4",
+    "\u0005 \u0011\u0002\u00b0\u00b1\u0007\u000b\u0002\u0002\u00b1\u00b3",
+    "\u0005 \u0011\u0002\u00b2\u00b0\u0003\u0002\u0002\u0002\u00b3\u00b6",
+    "\u0003\u0002\u0002\u0002\u00b4\u00b2\u0003\u0002\u0002\u0002\u00b4\u00b5",
+    "\u0003\u0002\u0002\u0002\u00b5\'\u0003\u0002\u0002\u0002\u00b6\u00b4",
+    "\u0003\u0002\u0002\u0002\u00b7\u00bc\u0005\b\u0005\u0002\u00b8\u00bc",
+    "\u0005\u0010\t\u0002\u00b9\u00bc\u0005\u0016\f\u0002\u00ba\u00bc\u0005",
+    "0\u0019\u0002\u00bb\u00b7\u0003\u0002\u0002\u0002\u00bb\u00b8\u0003",
+    "\u0002\u0002\u0002\u00bb\u00b9\u0003\u0002\u0002\u0002\u00bb\u00ba\u0003",
+    "\u0002\u0002\u0002\u00bc)\u0003\u0002\u0002\u0002\u00bd\u00c2\u0005",
+    "(\u0015\u0002\u00be\u00bf\u0007\u000b\u0002\u0002\u00bf\u00c1\u0005",
+    "(\u0015\u0002\u00c0\u00be\u0003\u0002\u0002\u0002\u00c1\u00c4\u0003",
+    "\u0002\u0002\u0002\u00c2\u00c0\u0003\u0002\u0002\u0002\u00c2\u00c3\u0003",
+    "\u0002\u0002\u0002\u00c3\u00c6\u0003\u0002\u0002\u0002\u00c4\u00c2\u0003",
+    "\u0002\u0002\u0002\u00c5\u00c7\u0007\u000b\u0002\u0002\u00c6\u00c5\u0003",
+    "\u0002\u0002\u0002\u00c6\u00c7\u0003\u0002\u0002\u0002\u00c7+\u0003",
+    "\u0002\u0002\u0002\u00c8\u00cd\u0005\u0006\u0004\u0002\u00c9\u00ca\u0007",
+    "\r\u0002\u0002\u00ca\u00cc\u0005\u0006\u0004\u0002\u00cb\u00c9\u0003",
+    "\u0002\u0002\u0002\u00cc\u00cf\u0003\u0002\u0002\u0002\u00cd\u00cb\u0003",
+    "\u0002\u0002\u0002\u00cd\u00ce\u0003\u0002\u0002\u0002\u00ce-\u0003",
+    "\u0002\u0002\u0002\u00cf\u00cd\u0003\u0002\u0002\u0002\u00d0\u00d5\u0005",
+    ",\u0017\u0002\u00d1\u00d2\u0007\u0007\u0002\u0002\u00d2\u00d3\u0005",
+    "*\u0016\u0002\u00d3\u00d4\u0007\b\u0002\u0002\u00d4\u00d6\u0003\u0002",
+    "\u0002\u0002\u00d5\u00d1\u0003\u0002\u0002\u0002\u00d5\u00d6\u0003\u0002",
+    "\u0002\u0002\u00d6/\u0003\u0002\u0002\u0002\u00d7\u00d8\u0005\u0006",
+    "\u0004\u0002\u00d8\u00d9\u0007\n\u0002\u0002\u00d9\u00da\u0005\b\u0005",
+    "\u0002\u00da1\u0003\u0002\u0002\u0002\u00db\u00dc\u0007\u0014\u0002",
+    "\u0002\u00dc\u00df\u0007\u000e\u0002\u0002\u00dd\u00e0\u0005&\u0014",
+    "\u0002\u00de\u00e0\u0005$\u0013\u0002\u00df\u00dd\u0003\u0002\u0002",
+    "\u0002\u00df\u00de\u0003\u0002\u0002\u0002\u00e0\u00e1\u0003\u0002\u0002",
+    "\u0002\u00e1\u00e2\u0007\u000f\u0002\u0002\u00e23\u0003\u0002\u0002",
+    "\u0002\u00e3\u00e4\u0007\u0005\u0002\u0002\u00e4\u00e5\u0007\u0014\u0002",
+    "\u0002\u00e5\u00e6\u0007\u000e\u0002\u0002\u00e6\u00e7\u0005&\u0014",
+    "\u0002\u00e7\u00e8\u0007\u000f\u0002\u0002\u00e8\u00e9\u0007\u0006\u0002",
+    "\u0002\u00e95\u0003\u0002\u0002\u0002\u00ea\u00ed\u00052\u001a\u0002",
+    "\u00eb\u00ed\u00054\u001b\u0002\u00ec\u00ea\u0003\u0002\u0002\u0002",
+    "\u00ec\u00eb\u0003\u0002\u0002\u0002\u00ed7\u0003\u0002\u0002\u0002",
+    "\u00ee\u00ef\u0007\u0014\u0002\u0002\u00ef\u00f0\u0007\t\u0002\u0002",
+    "\u00f0\u00f3\u0007\u000e\u0002\u0002\u00f1\u00f4\u0005&\u0014\u0002",
+    "\u00f2\u00f4\u0005$\u0013\u0002\u00f3\u00f1\u0003\u0002\u0002\u0002",
+    "\u00f3\u00f2\u0003\u0002\u0002\u0002\u00f4\u00f5\u0003\u0002\u0002\u0002",
+    "\u00f5\u00f6\u0007\u000f\u0002\u0002\u00f69\u0003\u0002\u0002\u0002",
+    "\u00f7\u00f8\u0007\u0005\u0002\u0002\u00f8\u00f9\u0007\u0014\u0002\u0002",
+    "\u00f9\u00fa\u0007\t\u0002\u0002\u00fa\u00fb\u0007\u000e\u0002\u0002",
+    "\u00fb\u00fc\u0005&\u0014\u0002\u00fc\u00fd\u0007\u000f\u0002\u0002",
+    "\u00fd\u00fe\u0007\u0006\u0002\u0002\u00fe;\u0003\u0002\u0002\u0002",
+    "\u00ff\u0102\u00058\u001d\u0002\u0100\u0102\u0005:\u001e\u0002\u0101",
+    "\u00ff\u0003\u0002\u0002\u0002\u0101\u0100\u0003\u0002\u0002\u0002\u0102",
+    "=\u0003\u0002\u0002\u0002\u001fADGMQY\\_gnsy~\u008c\u0090\u009c\u00a1",
+    "\u00aa\u00ad\u00b4\u00bb\u00c2\u00c6\u00cd\u00d5\u00df\u00ec\u00f3\u0101"].join("");
 
 
 const atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
@@ -492,17 +494,25 @@ export default class QMapParser extends antlr4.Parser {
 	        this.match(QMapParser.TRIPLE_DOT);
 	        this.state = 99;
 	        this.match(QMapParser.AMPERSAND);
-	        this.state = 100;
+	        this.state = 101;
+	        this._errHandler.sync(this);
+	        _la = this._input.LA(1);
+	        if(_la===QMapParser.DOT) {
+	            this.state = 100;
+	            this.match(QMapParser.DOT);
+	        }
+
+	        this.state = 103;
 	        this.id();
-	        this.state = 105;
+	        this.state = 108;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        while(_la===QMapParser.DOT) {
-	            this.state = 101;
+	            this.state = 104;
 	            this.match(QMapParser.DOT);
-	            this.state = 102;
+	            this.state = 105;
 	            this.id();
-	            this.state = 107;
+	            this.state = 110;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        }
@@ -528,25 +538,25 @@ export default class QMapParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 108;
+	        this.state = 111;
 	        this.match(QMapParser.TRIPLE_DOT);
-	        this.state = 110;
+	        this.state = 113;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===QMapParser.STRING || _la===QMapParser.ID) {
-	            this.state = 109;
+	            this.state = 112;
 	            this.id();
 	        }
 
-	        this.state = 116;
+	        this.state = 119;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        while(_la===QMapParser.DOT) {
-	            this.state = 112;
+	            this.state = 115;
 	            this.match(QMapParser.DOT);
-	            this.state = 113;
+	            this.state = 116;
 	            this.id();
-	            this.state = 118;
+	            this.state = 121;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        }
@@ -570,19 +580,19 @@ export default class QMapParser extends antlr4.Parser {
 	    let localctx = new SpreadContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 20, QMapParser.RULE_spread);
 	    try {
-	        this.state = 121;
+	        this.state = 124;
 	        this._errHandler.sync(this);
-	        var la_ = this._interp.adaptivePredict(this._input,11,this._ctx);
+	        var la_ = this._interp.adaptivePredict(this._input,12,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 119;
+	            this.state = 122;
 	            this.global_spread();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 120;
+	            this.state = 123;
 	            this.scoped_spread();
 	            break;
 
@@ -609,7 +619,7 @@ export default class QMapParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 123;
+	        this.state = 126;
 	        _la = this._input.LA(1);
 	        if(!((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << QMapParser.STRING) | (1 << QMapParser.BOOL) | (1 << QMapParser.NUMBER))) !== 0))) {
 	        this._errHandler.recoverInline(this);
@@ -639,13 +649,13 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 24, QMapParser.RULE_primitive);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 125;
-	        this.match(QMapParser.AT);
-	        this.state = 126;
-	        this.match(QMapParser.LEFT_BRACE);
-	        this.state = 127;
-	        this.primitive_val();
 	        this.state = 128;
+	        this.match(QMapParser.AT);
+	        this.state = 129;
+	        this.match(QMapParser.LEFT_BRACE);
+	        this.state = 130;
+	        this.primitive_val();
+	        this.state = 131;
 	        this.match(QMapParser.RIGHT_BRACE);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -668,9 +678,9 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 26, QMapParser.RULE_exvar);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 130;
+	        this.state = 133;
 	        this.match(QMapParser.AT);
-	        this.state = 131;
+	        this.state = 134;
 	        this.match(QMapParser.ID);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -692,19 +702,19 @@ export default class QMapParser extends antlr4.Parser {
 	    let localctx = new VariableContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 28, QMapParser.RULE_variable);
 	    try {
-	        this.state = 135;
+	        this.state = 138;
 	        this._errHandler.sync(this);
-	        var la_ = this._interp.adaptivePredict(this._input,12,this._ctx);
+	        var la_ = this._interp.adaptivePredict(this._input,13,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 133;
+	            this.state = 136;
 	            this.exvar();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 134;
+	            this.state = 137;
 	            this.primitive();
 	            break;
 
@@ -729,19 +739,19 @@ export default class QMapParser extends antlr4.Parser {
 	    let localctx = new ParamContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 30, QMapParser.RULE_param);
 	    try {
-	        this.state = 139;
+	        this.state = 142;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case QMapParser.AT:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 137;
+	            this.state = 140;
 	            this.variable();
 	            break;
 	        case QMapParser.LEFT_BRACKET:
 	        case QMapParser.STRING:
 	        case QMapParser.ID:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 138;
+	            this.state = 141;
 	            this.stm();
 	            break;
 	        default:
@@ -768,13 +778,13 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 32, QMapParser.RULE_aparam);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 141;
-	        this.match(QMapParser.AT);
-	        this.state = 142;
-	        this.match(QMapParser.LEFT_BRACKET);
-	        this.state = 143;
-	        this.param();
 	        this.state = 144;
+	        this.match(QMapParser.AT);
+	        this.state = 145;
+	        this.match(QMapParser.LEFT_BRACKET);
+	        this.state = 146;
+	        this.param();
+	        this.state = 147;
 	        this.match(QMapParser.RIGHT_BRACKET);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -798,50 +808,50 @@ export default class QMapParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 156;
+	        this.state = 159;
 	        this._errHandler.sync(this);
-	        var la_ = this._interp.adaptivePredict(this._input,15,this._ctx);
+	        var la_ = this._interp.adaptivePredict(this._input,16,this._ctx);
 	        if(la_===1) {
-	            this.state = 146;
+	            this.state = 149;
 	            this.param();
-	            this.state = 151;
+	            this.state = 154;
 	            this._errHandler.sync(this);
-	            var _alt = this._interp.adaptivePredict(this._input,14,this._ctx)
+	            var _alt = this._interp.adaptivePredict(this._input,15,this._ctx)
 	            while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
 	                if(_alt===1) {
-	                    this.state = 147;
+	                    this.state = 150;
 	                    this.match(QMapParser.COMMA);
-	                    this.state = 148;
+	                    this.state = 151;
 	                    this.param(); 
 	                }
-	                this.state = 153;
+	                this.state = 156;
 	                this._errHandler.sync(this);
-	                _alt = this._interp.adaptivePredict(this._input,14,this._ctx);
+	                _alt = this._interp.adaptivePredict(this._input,15,this._ctx);
 	            }
 
-	            this.state = 154;
+	            this.state = 157;
 	            this.match(QMapParser.COMMA);
 
 	        }
-	        this.state = 158;
+	        this.state = 161;
 	        this.aparam();
-	        this.state = 168;
+	        this.state = 171;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===QMapParser.COMMA) {
-	            this.state = 159;
+	            this.state = 162;
 	            this.match(QMapParser.COMMA);
-	            this.state = 160;
+	            this.state = 163;
 	            this.param();
-	            this.state = 165;
+	            this.state = 168;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	            while(_la===QMapParser.COMMA) {
-	                this.state = 161;
+	                this.state = 164;
 	                this.match(QMapParser.COMMA);
-	                this.state = 162;
+	                this.state = 165;
 	                this.param();
-	                this.state = 167;
+	                this.state = 170;
 	                this._errHandler.sync(this);
 	                _la = this._input.LA(1);
 	            }
@@ -869,17 +879,17 @@ export default class QMapParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 170;
+	        this.state = 173;
 	        this.param();
-	        this.state = 175;
+	        this.state = 178;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        while(_la===QMapParser.COMMA) {
-	            this.state = 171;
+	            this.state = 174;
 	            this.match(QMapParser.COMMA);
-	            this.state = 172;
+	            this.state = 175;
 	            this.param();
-	            this.state = 177;
+	            this.state = 180;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        }
@@ -903,31 +913,31 @@ export default class QMapParser extends antlr4.Parser {
 	    let localctx = new QueryContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 38, QMapParser.RULE_query);
 	    try {
-	        this.state = 182;
+	        this.state = 185;
 	        this._errHandler.sync(this);
-	        var la_ = this._interp.adaptivePredict(this._input,19,this._ctx);
+	        var la_ = this._interp.adaptivePredict(this._input,20,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 178;
+	            this.state = 181;
 	            this.stm();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 179;
+	            this.state = 182;
 	            this.exclude();
 	            break;
 
 	        case 3:
 	            this.enterOuterAlt(localctx, 3);
-	            this.state = 180;
+	            this.state = 183;
 	            this.spread();
 	            break;
 
 	        case 4:
 	            this.enterOuterAlt(localctx, 4);
-	            this.state = 181;
+	            this.state = 184;
 	            this.field_rename();
 	            break;
 
@@ -954,28 +964,28 @@ export default class QMapParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 184;
+	        this.state = 187;
 	        this.query();
-	        this.state = 189;
+	        this.state = 192;
 	        this._errHandler.sync(this);
-	        var _alt = this._interp.adaptivePredict(this._input,20,this._ctx)
+	        var _alt = this._interp.adaptivePredict(this._input,21,this._ctx)
 	        while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
 	            if(_alt===1) {
-	                this.state = 185;
+	                this.state = 188;
 	                this.match(QMapParser.COMMA);
-	                this.state = 186;
+	                this.state = 189;
 	                this.query(); 
 	            }
-	            this.state = 191;
+	            this.state = 194;
 	            this._errHandler.sync(this);
-	            _alt = this._interp.adaptivePredict(this._input,20,this._ctx);
+	            _alt = this._interp.adaptivePredict(this._input,21,this._ctx);
 	        }
 
-	        this.state = 193;
+	        this.state = 196;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===QMapParser.COMMA) {
-	            this.state = 192;
+	            this.state = 195;
 	            this.match(QMapParser.COMMA);
 	        }
 
@@ -1001,17 +1011,17 @@ export default class QMapParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 195;
+	        this.state = 198;
 	        this.id();
-	        this.state = 200;
+	        this.state = 203;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        while(_la===QMapParser.DOT) {
-	            this.state = 196;
+	            this.state = 199;
 	            this.match(QMapParser.DOT);
-	            this.state = 197;
+	            this.state = 200;
 	            this.id();
-	            this.state = 202;
+	            this.state = 205;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	        }
@@ -1037,17 +1047,17 @@ export default class QMapParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 203;
+	        this.state = 206;
 	        this.obj_ref();
-	        this.state = 208;
+	        this.state = 211;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===QMapParser.LEFT_BRACE) {
-	            this.state = 204;
+	            this.state = 207;
 	            this.match(QMapParser.LEFT_BRACE);
-	            this.state = 205;
+	            this.state = 208;
 	            this.query_list();
-	            this.state = 206;
+	            this.state = 209;
 	            this.match(QMapParser.RIGHT_BRACE);
 	        }
 
@@ -1072,11 +1082,11 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 46, QMapParser.RULE_field_rename);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 210;
+	        this.state = 213;
 	        this.id();
-	        this.state = 211;
+	        this.state = 214;
 	        this.match(QMapParser.COLON);
-	        this.state = 212;
+	        this.state = 215;
 	        this.stm();
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -1099,26 +1109,26 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 48, QMapParser.RULE_normal_fn);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 214;
+	        this.state = 217;
 	        this.match(QMapParser.ID);
-	        this.state = 215;
-	        this.match(QMapParser.LEFT_PAREN);
 	        this.state = 218;
+	        this.match(QMapParser.LEFT_PAREN);
+	        this.state = 221;
 	        this._errHandler.sync(this);
-	        var la_ = this._interp.adaptivePredict(this._input,24,this._ctx);
+	        var la_ = this._interp.adaptivePredict(this._input,25,this._ctx);
 	        switch(la_) {
 	        case 1:
-	            this.state = 216;
+	            this.state = 219;
 	            this.params();
 	            break;
 
 	        case 2:
-	            this.state = 217;
+	            this.state = 220;
 	            this.aparams();
 	            break;
 
 	        }
-	        this.state = 220;
+	        this.state = 223;
 	        this.match(QMapParser.RIGHT_PAREN);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -1141,17 +1151,17 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 50, QMapParser.RULE_map_fn);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 222;
-	        this.match(QMapParser.LEFT_BRACKET);
-	        this.state = 223;
-	        this.match(QMapParser.ID);
-	        this.state = 224;
-	        this.match(QMapParser.LEFT_PAREN);
 	        this.state = 225;
-	        this.params();
+	        this.match(QMapParser.LEFT_BRACKET);
 	        this.state = 226;
-	        this.match(QMapParser.RIGHT_PAREN);
+	        this.match(QMapParser.ID);
 	        this.state = 227;
+	        this.match(QMapParser.LEFT_PAREN);
+	        this.state = 228;
+	        this.params();
+	        this.state = 229;
+	        this.match(QMapParser.RIGHT_PAREN);
+	        this.state = 230;
 	        this.match(QMapParser.RIGHT_BRACKET);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -1173,17 +1183,17 @@ export default class QMapParser extends antlr4.Parser {
 	    let localctx = new FnContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 52, QMapParser.RULE_fn);
 	    try {
-	        this.state = 231;
+	        this.state = 234;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case QMapParser.ID:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 229;
+	            this.state = 232;
 	            this.normal_fn();
 	            break;
 	        case QMapParser.LEFT_BRACKET:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 230;
+	            this.state = 233;
 	            this.map_fn();
 	            break;
 	        default:
@@ -1210,28 +1220,28 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 54, QMapParser.RULE_normal_client_fn);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 233;
+	        this.state = 236;
 	        this.match(QMapParser.ID);
-	        this.state = 234;
+	        this.state = 237;
 	        this.match(QMapParser.EX_MARK);
-	        this.state = 235;
-	        this.match(QMapParser.LEFT_PAREN);
 	        this.state = 238;
+	        this.match(QMapParser.LEFT_PAREN);
+	        this.state = 241;
 	        this._errHandler.sync(this);
-	        var la_ = this._interp.adaptivePredict(this._input,26,this._ctx);
+	        var la_ = this._interp.adaptivePredict(this._input,27,this._ctx);
 	        switch(la_) {
 	        case 1:
-	            this.state = 236;
+	            this.state = 239;
 	            this.params();
 	            break;
 
 	        case 2:
-	            this.state = 237;
+	            this.state = 240;
 	            this.aparams();
 	            break;
 
 	        }
-	        this.state = 240;
+	        this.state = 243;
 	        this.match(QMapParser.RIGHT_PAREN);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -1254,19 +1264,19 @@ export default class QMapParser extends antlr4.Parser {
 	    this.enterRule(localctx, 56, QMapParser.RULE_map_client_fn);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 242;
-	        this.match(QMapParser.LEFT_BRACKET);
-	        this.state = 243;
-	        this.match(QMapParser.ID);
-	        this.state = 244;
-	        this.match(QMapParser.EX_MARK);
 	        this.state = 245;
-	        this.match(QMapParser.LEFT_PAREN);
+	        this.match(QMapParser.LEFT_BRACKET);
 	        this.state = 246;
-	        this.params();
+	        this.match(QMapParser.ID);
 	        this.state = 247;
-	        this.match(QMapParser.RIGHT_PAREN);
+	        this.match(QMapParser.EX_MARK);
 	        this.state = 248;
+	        this.match(QMapParser.LEFT_PAREN);
+	        this.state = 249;
+	        this.params();
+	        this.state = 250;
+	        this.match(QMapParser.RIGHT_PAREN);
+	        this.state = 251;
 	        this.match(QMapParser.RIGHT_BRACKET);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -1288,17 +1298,17 @@ export default class QMapParser extends antlr4.Parser {
 	    let localctx = new Client_fnContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 58, QMapParser.RULE_client_fn);
 	    try {
-	        this.state = 252;
+	        this.state = 255;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case QMapParser.ID:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 250;
+	            this.state = 253;
 	            this.normal_client_fn();
 	            break;
 	        case QMapParser.LEFT_BRACKET:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 251;
+	            this.state = 254;
 	            this.map_client_fn();
 	            break;
 	        default:

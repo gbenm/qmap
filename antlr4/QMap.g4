@@ -14,7 +14,7 @@ fn_stm: (fn | client_fn) (index_ref? fn_return)?;
 
 exclude: EX_MARK id;
 
-global_spread: TRIPLE_DOT AMPERSAND id (DOT id)*;
+global_spread: TRIPLE_DOT AMPERSAND DOT? id (DOT id)*;
 
 scoped_spread: TRIPLE_DOT id? (DOT id)*;
 
