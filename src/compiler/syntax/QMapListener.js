@@ -203,6 +203,24 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by QMapParser#field_scoped.
+	enterField_scoped(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#field_scoped.
+	exitField_scoped(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#field_global.
+	enterField_global(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#field_global.
+	exitField_global(ctx) {
+	}
+
+
 	// Enter a parse tree produced by QMapParser#field.
 	enterField(ctx) {
 	}

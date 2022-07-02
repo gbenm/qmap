@@ -12,6 +12,7 @@ export interface SymbolTable {
 
   // Index methods
   registerPathInIndex(name: string, ...path: string[]): SymbolTable
+  resetIndexCurrentPath(reset?: boolean): SymbolTable
   copyIndexFrom(...path: string[]): void
   addToIndex(special: symbol): void
   addToIndex(query: string, ...queries: string[]): void
@@ -141,6 +142,11 @@ export class SymbolTableImpl implements SymbolTable {
 
     this.addToIndex(name, ...path)
     return new SymbolTableImpl(this.stack, this.queryDescriptor, [...this.currentPath, name, ...path], this.ignoreIndex)
+  }
+
+  resetIndexCurrentPath(reset?: boolean): SymbolTable {
+    const curentPath = reset || reset === undefined ? [] : this.currentPath
+    return new SymbolTableImpl(this.stack, this.queryDescriptor, curentPath, this.ignoreIndex)
   }
 
   generateIndex(): QMapIndex {

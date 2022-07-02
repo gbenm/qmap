@@ -4,6 +4,7 @@ export enum QueryType {
   FUNCTION = "function",
   CLIENT_FUNCTION = "client_function",
   ACCESS = "access",
+  GLOBAL_ACCESS = "global_access",
   ALL = "all",
   EXCLUDE = "exclude",
   SPREAD = "spread",
@@ -13,7 +14,7 @@ export enum QueryType {
   PRIMITIVE = "primitive"
 }
 
-export type QueryNode = PrimitiveNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
+export type QueryNode = PrimitiveNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | GlobalAcccesQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
 
 export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
@@ -73,10 +74,17 @@ export interface SelectQueryNode extends CommonNamedQueryNode {
   type: QueryType.SELECT
 }
 
-export interface AccessQueryNode extends CommonQueryNode {
-  type: QueryType.ACCESS
+export interface CommonAccessQueryNode extends CommonQueryNode {
   alias: string
   keys: string[]
+}
+
+export interface AccessQueryNode extends CommonAccessQueryNode {
+  type: QueryType.ACCESS
+}
+
+export interface GlobalAcccesQueryNode extends CommonAccessQueryNode {
+  type: QueryType.GLOBAL_ACCESS
 }
 
 export type SpreadIds = [(string | symbol)?, ...string[]]

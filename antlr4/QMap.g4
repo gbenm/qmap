@@ -43,7 +43,9 @@ query_list: query (COMMA query)* COMMA?;
 
 obj_ref: id (DOT id)*;
 
-field: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
+field_scoped: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
+field_global: AMPERSAND DOT field_scoped;
+field: field_global | field_scoped;
 
 field_rename: id COLON stm;
 

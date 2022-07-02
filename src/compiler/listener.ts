@@ -154,7 +154,7 @@ export default class QMapListener extends Listener {
     ctx.ids = ignoreTerminals(ctx.children, id => id.text)
   }
 
-  exitField(ctx: ListenerContext): void {
+  exitField_scoped(ctx: ListenerContext): void {
     const objRef = ctx.getChild(0)
     const queryList = ctx.getChild(2)
 
@@ -163,6 +163,20 @@ export default class QMapListener extends Listener {
     } else {
       ctx.node = new Field(objRef.ids)
     }
+  }
+
+  exitField_global(ctx: ListenerContext): void {
+    const field: Field = ctx.getChild(1).node
+
+    field.globalAccess = true
+
+    forwardNode(ctx, {
+      index: 2
+    })
+  }
+
+  exitField(ctx: ListenerContext): void {
+    forwardNode(ctx)
   }
 
   exitField_rename(ctx: ListenerContext): void {
