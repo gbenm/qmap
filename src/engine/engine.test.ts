@@ -55,6 +55,28 @@ describe("includes", () => {
     expect(includes(["product", "id", "any"])).toBe(true)
   })
 
+  it("global access", () => {
+    const qmap = qmapCreator()
+
+    const { includes } = qmap(`{
+      product {
+        &.provider.name,
+        id: &.product_id,
+        name: &.product_name
+      }
+    }`)
+
+    expect(includes(["product"])).toBe(true)
+    expect(includes(["product", "any"])).toBe(false)
+    expect(includes(["product_id"])).toBe(true)
+    expect(includes(["product_id", "any"])).toBe(true)
+    expect(includes(["product_name"])).toBe(true)
+    expect(includes(["product_name", "any"])).toBe(true)
+    expect(includes(["provider"])).toBe(true)
+    expect(includes(["provider", "name"])).toBe(true)
+    expect(includes(["provider", "another"])).toBe(false)
+  })
+
   it("function", () => {
     const qmap = qmapCreator()
 
