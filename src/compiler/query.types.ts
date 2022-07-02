@@ -14,7 +14,7 @@ export enum QueryType {
   PRIMITIVE = "primitive"
 }
 
-export type QueryNode = PrimitiveNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | GlobalAcccesQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
+export type QueryNode = PrimitiveNode | AllQueryNode | ExcludeQueryNode | SelectQueryNode | FunctionQueryNode | ClientFunctionQueryNode | AccessQueryNode | GlobalAccessQueryNode | RootQueryNode | SpreadQueryNode | RenameQueryNode | VarQueryNode | HideQueryNode
 
 export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
