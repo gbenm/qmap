@@ -650,6 +650,45 @@ describe("apply", () => {
     ])
   })
 
+  it ("new object", () => {
+    const { apply, errors } = qmap(`{
+      transaction {
+        product: {
+          &.provider,
+          id: product_id,
+          name: product_name
+        }
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      provider: {
+        id: 3,
+        name: "qmap"
+      },
+      transaction: {
+        id: 100,
+        product_id: 1929,
+        product_name: "lib"
+      }
+    })
+
+    expect(result).toEqual({
+      transaction: {
+        product: {
+          provider: {
+            id: 3,
+            name: "qmap"
+          },
+          id: 1929,
+          name: "lib"
+        }
+      }
+    })
+  })
+
   it ("function", () => {
     const { apply, errors } = qmap(`{
       upperCase(name),
