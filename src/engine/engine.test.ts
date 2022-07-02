@@ -637,6 +637,66 @@ describe("apply", () => {
     })
   })
 
+  it ("global access", () => {
+    const input = {
+      provider: {
+        id: 1,
+        name: "qmap"
+      },
+      product: {},
+      product_id: 2,
+      product_name: "package"
+    }
+
+    const input_array = [
+      input,
+      {
+        ...input,
+        product_name: "package2",
+        product_id: 3
+      }
+    ]
+
+    const { apply, errors } = qmap(`{
+      product {
+        id: &.product_id,
+        name: &.product_name,
+        provider: &.provider.name
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply(input)
+
+    expect(result).toEqual({
+      product: {
+        id: 2,
+        name: "package",
+        provider: "qmap"
+      }
+    })
+
+    const result2 = apply(input_array)
+
+    expect(result2).toEqual([
+      {
+        product: {
+          id: 2,
+          name: "package",
+          provider: "qmap"
+        }
+      },
+      {
+        product: {
+          id: 3,
+          name: "package2",
+          provider: "qmap"
+        }
+      },
+    ])
+  })
+
   it ("for each - function", () => {
     const { apply, errors } = qmap("{ names: [upperCase([concat(names, salt)])] }")
 
