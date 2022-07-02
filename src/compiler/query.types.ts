@@ -83,7 +83,7 @@ export interface AccessQueryNode extends CommonAccessQueryNode {
   type: QueryType.ACCESS
 }
 
-export interface GlobalAcccesQueryNode extends CommonAccessQueryNode {
+export interface GlobalAccessQueryNode extends CommonAccessQueryNode {
   type: QueryType.GLOBAL_ACCESS
 }
 
