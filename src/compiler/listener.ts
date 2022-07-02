@@ -166,7 +166,7 @@ export default class QMapListener extends Listener {
   }
 
   exitField_global(ctx: ListenerContext): void {
-    const field: Field = ctx.getChild(1).node
+    const field: Field = ctx.getChild(2).node
 
     field.globalAccess = true
 
