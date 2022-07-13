@@ -15,6 +15,8 @@ export interface ExecutionContext {
   getVar: (name: string) => unknown
   getFn: (name: string) => QMapFunction
   globalTarget: any
+  currentResult: any
+  functionScopedResult?: any
 }
 
 export interface ApplyDefinitionContext<T extends QueryNode> {

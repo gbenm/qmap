@@ -1,4 +1,4 @@
-import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
+import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, OnResultQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
 import { isNullable, mergeObjects } from "../../../utils"
 import { Nullable } from "../../../utils/types"
 import { QMapOptions } from "../types"
@@ -29,7 +29,8 @@ export function apply<R = any>(this: ApplyContext, target: any, overrideOptions?
 
       return fn
     },
-    globalTarget: target
+    globalTarget: target,
+    currentResult: {}
   }
 
   const getApplyFn = (query: any) => query?  setupApply.bind(null, executionContext, query.definitions) : (_, target) => target
@@ -42,6 +43,7 @@ export function apply<R = any>(this: ApplyContext, target: any, overrideOptions?
 
 function setupApply(context: ExecutionContext, definitions: QueryNode[], result: any, target: any): any {
   context.globalTarget = target
+  context.currentResult = result
   return _apply(context, definitions, result, target)
 }
 
@@ -88,6 +90,9 @@ function applyDefinition(context: ExecutionContext, result: any, def: QueryNode,
       break
     case QueryType.RENAME:
       result[def.alias] = applyDefinition(context, result, def.node, target)
+      break
+    case QueryType.ON_RESULT:
+      applyOnResultDefinition({ context, result, def, target })
       break
     case QueryType.NEW_OBJECT:
       applyNewObjectDefinition({ context, result, def, target })
@@ -154,10 +159,28 @@ function applyGlobalAccessDefinition({ context, def, result }: ApplyDefinitionCo
   })
 }
 
+function applyOnResultDefinition({ context, def, result }: ApplyDefinitionContext<OnResultQueryNode>) {
+  const globalTarget = context.globalTarget
+  context.globalTarget = context.currentResult
+  def.node["alias"] = def.alias
+
+  const scopedResult = Array.isArray(result) ? context.functionScopedResult : result
+
+  if (isNullable(scopedResult)) {
+    throw new Error("OnResultQueryDefinition: Result cannot be null")
+  }
+
+  applyDefinition(context, result, def.node, scopedResult)
+
+  context.globalTarget = globalTarget
+}
+
 function applyFunctionDefinition({ context, def, result, target }: ApplyDefinitionContext<FunctionQueryNode>) {
   const fn = context.getFn(def.name)
   let resultItem: any
   const arrayPosition = def.arrayPosition as number
+
+  context.functionScopedResult = result
 
   if (Number.isInteger(arrayPosition)) {
     resultItem = _apply(context, def.args, [], target)
