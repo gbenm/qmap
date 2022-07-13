@@ -445,6 +445,9 @@ describe("apply", () => {
           ...o,
           salt: "salt"
         }
+      },
+      createLabels({ id, name }) {
+        return `id: ${id} name: ${name}`
       }
     }
   })
@@ -686,6 +689,38 @@ describe("apply", () => {
           name: "lib"
         }
       }
+    })
+  })
+
+  test ("on result", () => {
+    const { apply, errors } = qmap(`{
+      products: take(products, @{3}),
+      compact_product: %{
+        products { id, name }
+      },
+      %{products.name},
+      createLabels(%{products})
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const result = apply({
+      products: (new Array(5).fill(0)).map((_, i) => ({
+        id: i,
+        name: `product ${i}`,
+        price: 10
+      })),
+    })
+
+    const resultProducts = (new Array(3).fill(0)).map((_, i) => ({
+      id: i,
+      name: `PRODUCT ${i}`,
+    }))
+
+    expect(result).toEqual({
+      compact_products: resultProducts,
+      products_name: resultProducts.map((product) => product.name),
+      products: resultProducts.map(qmap.functions["createLabels"])
     })
   })
 
