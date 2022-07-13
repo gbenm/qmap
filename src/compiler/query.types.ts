@@ -12,7 +12,8 @@ export enum QueryType {
   RENAME = "rename",
   VAR = "variable",
   HIDE = "hide",
-  PRIMITIVE = "primitive"
+  PRIMITIVE = "primitive",
+  ON_RESULT = "on-result"
 }
 
 export type QueryNode = PrimitiveNode
@@ -116,6 +117,12 @@ export interface SpreadQueryNode {
 
 export interface RenameQueryNode {
   type: QueryType.RENAME
+  alias: string
+  node: QueryNode
+}
+
+export interface OnResultQueryNode {
+  type: QueryType.ON_RESULT
   alias: string
   node: QueryNode
 }
