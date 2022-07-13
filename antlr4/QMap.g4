@@ -59,12 +59,15 @@ normal_client_fn: ID EX_MARK LEFT_PAREN (params | aparams) RIGHT_PAREN;
 map_client_fn: LEFT_BRACKET ID EX_MARK LEFT_PAREN params RIGHT_PAREN RIGHT_BRACKET;
 client_fn: normal_client_fn | map_client_fn;
 
+onresult: PERCENT LEFT_BRACE stm RIGHT_BRACE;
+
 fragment DOUBLE_QUOTE: '"';
 fragment SINGLE_QUOTE: '\'';
 fragment ESCAPE: '\\' ['"?abfnrtv\\];
 fragment DLOUBE_QUOTE_STR_CHAR: ~["]|ESCAPE|'\\'?'\r'?'\n';
 fragment SINGLE_QUOTE_STR_CHAR: ~[']|ESCAPE|'\\'?'\r'?'\n';
 
+PERCENT: '%';
 AT: '@';
 HASH: '#';
 LEFT_BRACKET: '[';
