@@ -30,6 +30,7 @@ export type QueryNode = PrimitiveNode
   | VarQueryNode
   | HideQueryNode
   | NewObjectQueryNode
+  | OnResultQueryNode
 
 export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
