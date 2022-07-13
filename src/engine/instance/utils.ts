@@ -1,7 +1,7 @@
 import { Nullable } from "../../utils/types"
 import { QMapContext, QMapFunction, QMapQuery } from "../creator/types"
 
-export function findInContext<T>(context: Nullable<QMapContext>, type: string, target: Nullable<string>): Nullable<T> {
+export function findInContext<T>(context: Nullable<QMapContext<any, any>>, type: string, target: Nullable<string>): Nullable<T> {
   if (!context || !target) {
     return null
   }
@@ -9,14 +9,14 @@ export function findInContext<T>(context: Nullable<QMapContext>, type: string, t
   return context[type][target] ?? findInContext<T>(context.extends, type, target)
 }
 
-export function findQuery(context: Nullable<QMapContext>, query: Nullable<string>): Nullable<QMapQuery> {
+export function findQuery(context: Nullable<QMapContext<any, any>>, query: Nullable<string>): Nullable<QMapQuery> {
   return findInContext<QMapQuery>(context, "queries", query)
 }
 
-export function findSchema(context: Nullable<QMapContext>, schema: Nullable<string>): Nullable<QMapQuery> {
+export function findSchema(context: Nullable<QMapContext<any, any>>, schema: Nullable<string>): Nullable<QMapQuery> {
   return findInContext<QMapQuery>(context, "schemas", schema)
 }
 
-export function findFunction(context: Nullable<QMapContext>, functionName: Nullable<string>): Nullable<QMapFunction> {
+export function findFunction(context: Nullable<QMapContext<any, any>>, functionName: Nullable<string>): Nullable<QMapFunction> {
   return findInContext(context, "functions", functionName)
 }

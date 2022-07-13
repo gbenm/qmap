@@ -1,6 +1,6 @@
 import { compile, QMapIndex, QueryNode, QueryType } from "../../compiler"
 import { qmap as qmapFn, QMap } from "../instance"
-import { QMapContext, QMapDescriptor, QMapQueries } from "./types"
+import { QMapContext, QMapDescriptor, QMapFunctions, QMapQueries } from "./types"
 
 function fromDefinitionsToJson(definitions: QueryNode[], descriptor: QMapIndex) {
   return definitions.reduce<QMapQueries>((definitions, definition) => {
@@ -16,18 +16,18 @@ function fromDefinitionsToJson(definitions: QueryNode[], descriptor: QMapIndex) 
   }, {})
 }
 
-export function qmapCreator(descriptor?: QMapDescriptor): QMap {
+export function qmapCreator<Pctx extends QMapContext<any, any>, Fns extends QMapFunctions>(descriptor?: QMapDescriptor<Pctx, Fns>): QMap<Pctx, Fns> {
   const { definitions: schemaDefinitions, descriptor: schemaDescriptor } = compile(descriptor?.schemas)
   const { definitions: queryDefinitions, descriptor: queryDescriptor } = compile(descriptor?.queries)
 
-  const context: QMapContext = {
+  const context: QMapContext<Pctx, Fns> = {
     extends: descriptor?.extends,
-    functions: descriptor?.functions ?? {},
+    functions: descriptor?.functions ?? {} as Fns,
     schemas: fromDefinitionsToJson(schemaDefinitions, schemaDescriptor as QMapIndex),
     queries: fromDefinitionsToJson(queryDefinitions, queryDescriptor as QMapIndex)
   }
 
-  const qmap: QMap = qmapFn.bind(context) as QMap
+  const qmap = qmapFn.bind(context) as QMap<Pctx, Fns>
 
   Object.keys(context).forEach(key => qmap[key] = context[key])
 

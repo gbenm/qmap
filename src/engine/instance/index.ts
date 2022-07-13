@@ -8,7 +8,7 @@ import { findQuery, findSchema } from "./utils"
 export { QMap } from "./types"
 export * from "./features"
 
-export function qmap(this: QMapContext, target: Nullable<string>, options?: QMapOptions): QMapExecutors {
+export function qmap(this: QMapContext<any, any>, target: Nullable<string>, options?: QMapOptions): QMapExecutors {
   const root = compile(target)
 
   return {
@@ -18,7 +18,7 @@ export function qmap(this: QMapContext, target: Nullable<string>, options?: QMap
       query: findQuery(this, root.query),
       schema: findSchema(this, options?.schema),
       variables: options?.variables
-    }),
+    }) as any,
     includes: includes.bind({
       root,
       context: this,

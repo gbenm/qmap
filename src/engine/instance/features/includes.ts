@@ -6,7 +6,7 @@ import { findSchema } from "../utils"
 
 type IncludesContext = {
   root: RootQueryNode
-  context: QMapContext
+  context: QMapContext<any, any>
   query: Nullable<QMapQuery>
   schema: Nullable<QMapQuery>
 }

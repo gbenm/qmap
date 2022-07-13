@@ -1,14 +1,13 @@
 import { Nullable } from "../../utils/types"
-import { QMapContext } from "../creator/types"
+import { QMapContext, QMapFunctions } from "../creator/types"
 
-export interface QMap extends QMapContext {
+export interface QMap<Pctx extends QMapContext<any, any>, Fns extends QMapFunctions> extends QMapContext<Pctx, Fns> {
   (query: Nullable<string>, options?: Nullable<QMapOptions>): QMapExecutors
 }
 
 export interface QMapExecutors {
   errors: unknown[] | undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  apply: (target: any, overrideOptions?: Nullable<QMapOptions>) => any
+  apply<T>(target: any, overrideOptions?: Nullable<QMapOptions>): T
   includes: (path: string[], overrideOptions?: Nullable<QMapIncludesOptions>) => boolean
 }
 

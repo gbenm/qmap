@@ -5,7 +5,7 @@ import { QMapVars } from "../types"
 
 export interface ApplyContext {
   root: RootQueryNode
-  context: QMapContext
+  context: QMapContext<any, any>
   query: Nullable<QMapQuery>
   schema: Nullable<QMapQuery>
   variables: Nullable<QMapVars>
