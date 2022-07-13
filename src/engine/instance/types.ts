@@ -1,7 +1,7 @@
 import { Nullable } from "../../utils/types"
 import { QMapContext, QMapFunctions } from "../creator/types"
 
-export interface QMap<Pctx extends QMapContext<any, any>, Fns extends QMapFunctions> extends QMapContext<Pctx, Fns> {
+export interface QMap<Pctx extends QMapContext<any, any> | undefined, Fns extends QMapFunctions> extends QMapContext<Pctx, Fns> {
   (query: Nullable<string>, options?: Nullable<QMapOptions>): QMapExecutors
 }
 

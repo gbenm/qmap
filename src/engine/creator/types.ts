@@ -7,7 +7,7 @@ export interface QMapFunctions {
   [key: string]: QMapFunction
 }
 
-export interface QMapDescriptor<Pctx extends QMapContext<any, any>, Fns extends QMapFunctions> {
+export interface QMapDescriptor<Pctx extends QMapContext<any, any> | undefined, Fns extends QMapFunctions> {
   extends?: Pctx
   functions?: Fns
   schemas?: string
@@ -23,8 +23,8 @@ export interface QMapQueries {
   [key: string]: QMapQuery
 }
 
-export interface QMapContext<Pctx extends QMapContext<any, any>, Fns extends QMapFunctions> {
-  extends?: Pctx
+export interface QMapContext<Pctx extends QMapContext<any, any> | undefined, Fns extends QMapFunctions> {
+  extends: Pctx
   functions: Fns
   schemas: QMapQueries
   queries: QMapQueries
