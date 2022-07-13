@@ -302,5 +302,14 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by QMapParser#onresult.
+	enterOnresult(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#onresult.
+	exitOnresult(ctx) {
+	}
+
+
 
 }
