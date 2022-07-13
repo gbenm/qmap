@@ -695,27 +695,25 @@ describe("apply", () => {
   test ("on result", () => {
     const { apply, errors } = qmap(`{
       products: take(products, @{3}),
-      compact_product: %{
+      compact_products: %{
         products { id, name }
       },
       %{products.name},
-      createLabels(%{products})
+      createLabels(@[%{products}])
     }`)
 
     expect(errors).toBeFalsy()
 
-    const result = apply({
+    const input = {
       products: (new Array(5).fill(0)).map((_, i) => ({
         id: i,
         name: `product ${i}`,
         price: 10
       })),
-    })
+    }
+    const result = apply(input)
 
-    const resultProducts = (new Array(3).fill(0)).map((_, i) => ({
-      id: i,
-      name: `PRODUCT ${i}`,
-    }))
+    const resultProducts = input.products.slice(0, 3).map(({ id, name }) => ({ id, name }))
 
     expect(result).toEqual({
       compact_products: resultProducts,
