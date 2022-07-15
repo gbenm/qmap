@@ -750,6 +750,31 @@ describe("apply", () => {
         }
       })
     })
+
+    test ("compose functions", () => {
+      const input = {
+        products: (new Array(5).fill(0)).map((_, i) => ({
+          id: i,
+          name: `product ${i}`,
+          price: 10
+        })),
+      }
+
+      const { apply, errors } = qmap(`{
+        product_names: products.name,
+        product_names: [ upperCase(take(%{product_names}, @{3})) ]
+      }`)
+
+      expect(errors).toBeFalsy()
+
+      const result = apply(input)
+
+      const productNames = input.products.slice(0, 3).map(({ name }) => name.toUpperCase())
+
+      expect(result).toEqual({
+        product_names: productNames
+      })
+    })
   })
 
   it ("function", () => {
