@@ -40,7 +40,7 @@ query
     | new_object
 ;
 
-query_list: query ((COMMA | SEMICOLON)? query)* (COMMA | SEMICOLON)?;
+query_list: query ((COMMA | SEMICOLON) query)* (COMMA | SEMICOLON)?;
 
 obj_ref: id (DOT id)*;
 
