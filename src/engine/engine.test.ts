@@ -692,33 +692,63 @@ describe("apply", () => {
     })
   })
 
-  test ("on result", () => {
-    const { apply, errors } = qmap(`{
-      products: take(products, @{3}),
-      compact_products: %{
-        products { id, name }
-      },
-      %{products.name},
-      createLabels(@[%{products}])
-    }`)
+  describe("on result", () => {
+    test ("simple", () => {
+      const { apply, errors } = qmap(`{
+        products: take(products, @{3}),
+        compact_products: %{
+          products { id, name }
+        },
+        %{products.name},
+        createLabels(@[%{products}])
+      }`)
 
-    expect(errors).toBeFalsy()
+      expect(errors).toBeFalsy()
 
-    const input = {
-      products: (new Array(5).fill(0)).map((_, i) => ({
-        id: i,
-        name: `product ${i}`,
-        price: 10
-      })),
-    }
-    const result = apply(input)
+      const input = {
+        products: (new Array(5).fill(0)).map((_, i) => ({
+          id: i,
+          name: `product ${i}`,
+          price: 10
+        })),
+      }
+      const result = apply(input)
 
-    const resultProducts = input.products.slice(0, 3).map(({ id, name }) => ({ id, name }))
+      const resultProducts = input.products.slice(0, 3).map(({ id, name }) => ({ id, name }))
 
-    expect(result).toEqual({
-      compact_products: resultProducts,
-      products_name: resultProducts.map((product) => product.name),
-      products: resultProducts.map(qmap.functions["createLabels"])
+      expect(result).toEqual({
+        compact_products: resultProducts,
+        products_name: resultProducts.map((product) => product.name),
+        products: resultProducts.map(qmap.functions["createLabels"])
+      })
+    })
+
+    test ("global access", () => {
+      const input = {
+        salt: "salt",
+        transaction: {
+          id: 3,
+          description: "pretty test"
+        }
+      }
+
+      const { apply, errors } = qmap(`{
+        upperCase(salt),
+        transaction {
+          id: concat(%{&.salt}, id)
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+
+      const result = apply(input)
+
+      expect(result).toEqual({
+        salt: "SALT",
+        transaction: {
+          id: "SALT3"
+        }
+      })
     })
   })
 
