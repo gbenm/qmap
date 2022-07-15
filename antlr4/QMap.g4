@@ -40,7 +40,7 @@ query
     | new_object
 ;
 
-query_list: query (COMMA query)* COMMA?;
+query_list: query ((COMMA | SEMICOLON)? query)* (COMMA | SEMICOLON)?;
 
 obj_ref: id (DOT id)*;
 
@@ -77,6 +77,7 @@ RIGHT_BRACE: '}';
 EX_MARK: '!';
 COLON: ':';
 COMMA: ',';
+SEMICOLON: ';';
 TRIPLE_DOT: '...';
 DOT: '.';
 LEFT_PAREN: '(';
