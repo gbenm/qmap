@@ -4,3 +4,4 @@
 node_modules/
 dist/
 src/compiler/syntax
+*.ignore.*
