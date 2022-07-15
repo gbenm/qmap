@@ -218,7 +218,7 @@ describe("fields", () => {
   })
 
   it("multiple", () => {
-    const { definitions, descriptor } = compile("{ first_name, last_name, age, image }")
+    const { definitions, descriptor } = compile("{ first_name; last_name; age; image }")
 
     const queryNodes: QueryNode[] = [
       {
@@ -338,11 +338,11 @@ describe("fields", () => {
 
     it("multiple", () => {
       const query = `cartitem {
-        id,
-        transaction.product { id, name },
+        id
+        transaction.product { id, name }
         transaction {
           id
-        },
+        }
         user.account { email }
       }`
 
