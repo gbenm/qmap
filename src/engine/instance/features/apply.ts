@@ -180,7 +180,9 @@ function applyFunctionDefinition({ context, def, result, target }: ApplyDefiniti
   let resultItem: any
   const arrayPosition = def.arrayPosition as number
 
-  context.functionScopedResult = result
+  if (!Array.isArray(result)) {
+    context.functionScopedResult = result
+  }
 
   if (Number.isInteger(arrayPosition)) {
     resultItem = _apply(context, def.args, [], target)
