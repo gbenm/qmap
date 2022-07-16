@@ -147,3 +147,7 @@ export interface RootQueryNode<IType = null> {
   descriptor: IType
   errors: unknown[]
 }
+
+export type QueryNodeVisitor = {
+  [T in QueryType]: (n: { type: T } & QueryNode) => void
+}
