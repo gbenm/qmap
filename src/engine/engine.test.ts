@@ -452,6 +452,65 @@ describe("apply", () => {
     }
   })
 
+  describe ("over option", () => {
+    test("empty", () => {
+      const { apply, errors } = qmap("{ id, name }")
+      expect(errors).toBeFalsy()
+
+      const result = apply({
+        id: 3,
+        name: "Test"
+      }, { over: [] })
+
+      expect(result).toEqual({
+        id: 3,
+        name: "Test"
+      })
+    })
+
+    test ("simple", () => {
+      const { apply, errors } = qmap("{ id, name }")
+      expect(errors).toBeFalsy()
+
+      const result = apply({
+        data: {
+          id: 3,
+          name: "Test"
+        }
+      }, { over: ["data"] })
+
+      result
+
+      expect(result).toEqual({
+        data: {
+          id: 3,
+          name: "Test"
+        }
+      })
+    })
+
+    test("deep", () => {
+      const { apply, errors } = qmap("{ id, name }")
+      expect(errors).toBeFalsy()
+
+      const result = apply({
+        response: {
+          data: {
+            id: 3,
+            name: "Test"
+          }
+        }
+      }, { over: ["response", "data"] })
+
+      expect(result).toEqual({
+        data: {
+          id: 3,
+          name: "Test"
+        }
+      })
+    })
+  })
+
   it ("nested select", () => {
     const { apply, errors } = qmap(`{
       balance,
