@@ -2,6 +2,7 @@ import { QueryNode, RootQueryNode } from "../../../compiler"
 import { Nullable } from "../../../utils/types"
 import { QMapContext, QMapFunction, QMapQuery } from "../../creator/types"
 import { QMapVars } from "../types"
+import { QMapOptions } from "../types"
 
 export interface ApplyContext {
   root: RootQueryNode
@@ -24,4 +25,8 @@ export interface ApplyDefinitionContext<T extends QueryNode> {
   result: any
   def: T
   target: any
+}
+
+export interface ApplyOptions extends QMapOptions {
+  over?: string[]
 }

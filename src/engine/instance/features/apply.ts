@@ -1,20 +1,21 @@
 import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, OnResultQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
-import { isNullable, mergeObjects } from "../../../utils"
+import { getValue, isNullable, mergeObjects } from "../../../utils"
 import { Nullable } from "../../../utils/types"
-import { QMapOptions } from "../types"
 import { findFunction, findSchema } from "../utils"
-import { ApplyContext, ApplyDefinitionContext, ExecutionContext } from "./types"
+import { ApplyContext, ApplyDefinitionContext, ApplyOptions, ExecutionContext } from "./types"
 
-export function apply<R = any>(this: ApplyContext, target: any, overrideOptions?: Nullable<QMapOptions>): R {
-  if (overrideOptions) {
+export function apply<R = any>(this: ApplyContext, initialTarget: any, overrideOptions?: Nullable<ApplyOptions>, first = true): R {
+  if (overrideOptions && first) {
     if (overrideOptions.schema) {
       this.schema = findSchema(this.context, overrideOptions.schema)
     }
     if (overrideOptions.variables) {
       this.variables = mergeObjects(overrideOptions.variables, this.variables)
     }
-    return apply.call(this, target) as R
+    return apply.call(this, initialTarget, overrideOptions, false) as R
   }
+
+  const { target, key: targetKey, parentTarget } = getTarget(initialTarget, overrideOptions)
 
   const executionContext: ExecutionContext = {
     getVar: (name: string) => {
@@ -38,7 +39,29 @@ export function apply<R = any>(this: ApplyContext, target: any, overrideOptions?
 
   const overSchema = getResult(target, getApplyFn(this.schema))
   const overQuery = getResult(overSchema, getApplyFn(this.query))
-  return getResult(overQuery, getApplyFn(this.root))
+  const result = getResult(overQuery, getApplyFn(this.root))
+
+  if (parentTarget && targetKey) {
+    parentTarget[targetKey] = result
+    return parentTarget
+  }
+
+  return result
+}
+
+function getTarget(target: any, options: Nullable<ApplyOptions>) {
+  if (options && options.over && options.over.length > 0) {
+    const keys = options.over.slice(0, -1)
+    const [key] = options.over.slice(-1)
+    const parentTarget = getValue(target, keys)
+    return {
+      target: parentTarget[key],
+      parentTarget,
+      key
+    }
+  }
+
+  return { target }
 }
 
 function setupApply(context: ExecutionContext, definitions: QueryNode[], result: any, target: any): any {
