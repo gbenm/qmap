@@ -5,7 +5,7 @@ import { QMapIncludesOptions } from "../types"
 import { findSchema } from "../utils"
 
 type IncludesContext = {
-  root: RootQueryNode
+  root: RootQueryNode<QMapIndex>
   context: QMapContext<any, any>
   query: Nullable<QMapQuery>
   schema: Nullable<QMapQuery>

@@ -1,5 +1,4 @@
 import { ASTNode, SymbolTable, rootScope, QueryNode, QueryType, CompilerConfig, SpreadIds, NamedQueryNode } from ".."
-import { allQuery } from "../SymbolTable"
 import { searchQueryNode } from "../utils"
 
 export class Spread implements ASTNode {
@@ -9,13 +8,11 @@ export class Spread implements ASTNode {
     const isAllQuery = !this.ids || this.ids.length === 0
 
     return isAllQuery
-      ? this.generateAllNode(parentTable)
+      ? this.generateAllNode()
       : this.generateSpreadNode(parentTable)
   }
 
-  generateAllNode(parentTable: SymbolTable): QueryNode {
-    parentTable.addToIndex(allQuery)
-
+  generateAllNode(): QueryNode {
     return {
       type: QueryType.ALL,
     }
@@ -41,7 +38,7 @@ export class Spread implements ASTNode {
 
   getNodeFromRoot(parentTable: SymbolTable, ids: string[]): QueryNode {
     const [primaryId, ...otherIds] = ids
-    const [node, path] = parentTable.lookup(primaryId, rootScope)
+    const [node] = parentTable.lookup(primaryId, rootScope)
 
     if (!node) {
       throw new Error(`Cannot find ${primaryId} in root scope`)
@@ -53,13 +50,11 @@ export class Spread implements ASTNode {
       throw new Error(`Cannot find ${ids.join(".")} in root scope`)
     }
 
-    parentTable.copyIndexFrom(...(path || []), primaryId, ...otherIds)
-
     return queryNode
   }
 
   getNodeFromScope(parentTable: SymbolTable, primaryId: string, otherIds: string[]): QueryNode {
-    const [node, path] = parentTable.lookup(primaryId as string)
+    const [node] = parentTable.lookup(primaryId as string)
 
     if (!node) {
       throw new Error(`Cannot find ${primaryId} in scope`)
@@ -70,8 +65,6 @@ export class Spread implements ASTNode {
     if (!queryNode) {
       throw new Error(`Cannot find ${this.ids.join(".")} in scope`)
     }
-
-    parentTable.copyIndexFrom(...(path || []), primaryId, ...otherIds)
 
     return queryNode
   }

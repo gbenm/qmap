@@ -16,7 +16,7 @@ export enum QueryType {
   ON_RESULT = "on-result"
 }
 
-export type QueryNode = PrimitiveNode
+export type QueryNode<IType = QMapIndex> = PrimitiveNode
   | AllQueryNode
   | ExcludeQueryNode
   | SelectQueryNode
@@ -24,7 +24,7 @@ export type QueryNode = PrimitiveNode
   | ClientFunctionQueryNode
   | AccessQueryNode
   | GlobalAccessQueryNode
-  | RootQueryNode
+  | RootQueryNode<IType>
   | SpreadQueryNode
   | RenameQueryNode
   | VarQueryNode
@@ -140,10 +140,10 @@ export interface HideQueryNode {
   index: QMapIndex
 }
 
-export interface RootQueryNode {
+export interface RootQueryNode<IType = null> {
   type: QueryType.ROOT
   definitions: QueryNode[]
   query?: string
-  descriptor: QMapIndex
+  descriptor: IType
   errors: unknown[]
 }

@@ -7,7 +7,7 @@ export class OnResult implements ASTNode {
   constructor (private node: ASTNode) { }
 
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
-    const table = parentTable.createScope(undefined, true)
+    const table = parentTable.createScope()
 
     const node = this.node.generate(config, table) as (QueryNode & { alias?: string, name?: string })
 

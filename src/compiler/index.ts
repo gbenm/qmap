@@ -2,7 +2,7 @@ import QMapLexer from "./syntax/QMapLexer"
 import QMapParser from "./syntax/QMapParser"
 import QMapListener from "./listener"
 import antlr from "antlr4"
-import { QueryType, RootQueryNode } from "./query.types"
+import { QMapIndex, QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
 import { mergeObjects } from "../utils"
 import { Root } from "./astn"
@@ -28,7 +28,7 @@ const defaultConfig: CompilerConfig = {
   ignoreIndex: false
 }
 
-export function compile (query: string | undefined | null, config: Partial<CompilerConfig> = defaultConfig): RootQueryNode {
+export function compile (query: string | undefined | null, config: Partial<CompilerConfig> = defaultConfig): RootQueryNode<QMapIndex> {
   config = mergeObjects(config, defaultConfig)
 
   const errors: unknown[] = []
@@ -50,11 +50,15 @@ export function compile (query: string | undefined | null, config: Partial<Compi
 
   try {
     const tree = parser.start() as StartContext
-    const root = tree.root.generate(config as CompilerConfig) as RootQueryNode
+    const root = tree.root.generate(config as CompilerConfig) as RootQueryNode<QMapIndex | null>
 
     root.errors = errors
 
-    return root
+    if (!root.descriptor) {
+      root.descriptor = { index: {} }
+    }
+
+    return root as RootQueryNode<QMapIndex>
   } catch (error: unknown) {
     errors.push(error)
   }
