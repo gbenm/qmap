@@ -1,11 +1,11 @@
 export enum QueryType {
   ROOT = "root",
   SELECT = "select",
-  NEW_OBJECT = "new-object",
+  NEW_OBJECT = "newObject",
   FUNCTION = "function",
-  CLIENT_FUNCTION = "client_function",
+  CLIENT_FUNCTION = "clientFunction",
   ACCESS = "access",
-  GLOBAL_ACCESS = "global_access",
+  GLOBAL_ACCESS = "globalAccess",
   ALL = "all",
   EXCLUDE = "exclude",
   SPREAD = "spread",
@@ -13,7 +13,7 @@ export enum QueryType {
   VAR = "variable",
   HIDE = "hide",
   PRIMITIVE = "primitive",
-  ON_RESULT = "on-result"
+  ON_RESULT = "onResult"
 }
 
 export type QueryNode<IType = QMapIndex> = PrimitiveNode
@@ -148,6 +148,6 @@ export interface RootQueryNode<IType = null> {
   errors: unknown[]
 }
 
-export type QueryNodeVisitor = {
-  [T in QueryType]: (n: { type: T } & QueryNode) => void
+export type QueryNodeInterface = {
+  [T in QueryType]: (n: { type: T } & QueryNode) => any
 }
