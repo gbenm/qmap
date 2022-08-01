@@ -149,5 +149,5 @@ export interface RootQueryNode<IType = null> {
 }
 
 export type QueryNodeInterface = {
-  [T in QueryType]: (n: { type: T } & QueryNode) => any
+  [T in QueryType]: (n: { type: T } & QueryNode, ...args: any[]) => any
 }
