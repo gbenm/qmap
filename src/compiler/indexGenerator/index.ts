@@ -176,7 +176,7 @@ class IndexStore {
   }
 
   popScope() {
-    const prevExclude = this.getValueFromIndexSnapshot(this.currentPath)?.exclude
+    const prevExclude = this.getValueFromIndexExcludesSnapshot(this.currentPath)?.exclude
     const scopedIndex = this.scopedIndex()
     if (prevExclude) {
       const currentExclude = this.currentExcludeToArray()
@@ -195,7 +195,7 @@ class IndexStore {
     if (!scopedIndex.all) {
       scopedIndex.all = true
     } else {
-      this.takeSnapshot()
+      this.takeExcludesSnapshot()
       scopedIndex.exclude = {}
     }
   }
@@ -225,13 +225,17 @@ class IndexStore {
     })
   }
 
-  private getValueFromIndexSnapshot(path: string[]): QMapIndex | undefined {
-    return getValue(this.snapshot, path, (value: QMapIndex | null, key) => {
-      return value?.index[key]
+  private getValueFromIndexExcludesSnapshot(path: string[]): QMapIndex {
+    return getValue(this.snapshot, path, (value: QMapIndex, key) => {
+      if (!value.index[key]) {
+        value.index[key] = { index: {} }
+      }
+      return value.index[key]
     })
   }
 
-  private takeSnapshot() {
-    this.snapshot = JSON.parse(JSON.stringify(this.index))
+  private takeExcludesSnapshot() {
+    const index = this.getValueFromIndexExcludesSnapshot(this.currentPath)
+    index.exclude = this.scopedIndex().exclude
   }
 }
