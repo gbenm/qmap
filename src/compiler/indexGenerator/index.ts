@@ -112,9 +112,11 @@ class IndexStore {
   private index: QMapIndex
   private scopes: IndexStoreScope[]
   private availableID: number
+  private snapshot: QMapIndex
 
   constructor() {
     this.index = { index: {} }
+    this.snapshot = { index: {} }
     this.scopes = [
       { id: 0, path: [] }
     ]
@@ -129,7 +131,7 @@ class IndexStore {
     return this.currentScope.path
   }
 
-  private get scopedIndex(): QMapIndex {
+  private scopedIndex(): QMapIndex {
     return this.getValueFromIndex(this.index, this.currentPath)
   }
 
@@ -147,7 +149,8 @@ class IndexStore {
   }
 
   enterScope(firstScope: string, ...otherScopes: string[]) {
-    this.addToIndex(this.scopedIndex, firstScope, ...otherScopes)
+    const scopedIndex = this.scopedIndex()
+    this.addToIndex(scopedIndex, firstScope, ...otherScopes)
     this.scopes.unshift({
       id: this.availableID++,
       path: [...this.currentPath, firstScope, ...otherScopes],
@@ -155,7 +158,7 @@ class IndexStore {
   }
 
   private addToIndex(scopedIndex: QMapIndex, scope: string, ...scopes: string[]) {
-    const targetIndex = this.scopedIndex.index[scope]
+    const targetIndex = scopedIndex.index[scope]
 
     if (!targetIndex) {
       scopedIndex.index[scope] = {
@@ -173,41 +176,62 @@ class IndexStore {
   }
 
   popScope() {
-    if (this.currentScope?.prevExclude) {
+    const prevExclude = this.getValueFromIndexSnapshot(this.currentPath)?.exclude
+    const scopedIndex = this.scopedIndex()
+    if (prevExclude) {
       const currentExclude = this.currentExcludeToArray()
-      this.scopedIndex.exclude = intersect(currentExclude, this.currentScope.prevExclude)
+      scopedIndex.exclude = intersect(currentExclude, this.excludeToArray(prevExclude))
         .reduce((excludeIndex, target) => {
           excludeIndex[target] = true
           return excludeIndex
         }, {})
     }
+
     this.scopes.shift()
   }
 
   addIncludeAll() {
-    if (!this.scopedIndex.all) {
-      this.scopedIndex.all = true
+    const scopedIndex = this.scopedIndex()
+    if (!scopedIndex.all) {
+      scopedIndex.all = true
     } else {
-      this.currentScope.prevExclude = this.currentExcludeToArray()
+      this.takeSnapshot()
+      scopedIndex.exclude = {}
     }
   }
 
   exclude(name: string) {
-    if (this.scopedIndex.all) {
-      if (!this.scopedIndex.exclude) {
-        this.scopedIndex.exclude = {}
+    const scopedIndex = this.scopedIndex()
+    if (scopedIndex.all) {
+      if (!scopedIndex.exclude) {
+        scopedIndex.exclude = {}
       }
-      this.scopedIndex.exclude[name] = true
+      scopedIndex.exclude[name] = true
     }
   }
 
   private currentExcludeToArray(): string[] {
-    return Object.keys(this.scopedIndex.exclude ?? {})
+    const scopedIndex = this.scopedIndex()
+    return this.excludeToArray(scopedIndex.exclude)
+  }
+
+  private excludeToArray(exclude: QMapIndex["exclude"]): string[] {
+    return Object.keys(exclude ?? {})
   }
 
   private getValueFromIndex(index: QMapIndex, path: string[]): QMapIndex {
     return getValue(index, path, (value: QMapIndex, key) => {
       return value.index[key]
     })
+  }
+
+  private getValueFromIndexSnapshot(path: string[]): QMapIndex | undefined {
+    return getValue(this.snapshot, path, (value: QMapIndex | null, key) => {
+      return value?.index[key]
+    })
+  }
+
+  private takeSnapshot() {
+    this.snapshot = JSON.parse(JSON.stringify(this.index))
   }
 }
