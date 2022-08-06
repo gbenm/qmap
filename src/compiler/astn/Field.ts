@@ -1,6 +1,5 @@
 import { ASTNode, SymbolTable, QueryNode, CompilerConfig, QueryType, SelectQueryNode } from ".."
 import { buildDefinitionsFromASTNodes } from "../utils"
-import { Spread } from "./Spread"
 
 export class Field implements ASTNode {
   public globalAccess = false
@@ -17,11 +16,6 @@ export class Field implements ASTNode {
       table,
       nodes: this.nodes
     })
-
-    if(definitions.length === 0) {
-      // sets all flag to true
-      new Spread([]).generate(config, table)
-    }
 
     if (this.globalAccess) {
       return {
