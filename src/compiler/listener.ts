@@ -66,14 +66,10 @@ export default class QMapListener extends Listener {
 
   exitFn_stm(ctx: ListenerContext): void {
     const fn: FunctionNode = ctx.getChild(0).node
-    const indexRef = ctx.getChild(1)
-    const queryList = ctx.getChild(2) ?? indexRef
+    const queryList = ctx.getChild(1)
 
     if (queryList) {
       fn.setQueryList(queryList.nodes)
-      if (Array.isArray(indexRef.ids)) {
-        fn.definitionsIndexRef = indexRef.ids
-      }
     }
 
     ctx.node = fn
@@ -154,15 +150,29 @@ export default class QMapListener extends Listener {
     ctx.ids = ignoreTerminals(ctx.children, id => id.text)
   }
 
-  exitField_scoped(ctx: ListenerContext): void {
+  exitField_defs(ctx: ListenerContext): void {
+    forwardNode(ctx, {
+      index: 1,
+      key: "nodes"
+    })
+  }
+
+  exitIndex_select(ctx: ListenerContext): void {
     const objRef = ctx.getChild(0)
     const queryList = ctx.getChild(2)
 
-    if (queryList) {
-      ctx.node = new Field(objRef.ids, queryList.nodes)
-    } else {
-      ctx.node = new Field(objRef.ids)
-    }
+    ctx.node = new Field(objRef.ids, queryList.nodes, true)
+  }
+
+  exitSelect(ctx: ListenerContext): void {
+    const objRef = ctx.getChild(0)
+    const queryList = ctx.getChild(1)
+
+    ctx.node = new Field(objRef.ids, queryList?.nodes)
+  }
+
+  exitField_scoped(ctx: ListenerContext): void {
+    forwardNode(ctx)
   }
 
   exitField_global(ctx: ListenerContext): void {

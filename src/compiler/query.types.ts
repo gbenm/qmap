@@ -37,6 +37,7 @@ export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 export type FnQueryNode = QueryNode & CommonFunctionQueryNode
 
 export type ParentQueryNode = QueryNode & Pick<CommonQueryNode, "definitions">
+export type ParentIndexQueryNode = QueryNode & Pick<SelectQueryNode, "definitions" | "indexDefinitions">
 
 export interface QMapIndex {
   index: {
@@ -90,6 +91,7 @@ export interface ExcludeQueryNode {
 
 export interface SelectQueryNode extends CommonNamedQueryNode {
   type: QueryType.SELECT
+  indexDefinitions: QueryNode[]
 }
 
 export interface NewObjectQueryNode extends CommonQueryNode {
@@ -104,10 +106,12 @@ export interface CommonAccessQueryNode extends CommonQueryNode {
 
 export interface AccessQueryNode extends CommonAccessQueryNode {
   type: QueryType.ACCESS
+  indexDefinitions: QueryNode[]
 }
 
 export interface GlobalAccessQueryNode extends CommonAccessQueryNode {
   type: QueryType.GLOBAL_ACCESS
+  indexDefinitions: QueryNode[]
 }
 
 export type SpreadIds = [(string | symbol)?, ...string[]]

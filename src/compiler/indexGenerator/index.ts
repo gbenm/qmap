@@ -1,5 +1,5 @@
 import { getValue, intersect } from "../../utils"
-import { AccessQueryNode, ClientFunctionQueryNode, ExcludeQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, ParentQueryNode, QMapIndex, QueryNode, QueryType, RenameQueryNode, RootQueryNode, SelectQueryNode, SpreadQueryNode } from "../query.types"
+import { AccessQueryNode, ClientFunctionQueryNode, ExcludeQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, ParentIndexQueryNode, ParentQueryNode, QMapIndex, QueryNode, QueryType, RenameQueryNode, RootQueryNode, SelectQueryNode, SpreadQueryNode } from "../query.types"
 import { QueryNodeVisitor } from "../queryNodeVisitor"
 import { IndexStoreScope } from "./types"
 
@@ -20,6 +20,7 @@ export class IndexGenerator extends QueryNodeVisitor {
     this.store.enterScope(n.name)
 
     this.visitChildren(n, "definitions")
+    this.visitChildren(n, "indexDefinitions")
     this.setAllIfEmpty(n)
 
     this.store.popScope()
@@ -43,12 +44,14 @@ export class IndexGenerator extends QueryNodeVisitor {
     const [scope, ...rest] = n.keys
     this.store.enterScope(scope, ...rest)
     this.visitChildren(n, "definitions")
+    this.visitChildren(n, "indexDefinitions")
     this.setAllIfEmpty(n)
     this.store.popScope()
   }
 
   globalAccess(n: GlobalAccessQueryNode): void {
     this.visitChildren(n, "definitions")
+    this.visitChildren(n, "indexDefinitions")
     // TODO:
   }
 
@@ -88,8 +91,12 @@ export class IndexGenerator extends QueryNodeVisitor {
     (<any> node)[key].forEach(child => this.visit(child))
   }
 
-  private setAllIfEmpty(n: ParentQueryNode) {
-    if (n.definitions.length === 0) {
+  private setAllIfEmpty(n: ParentQueryNode | ParentIndexQueryNode) {
+    const indexNode = <ParentIndexQueryNode> n
+    const includeAllParentIndex = indexNode.indexDefinitions && n.definitions.length === 0 && indexNode.indexDefinitions.length === 0
+    const includeAll = !indexNode.indexDefinitions && n.definitions.length === 0
+
+    if (includeAll || includeAllParentIndex) {
       this.store.addIncludeAll()
     }
   }

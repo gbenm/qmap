@@ -15,8 +15,6 @@ function generateNameFromNodes (nodes: QueryNode[]): string {
 }
 
 export class Function implements ASTNode {
-  public definitionsIndexRef?: string[]
-
   constructor(
     private name: string,
     private args: ASTNode[],
