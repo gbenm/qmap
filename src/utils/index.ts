@@ -54,3 +54,7 @@ export const mergeObjects = (obj: any, obj2: any) => {
 
   return result
 }
+
+export function intersect<T>(arr1: T[], arr2: T[]): T[] {
+  return arr1.filter(a => arr2.includes(a))
+}
