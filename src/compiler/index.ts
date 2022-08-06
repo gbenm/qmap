@@ -6,6 +6,7 @@ import { QMapIndex, QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
 import { mergeObjects } from "../utils"
 import { Root } from "./astn"
+import { IndexGenerator } from "./indexGenerator"
 
 export * from "./ASTNode"
 export * from "./SymbolTable"
@@ -48,6 +49,8 @@ export function compile (query: string | undefined | null, config: Partial<Compi
   })
   parser.addParseListener(new QMapListener())
 
+  const gen = new IndexGenerator()
+
   try {
     const tree = parser.start() as StartContext
     const root = tree.root.generate(config as CompilerConfig) as RootQueryNode<QMapIndex | null>
@@ -55,7 +58,11 @@ export function compile (query: string | undefined | null, config: Partial<Compi
     root.errors = errors
 
     if (!root.descriptor) {
-      root.descriptor = { index: {} }
+      if (!config.ignoreIndex) {
+        root.descriptor = gen.createIndexFrom(root)
+      } else {
+        root.descriptor = { index: {} }
+      }
     }
 
     return root as RootQueryNode<QMapIndex>
@@ -70,5 +77,5 @@ export function compile (query: string | undefined | null, config: Partial<Compi
       index: {}
     },
     errors
-   }
+  }
 }
