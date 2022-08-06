@@ -200,13 +200,15 @@ describe("root query", () => {
 
 describe("fields", () => {
   it("simple", () => {
-    const { definitions, descriptor } = compile("{ product }")
+    const { definitions, descriptor, errors } = compile("{ product }")
 
     const productField: SelectQueryNode = {
       type: QueryType.SELECT,
       name: "product",
       definitions: []
     }
+
+    expect(errors).toEqual([])
 
     expect(definitions.length).toBe(1)
     expect(definitions[0]).toMatchObject(productField)
@@ -270,8 +272,9 @@ describe("fields", () => {
 
   describe("access", () => {
     it("simple", () => {
-      const { definitions, descriptor } = compile("{ transaction.product.name }")
+      const { definitions, descriptor, errors } = compile("{ transaction.product.name }")
 
+      expect(errors).toEqual([])
       expect(definitions.length).toBe(1)
 
       const expeted: AccessQueryNode = {
@@ -570,8 +573,7 @@ describe("exclude", () => {
     })
 
     expect(descriptor).toMatchObject({
-      index: { },
-      exclude: { name: true }
+      index: { }
     })
 
     numberOfKeysMustBe(descriptor.index, 0)
@@ -591,11 +593,7 @@ describe("exclude", () => {
     })
 
     expect(descriptor).toMatchObject({
-      index: {},
-      exclude: {
-        name: true,
-        id: true
-      }
+      index: {}
     })
 
     numberOfKeysMustBe(descriptor.index, 0)
@@ -628,11 +626,7 @@ describe("exclude", () => {
     expect(descriptor).toMatchObject({
       index: {
         transaction: {
-          index: {},
-          exclude: {
-            product: true,
-            provider: true
-          }
+          index: {}
         }
       }
     })
@@ -1040,7 +1034,7 @@ describe("spread", () => {
     })
   })
 
-  it ("extended", () => {
+  it ("extended mode", () => {
     const query = `{
       another {
         target {
@@ -1111,6 +1105,45 @@ describe("spread", () => {
         }
       }
     })
+  })
+})
+
+describe("all with exclude (index)", () => {
+  it("multiple", () => {
+    const { descriptor, errors } = compile("{ ..., !name, !id }")
+
+    expect(errors).toEqual([])
+    expect(descriptor).toEqual({
+      index: {},
+      all: true,
+      exclude: {
+        name: true,
+        id: true
+      }
+    })
+
+    numberOfKeysMustBe(descriptor.index, 0)
+  })
+
+  it ("nested", () => {
+    const { descriptor, errors } = compile("{ transaction { ..., !product, !provider } }")
+
+    expect(errors).toEqual([])
+    expect(descriptor).toEqual({
+      index: {
+        transaction: {
+          index: {},
+          all: true,
+          exclude: {
+            product: true,
+            provider: true
+          }
+        }
+      }
+    })
+
+    numberOfKeysMustBe(descriptor.index, 1)
+    numberOfKeysMustBe(descriptor.index.transaction.index, 0)
   })
 })
 
@@ -1859,7 +1892,7 @@ describe("rename", () => {
     })
   })
 
-  it("extended", () => {
+  it("extended mode", () => {
     const query = "{ id: access_number }"
 
     const { definitions, descriptor } = compile(query, {
