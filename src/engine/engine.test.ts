@@ -417,6 +417,119 @@ describe("includes", () => {
       expect(includes(["product", "provider", "name"])).toBe(false)
     })
   })
+
+  describe ("multi includes and excludes", () => {
+    test ("select", () => {
+      const qmap = qmapCreator()
+
+      const { includes, errors } = qmap(`{
+        products_header: products {
+          id, name
+        },
+        products_body: products {
+          ...,
+          !id,
+          !name
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+      expect(includes(["products"])).toBe(true)
+      expect(includes(["products", "id"])).toBe(true)
+      expect(includes(["products", "name"])).toBe(true)
+      expect(includes(["products", "any"])).toBe(true)
+      expect(includes(["any"])).toBe(false)
+    })
+
+    test ("simple all", () => {
+      const qmap = qmapCreator()
+
+      const { includes, errors } = qmap(`{
+        lawyer: person {
+          ...,
+          !height,
+          !weight,
+          !age
+        },
+        person {
+          ...,
+          !grade,
+          !college_number,
+          !age
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+      expect(includes(["person"])).toBe(true)
+      expect(includes(["person", "any"])).toBe(true)
+      expect(includes(["person", "height"])).toBe(true)
+      expect(includes(["person", "weight"])).toBe(true)
+      expect(includes(["person", "age"])).toBe(false)
+      expect(includes(["person", "grade"])).toBe(true)
+      expect(includes(["person", "college_number"])).toBe(true)
+      expect(includes(["any"])).toBe(false)
+    })
+
+    test ("complex", () => {
+      const qmap = qmapCreator()
+
+      const { includes, errors } = qmap(`{
+        lawyer: person {
+          ...,
+          !height,
+          !weight,
+          !age,
+          parent {
+            ...,
+            !height,
+            !weight,
+            !age,
+          }
+        },
+        doctor: person {
+          ...,
+          !height,
+          !age,
+          parent {
+            ...,
+            !height,
+            !age,
+          }
+        },
+        person {
+          ...,
+          !grade,
+          !college_number,
+          !age,
+          parent {
+            ...,
+            !grade,
+            !college_number,
+            !age
+          }
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+      expect(includes(["person"])).toBe(true)
+      expect(includes(["person", "any"])).toBe(true)
+      expect(includes(["person", "height"])).toBe(true)
+      expect(includes(["person", "weight"])).toBe(true)
+      expect(includes(["person", "age"])).toBe(false)
+      expect(includes(["person", "grade"])).toBe(true)
+      expect(includes(["person", "college_number"])).toBe(true)
+      expect(includes(["any"])).toBe(false)
+
+
+      expect(includes(["person", "parent"])).toBe(true)
+      expect(includes(["person", "parent", "any"])).toBe(true)
+      expect(includes(["person", "parent", "height"])).toBe(true)
+      expect(includes(["person", "parent", "weight"])).toBe(true)
+      expect(includes(["person", "parent", "age"])).toBe(false)
+      expect(includes(["person", "parent", "grade"])).toBe(true)
+      expect(includes(["person", "parent", "college_number"])).toBe(true)
+    })
+  })
 })
 
 describe("apply", () => {

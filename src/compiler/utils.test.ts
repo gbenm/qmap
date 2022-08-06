@@ -8,14 +8,16 @@ describe("Utils", () => {
     const nameQueryNode: QueryNode = {
       type: QueryType.SELECT,
       name: "name",
-      definitions: []
+      definitions: [],
+      indexDefinitions: []
     }
 
     const familyQueryNode: QueryNode = {
       type: QueryType.SELECT,
       name: "Family",
       alias: "family",
-      definitions: []
+      definitions: [],
+      indexDefinitions: []
     }
 
     const personNode: QueryNode = {
@@ -24,13 +26,15 @@ describe("Utils", () => {
       definitions: [
         nameQueryNode,
         familyQueryNode
-      ]
+      ],
+      indexDefinitions: []
     }
 
     const node: QueryNode = {
       type: QueryType.SELECT,
       name: "test",
-      definitions: [ personNode ]
+      definitions: [ personNode ],
+      indexDefinitions: []
     }
 
     const result1 = searchQueryNode(node, ["person", "name"])

@@ -5,7 +5,7 @@ import { Spread } from "./Spread"
 export class Root implements ASTNode {
   constructor (public id: string | undefined, public children?: ASTNode[]) { }
 
-  generate (config: CompilerConfig): QueryNode {
+  generate (config: CompilerConfig): QueryNode<null> {
     const rootTable = SymbolTableImpl.create(config.ignoreIndex)
 
     const definitions: QueryNode[] = buildDefinitionsFromASTNodes({
@@ -23,7 +23,7 @@ export class Root implements ASTNode {
       type: QueryType.ROOT,
       definitions,
       query: this.id,
-      descriptor: rootTable.generateIndex(),
+      descriptor: null,
       errors: []
     }
   }

@@ -1,37 +1,32 @@
 import { ASTNode, SymbolTable, QueryNode, CompilerConfig, QueryType, SelectQueryNode } from ".."
 import { buildDefinitionsFromASTNodes } from "../utils"
-import { Spread } from "./Spread"
 
 export class Field implements ASTNode {
   public globalAccess = false
 
-  constructor (public accessKeys: string[], public nodes?: ASTNode[]) { }
+  constructor (public accessKeys: string[], public nodes?: ASTNode[], public indexSelect = false) { }
 
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     const [primaryId, ...otherIds] = this.accessKeys
 
-    const table = parentTable
-      .createScope()
-      .resetIndexCurrentPath(this.globalAccess)
-      .registerPathInIndex(primaryId, ...otherIds)
+    const table = parentTable.createScope()
 
-    const definitions: QueryNode[] = buildDefinitionsFromASTNodes({
+    const defs: QueryNode[] = buildDefinitionsFromASTNodes({
       config,
       table,
       nodes: this.nodes
     })
 
-    if(definitions.length === 0) {
-      // sets all flag to true
-      new Spread([]).generate(config, table)
-    }
+    const definitions = this.indexSelect? [] : defs
+    const indexDefinitions = this.indexSelect? defs : []
 
     if (this.globalAccess) {
       return {
         type: QueryType.GLOBAL_ACCESS,
         alias: this.accessKeys.join("_"),
         keys: this.accessKeys,
-        definitions
+        definitions,
+        indexDefinitions
       }
     }
 
@@ -39,7 +34,8 @@ export class Field implements ASTNode {
       const selectNode: SelectQueryNode = {
         type: QueryType.SELECT,
         name: primaryId,
-        definitions
+        definitions,
+        indexDefinitions
       }
 
       parentTable.add(primaryId, selectNode)
@@ -51,7 +47,8 @@ export class Field implements ASTNode {
       type: QueryType.ACCESS,
       alias: this.accessKeys.join("_"),
       keys: this.accessKeys,
-      definitions
+      definitions,
+      indexDefinitions
     }
   }
 }

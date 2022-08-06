@@ -41,15 +41,6 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
-	// Enter a parse tree produced by QMapParser#index_ref.
-	enterIndex_ref(ctx) {
-	}
-
-	// Exit a parse tree produced by QMapParser#index_ref.
-	exitIndex_ref(ctx) {
-	}
-
-
 	// Enter a parse tree produced by QMapParser#fn_return.
 	enterFn_return(ctx) {
 	}
@@ -200,6 +191,33 @@ export default class QMapListener extends antlr4.tree.ParseTreeListener {
 
 	// Exit a parse tree produced by QMapParser#obj_ref.
 	exitObj_ref(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#field_defs.
+	enterField_defs(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#field_defs.
+	exitField_defs(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#select.
+	enterSelect(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#select.
+	exitSelect(ctx) {
+	}
+
+
+	// Enter a parse tree produced by QMapParser#index_select.
+	enterIndex_select(ctx) {
+	}
+
+	// Exit a parse tree produced by QMapParser#index_select.
+	exitIndex_select(ctx) {
 	}
 
 

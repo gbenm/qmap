@@ -57,8 +57,9 @@ function checkFunctionQueryNode(node: QueryNode, {
 function checkSelectQueryNode(node: QueryNode, {
   name,
   alias,
-  consumer
-}: { name: string, alias?: string, consumer?: (definitions: QueryNode[]) => void }) {
+  consumer,
+  indexDefinitions
+}: { name: string, alias?: string, consumer?: (definitions: QueryNode[]) => void, indexDefinitions?: boolean }) {
   const expected = {
     type: QueryType.SELECT,
     name,
@@ -77,7 +78,11 @@ function checkSelectQueryNode(node: QueryNode, {
   expect(node).toMatchObject(expected)
 
   if (consumer) {
-    getDefinitions(node, consumer)
+    if (indexDefinitions) {
+      overIndexDefinitions(node, consumer)
+    } else {
+      getDefinitions(node, consumer)
+    }
   }
 }
 
@@ -101,8 +106,9 @@ function checkAccessQueryNode(node: QueryNode, {
   keys,
   alias,
   isGlobal = false,
+  indexDefinitions,
   consumer
-}: { keys: string[], alias?: string, isGlobal?: boolean, consumer?: (definitions: QueryNode[]) => void }) {
+}: { keys: string[], alias?: string, isGlobal?: boolean, consumer?: (definitions: QueryNode[]) => void, indexDefinitions?: boolean}) {
   const expected = {
     type: isGlobal? QueryType.GLOBAL_ACCESS : QueryType.ACCESS,
     alias: alias || keys.join("_"),
@@ -116,7 +122,11 @@ function checkAccessQueryNode(node: QueryNode, {
   expect(node).toMatchObject(expected)
 
   if (consumer) {
-    getDefinitions(node, consumer)
+    if (indexDefinitions) {
+      overIndexDefinitions(node, consumer)
+    } else {
+      getDefinitions(node, consumer)
+    }
   }
 
   mustNotHaveName(node)
@@ -125,6 +135,11 @@ function checkAccessQueryNode(node: QueryNode, {
 function getDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) => void) {
   expect(node["definitions"]).toBeTruthy()
   consumer(node["definitions"])
+}
+
+function overIndexDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) => void) {
+  expect(node["indexDefinitions"]).toBeTruthy()
+  consumer(node["indexDefinitions"])
 }
 
 function getArgs (node: FnQueryNode, consumer: (args: QueryNode[]) => void) {
@@ -200,13 +215,16 @@ describe("root query", () => {
 
 describe("fields", () => {
   it("simple", () => {
-    const { definitions, descriptor } = compile("{ product }")
+    const { definitions, descriptor, errors } = compile("{ product }")
 
     const productField: SelectQueryNode = {
       type: QueryType.SELECT,
       name: "product",
-      definitions: []
+      definitions: [],
+      indexDefinitions: []
     }
+
+    expect(errors).toEqual([])
 
     expect(definitions.length).toBe(1)
     expect(definitions[0]).toMatchObject(productField)
@@ -224,22 +242,26 @@ describe("fields", () => {
       {
         type: QueryType.SELECT,
         name: "first_name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       },
       {
         type: QueryType.SELECT,
         name: "last_name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       },
       {
         type: QueryType.SELECT,
         name: "age",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       },
       {
         type: QueryType.SELECT,
         name: "image",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       }
     ]
 
@@ -270,15 +292,17 @@ describe("fields", () => {
 
   describe("access", () => {
     it("simple", () => {
-      const { definitions, descriptor } = compile("{ transaction.product.name }")
+      const { definitions, descriptor, errors } = compile("{ transaction.product.name }")
 
+      expect(errors).toEqual([])
       expect(definitions.length).toBe(1)
 
       const expeted: AccessQueryNode = {
         type: QueryType.ACCESS,
         keys: ["transaction", "product", "name"],
         alias: "transaction_product_name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       }
 
       expect(definitions[0]).toMatchObject(expeted)
@@ -309,7 +333,8 @@ describe("fields", () => {
       const selectQueryNode: SelectQueryNode = {
         type: QueryType.SELECT,
         name: "name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       }
 
       const result = definitions[0] as AccessQueryNode
@@ -570,8 +595,7 @@ describe("exclude", () => {
     })
 
     expect(descriptor).toMatchObject({
-      index: { },
-      exclude: { name: true }
+      index: { }
     })
 
     numberOfKeysMustBe(descriptor.index, 0)
@@ -591,11 +615,7 @@ describe("exclude", () => {
     })
 
     expect(descriptor).toMatchObject({
-      index: {},
-      exclude: {
-        name: true,
-        id: true
-      }
+      index: {}
     })
 
     numberOfKeysMustBe(descriptor.index, 0)
@@ -628,11 +648,7 @@ describe("exclude", () => {
     expect(descriptor).toMatchObject({
       index: {
         transaction: {
-          index: {},
-          exclude: {
-            product: true,
-            provider: true
-          }
+          index: {}
         }
       }
     })
@@ -1040,7 +1056,7 @@ describe("spread", () => {
     })
   })
 
-  it ("extended", () => {
+  it ("extended mode", () => {
     const query = `{
       another {
         target {
@@ -1114,6 +1130,45 @@ describe("spread", () => {
   })
 })
 
+describe("all with exclude (index)", () => {
+  it("multiple", () => {
+    const { descriptor, errors } = compile("{ ..., !name, !id }")
+
+    expect(errors).toEqual([])
+    expect(descriptor).toEqual({
+      index: {},
+      all: true,
+      exclude: {
+        name: true,
+        id: true
+      }
+    })
+
+    numberOfKeysMustBe(descriptor.index, 0)
+  })
+
+  it ("nested", () => {
+    const { descriptor, errors } = compile("{ transaction { ..., !product, !provider } }")
+
+    expect(errors).toEqual([])
+    expect(descriptor).toEqual({
+      index: {
+        transaction: {
+          index: {},
+          all: true,
+          exclude: {
+            product: true,
+            provider: true
+          }
+        }
+      }
+    })
+
+    numberOfKeysMustBe(descriptor.index, 1)
+    numberOfKeysMustBe(descriptor.index.transaction.index, 0)
+  })
+})
+
 describe("functions", () => {
   describe("query", () => {
     function checkGen(definitions: QueryNode[], errors: unknown[]) {
@@ -1169,101 +1224,6 @@ describe("functions", () => {
             all: true
           }
         }
-      })
-    })
-
-    it ("with implicit index", () => {
-      const query = `/*qmap*/{
-        take(products, @{3}) #{
-          ...,
-          toUpperCase(name)
-        }
-      }`
-
-      const { definitions, descriptor, errors } = compile(query)
-
-      checkGen(definitions, errors)
-
-      expect(descriptor).toEqual({
-        index: {
-          products: {
-            index: {
-              name: {
-                index: {},
-                all: true
-              }
-            },
-            all: true
-          }
-        }
-      })
-    })
-
-    describe ("with explicit index", () => {
-      it ("single", () => {
-        const query = `/*qmap*/{
-          take(products, @{3}) #single {
-            ...,
-            toUpperCase(name)
-          }
-        }`
-
-        const { definitions, descriptor, errors } = compile(query)
-
-        checkGen(definitions, errors)
-
-        expect(descriptor).toEqual({
-          index: {
-            single: {
-              index: {
-                name: {
-                  index: {},
-                  all: true
-                }
-              },
-              all: true
-            },
-            products: {
-              index: {},
-              all: true
-            }
-          }
-        })
-      })
-
-      it ("multiple", () => {
-        const query = `/*qmap*/{
-          take(products, @{3}) #multiple.keys {
-            ...,
-            toUpperCase(name)
-          }
-        }`
-
-        const { definitions, descriptor, errors } = compile(query)
-
-        checkGen(definitions, errors)
-
-        expect(descriptor).toEqual({
-          index: {
-            multiple: {
-              index: {
-                keys: {
-                  index: {
-                    name: {
-                      index: {},
-                      all: true
-                    }
-                  },
-                  all: true
-                }
-              },
-            },
-            products: {
-              index: {},
-              all: true
-            }
-          }
-        })
       })
     })
   })
@@ -1859,7 +1819,7 @@ describe("rename", () => {
     })
   })
 
-  it("extended", () => {
+  it("extended mode", () => {
     const query = "{ id: access_number }"
 
     const { definitions, descriptor } = compile(query, {
@@ -2032,6 +1992,136 @@ test("On Result", () => {
         all: true
       }
     }
+  })
+})
+
+
+describe("index definitions", () => {
+  test("select", () => {
+    const query = `/*qmap*/{
+      products #{
+        name
+      };
+      take(%{products}, @{3})
+    }`
+
+    const { definitions, descriptor, errors } = compile(query)
+
+    expect(errors).toEqual([])
+
+    checkSelectQueryNode(definitions[0], {
+      name: "products",
+      indexDefinitions: true,
+      consumer(defs) {
+        expect(defs.length).toBe(1)
+        checkSelectQueryNode(defs[0], { name: "name" })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        products: {
+          index: {
+            name: {
+              index: {},
+              all: true
+            }
+          },
+        }
+      }
+    })
+  })
+
+  test("access", () => {
+    const query = `/*qmap*/{
+      products: transaction.products #{
+        name
+      };
+      take(%{products}, @{3})
+    }`
+
+    const { definitions, descriptor, errors } = compile(query)
+
+    expect(errors).toEqual([])
+
+    checkAccessQueryNode(definitions[0], {
+      keys: ["transaction", "products"],
+      alias: "products",
+      indexDefinitions: true,
+      consumer(defs) {
+        expect(defs.length).toBe(1)
+        checkSelectQueryNode(defs[0], { name: "name" })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        transaction: {
+          index: {
+            products: {
+              index: {
+                name: {
+                  index: {},
+                  all: true
+                }
+              },
+            }
+          }
+        }
+      }
+    })
+  })
+
+  test("global access", () => {
+    const query = `/*qmap*/{
+      info {
+        products: &.transaction.products #{
+          name
+        };
+        take(%{products}, @{3})
+      }
+    }`
+
+    const { definitions, descriptor, errors } = compile(query)
+
+    expect(errors).toEqual([])
+
+    checkSelectQueryNode(definitions[0], {
+      name: "info",
+      consumer(defs) {
+        expect(defs.length).toBe(2)
+        checkAccessQueryNode(defs[0], {
+          keys: ["transaction", "products"],
+          alias: "products",
+          indexDefinitions: true,
+          isGlobal: true,
+          consumer(defs) {
+            expect(defs.length).toBe(1)
+            checkSelectQueryNode(defs[0], { name: "name" })
+          }
+        })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        transaction: {
+          index: {
+            products: {
+              index: {
+                name: {
+                  index: {},
+                  all: true
+                }
+              },
+            }
+          }
+        },
+        info: {
+          index: {},
+        }
+      }
+    })
   })
 })
 

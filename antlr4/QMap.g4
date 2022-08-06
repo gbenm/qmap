@@ -8,9 +8,8 @@ id: ID | STRING;
 
 stm: field | fn_stm;
 
-index_ref: HASH obj_ref?;
 fn_return: LEFT_BRACE query_list RIGHT_BRACE;
-fn_stm: (fn | client_fn) (index_ref? fn_return)?;
+fn_stm: (fn | client_fn) fn_return?;
 
 exclude: EX_MARK id;
 
@@ -44,7 +43,10 @@ query_list: query ((COMMA | SEMICOLON) query)* (COMMA | SEMICOLON)?;
 
 obj_ref: id (DOT id)*;
 
-field_scoped: obj_ref (LEFT_BRACE query_list RIGHT_BRACE)?;
+field_defs: LEFT_BRACE query_list RIGHT_BRACE;
+select: obj_ref field_defs?;
+index_select: obj_ref HASH field_defs;
+field_scoped: select | index_select;
 field_global: AMPERSAND DOT field_scoped;
 field: field_global | field_scoped | onresult;
 

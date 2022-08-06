@@ -1,11 +1,11 @@
 export enum QueryType {
   ROOT = "root",
   SELECT = "select",
-  NEW_OBJECT = "new-object",
+  NEW_OBJECT = "newObject",
   FUNCTION = "function",
-  CLIENT_FUNCTION = "client_function",
+  CLIENT_FUNCTION = "clientFunction",
   ACCESS = "access",
-  GLOBAL_ACCESS = "global_access",
+  GLOBAL_ACCESS = "globalAccess",
   ALL = "all",
   EXCLUDE = "exclude",
   SPREAD = "spread",
@@ -13,10 +13,10 @@ export enum QueryType {
   VAR = "variable",
   HIDE = "hide",
   PRIMITIVE = "primitive",
-  ON_RESULT = "on-result"
+  ON_RESULT = "onResult"
 }
 
-export type QueryNode = PrimitiveNode
+export type QueryNode<IType = QMapIndex> = PrimitiveNode
   | AllQueryNode
   | ExcludeQueryNode
   | SelectQueryNode
@@ -24,7 +24,7 @@ export type QueryNode = PrimitiveNode
   | ClientFunctionQueryNode
   | AccessQueryNode
   | GlobalAccessQueryNode
-  | RootQueryNode
+  | RootQueryNode<IType>
   | SpreadQueryNode
   | RenameQueryNode
   | VarQueryNode
@@ -35,6 +35,9 @@ export type QueryNode = PrimitiveNode
 export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
 export type FnQueryNode = QueryNode & CommonFunctionQueryNode
+
+export type ParentQueryNode = QueryNode & Pick<CommonQueryNode, "definitions">
+export type ParentIndexQueryNode = QueryNode & Pick<SelectQueryNode, "definitions" | "indexDefinitions">
 
 export interface QMapIndex {
   index: {
@@ -88,6 +91,7 @@ export interface ExcludeQueryNode {
 
 export interface SelectQueryNode extends CommonNamedQueryNode {
   type: QueryType.SELECT
+  indexDefinitions: QueryNode[]
 }
 
 export interface NewObjectQueryNode extends CommonQueryNode {
@@ -102,10 +106,12 @@ export interface CommonAccessQueryNode extends CommonQueryNode {
 
 export interface AccessQueryNode extends CommonAccessQueryNode {
   type: QueryType.ACCESS
+  indexDefinitions: QueryNode[]
 }
 
 export interface GlobalAccessQueryNode extends CommonAccessQueryNode {
   type: QueryType.GLOBAL_ACCESS
+  indexDefinitions: QueryNode[]
 }
 
 export type SpreadIds = [(string | symbol)?, ...string[]]
@@ -113,7 +119,7 @@ export type SpreadIds = [(string | symbol)?, ...string[]]
 export interface SpreadQueryNode {
   type: QueryType.SPREAD
   keys: SpreadIds
-  node: QueryNode
+  node: ParentQueryNode
 }
 
 export interface RenameQueryNode {
@@ -140,10 +146,14 @@ export interface HideQueryNode {
   index: QMapIndex
 }
 
-export interface RootQueryNode {
+export interface RootQueryNode<IType = null> {
   type: QueryType.ROOT
   definitions: QueryNode[]
   query?: string
-  descriptor: QMapIndex
+  descriptor: IType
   errors: unknown[]
+}
+
+export type QueryNodeInterface = {
+  [T in QueryType]: (n: { type: T } & QueryNode, ...args: any[]) => any
 }
