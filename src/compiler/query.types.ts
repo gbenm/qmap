@@ -36,6 +36,8 @@ export type NamedQueryNode = CommonNamedQueryNode & QueryNode
 
 export type FnQueryNode = QueryNode & CommonFunctionQueryNode
 
+export type ParentQueryNode = QueryNode & Pick<CommonQueryNode, "definitions">
+
 export interface QMapIndex {
   index: {
     [key: string]: QMapIndex
@@ -113,7 +115,7 @@ export type SpreadIds = [(string | symbol)?, ...string[]]
 export interface SpreadQueryNode {
   type: QueryType.SPREAD
   keys: SpreadIds
-  node: QueryNode
+  node: ParentQueryNode
 }
 
 export interface RenameQueryNode {
