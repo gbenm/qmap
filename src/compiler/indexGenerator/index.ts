@@ -32,7 +32,6 @@ export class IndexGenerator extends QueryNodeVisitor {
 
   function(n: FunctionQueryNode): void {
     this.visitChildren(n, "args")
-    // TODO: custom return index
   }
 
   clientFunction(n: ClientFunctionQueryNode): void {
@@ -50,9 +49,12 @@ export class IndexGenerator extends QueryNodeVisitor {
   }
 
   globalAccess(n: GlobalAccessQueryNode): void {
+    const [scope, ...rest] = n.keys
+    this.store.enterGlobalScope(scope, ...rest)
     this.visitChildren(n, "definitions")
     this.visitChildren(n, "indexDefinitions")
-    // TODO:
+    this.setAllIfEmpty(n)
+    this.store.popScope()
   }
 
   all(): void {
@@ -133,6 +135,15 @@ class IndexStore {
 
   getIndex() {
     return this.index
+  }
+
+  enterGlobalScope(firstScope: string, ...otherScopes: string[]) {
+    this.addToIndex(this.index, firstScope, ...otherScopes)
+
+    this.scopes.unshift({
+      id: this.availableID++,
+      path: [firstScope, ...otherScopes],
+    })
   }
 
   enterScope(firstScope: string, ...otherScopes: string[]) {
