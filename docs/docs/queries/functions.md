@@ -146,63 +146,52 @@ la función no afectan el [índice](../instance#includes) (el que le
 permite saber si se debe incluir la información), por lo que resulta
 incluyendo todo.
 
-Se puede activar la modificación del índice al anteponer `#` en las
-llaves (esto permite modificar el índice sobre el primer argumento
-que **debe ser** una selección o un acceso)
+Para poder evitar incluir todo en el índice se puede utilizar [index select](./index-select),
+lo que permite conservar aún la optimización.
 
 ```javascript
 const query = `{
-    take(products, @{2}) #{
+    products: take(products #{ name }, @{2}) {
         name
     }
 }`
 ```
 
-Sin embargo lo anterior sigue incluyendo todo debido a que `products` no tiene
-cuerpo. El truco consiste en utilizar [exclude](./exclude) que aunque el cuerpo
-no incluya el objetivo a eliminar, este servirá para eliminarlo del índice.
+Se puede volver más legible utilizando [on result](./onresult)
+
 
 ```javascript
 const query = `{
-    take(products, @{2}) #{
+    producs #{ name },
+    products: take(%{products}, @{2}) {
         !provider
         name
     }
 }`
 ```
+
+En el ejemplo anterior no fue necesario remover
+el "extra" ya que al renombrar el resultado
+de `take` se está sobreescribiendo, si se agrega información
+temporal que no será sobreescrita, podría ser una opción
+utilizar [exclude](./exclude) para removerlo.
+
+```javascript
+const query = `{
+    temp: producs #{ name },
+    take(%{products}, @{2}) #{
+        !provider
+        name
+    },
+    !temp // eliminado después del uso
+}`
+```
+
 :::note
 Esto únicamente tiene sentido si se va utilizar el índice de esta selección para
 realizar una operación condicional, por ejemplo `provider` podría significar
-un join con la tabla de Proveedores si es que se usa una RDBMS
+un join con la tabla de Proveedores si es que se usa una RDB
 :::
-
-#### Sobre otro índice
-Se puede colocar una ruta relativa (en el campo actual) después del `#` y antes de `{}`
-para especificar en dónde van las modificaciones del índice. De forma explicita quedaría:
-
-```javascript
-const query = `{
-    take(products, @{2}) #products {
-        !provider
-        name
-    }
-}`
-```
-
-Por ejemplo si el índice a modificar es sobre el segundo argumento:
-
-```javascript
-const query = `{
-    foo(arg1, other.place) #other.place {
-        !user,
-        name
-    }
-}`
-```
-
-Lo anterior agregaría al índice del segundo argumento el `exclude` del
-"user"
-
 
 ## Funciones map
 Por defecto las funciones toman el objeto, es decir
