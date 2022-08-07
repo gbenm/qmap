@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 ---
 # Excluir
 Permite eliminar valores del resultado, es de

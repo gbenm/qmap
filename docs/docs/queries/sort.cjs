@@ -8,6 +8,7 @@ sort([
     "access",
     "index-select",
     "functions",
+    "onresult",
     "rename",
     "new-object",
     "global-access",
