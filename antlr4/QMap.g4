@@ -37,6 +37,7 @@ query
     | spread
     | field_rename
     | new_object
+    | hide
 ;
 
 query_list: query ((COMMA | SEMICOLON) query)* (COMMA | SEMICOLON)?;
@@ -63,12 +64,15 @@ client_fn: normal_client_fn | map_client_fn;
 
 onresult: PERCENT LEFT_BRACE stm RIGHT_BRACE;
 
+hide: TILDE ID field_defs;
+
 fragment DOUBLE_QUOTE: '"';
 fragment SINGLE_QUOTE: '\'';
 fragment ESCAPE: '\\' ['"?abfnrtv\\];
 fragment DLOUBE_QUOTE_STR_CHAR: ~["]|ESCAPE|'\\'?'\r'?'\n';
 fragment SINGLE_QUOTE_STR_CHAR: ~[']|ESCAPE|'\\'?'\r'?'\n';
 
+TILDE: '~';
 PERCENT: '%';
 AT: '@';
 HASH: '#';
