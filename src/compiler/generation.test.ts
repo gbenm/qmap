@@ -54,6 +54,26 @@ function checkFunctionQueryNode(node: QueryNode, {
   getDefinitions(node, checkReturn ?? defaultReturnChecker)
 }
 
+
+function checkHideNode(node: QueryNode, {
+  name,
+  consumer,
+}: { name: string, consumer?: (definitions: QueryNode[]) => void }) {
+  const nodeWithoutDefs = { ...node }
+  delete nodeWithoutDefs["definitions"]
+
+  expect(nodeWithoutDefs).toEqual({
+    type: QueryType.HIDE,
+    name
+  })
+
+  if (consumer) {
+    getDefinitions(node, consumer)
+  } else {
+    getDefinitions(node, (defs) => expect(defs.length).toBe(0))
+  }
+}
+
 function checkSelectQueryNode(node: QueryNode, {
   name,
   alias,
@@ -658,6 +678,26 @@ describe("exclude", () => {
   })
 })
 
+test("hide node", () => {
+  const { descriptor, definitions, errors } = compile("/*qmap*/{ ~common { id, name } }")
+
+  expect(errors).toEqual([])
+  expect(definitions.length).toBe(1)
+
+  checkHideNode(definitions[0], {
+    name: "common",
+    consumer(defs) {
+      expect(defs.length).toBe(2)
+      checkSelectQueryNode(defs[0], { name: "id" })
+      checkSelectQueryNode(defs[1], { name: "name" })
+    }
+  })
+
+  expect(descriptor).toEqual({
+    index: {}
+  })
+})
+
 describe("spread", () => {
   describe("Include all", () => {
     it("simple", () => {
@@ -1123,6 +1163,49 @@ describe("spread", () => {
               index: {},
               all: true
             }
+          }
+        }
+      }
+    })
+  })
+
+  test("hide nodes", () => {
+    const { errors, descriptor, definitions } = compile(`/*qmap*/{
+      ~common {
+        id, name
+      },
+      user {
+        ...common
+      }
+    }`)
+
+    expect(errors).toEqual([])
+
+    expect(definitions.length).toBe(2)
+    checkHideNode(definitions[0], {
+      name: "common",
+      consumer(defs) {
+        expect(defs.length).toBe(2)
+        checkSelectQueryNode(defs[0], { name: "id" })
+        checkSelectQueryNode(defs[1], { name: "name" })
+      }
+    })
+
+    checkSelectQueryNode(definitions[1], {
+      name: "user",
+      consumer(defs) {
+        expect(defs.length).toBe(2)
+        checkSelectQueryNode(defs[0], { name: "id" })
+        checkSelectQueryNode(defs[1], { name: "name" })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        user: {
+          index: {
+            id: { index: {}, all: true },
+            name: { index: {}, all: true }
           }
         }
       }

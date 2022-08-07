@@ -26,11 +26,8 @@ function sort(entries) {
 }
 
 function writeSideBarPosition(filename, i) {
-    console.log(filename)
     const content = fs.readFileSync(filename).toString()
-    console.log(content.substring(0, 30))
     const newContent = content.replace(/(sidebar_position:)\s*[1-9]\d*/, `$1 ${i+1}`)
-    console.log(newContent.substring(0, 30))
     fs.writeFileSync(filename, newContent)
 }
 

@@ -530,6 +530,27 @@ describe("includes", () => {
       expect(includes(["person", "parent", "college_number"])).toBe(true)
     })
   })
+
+  test("hide node", () => {
+    const qmap = qmapCreator()
+
+    const { includes, errors } = qmap(`{
+      ~common {
+        id, name
+      },
+      user {
+        ...common
+      }
+    }`)
+
+    expect(errors).toBeFalsy()
+    expect(includes(["common"])).toBe(false)
+    expect(includes(["any"])).toBe(false)
+    expect(includes(["user"])).toBe(true)
+    expect(includes(["user", "id"])).toBe(true)
+    expect(includes(["user", "name"])).toBe(true)
+    expect(includes(["user", "any"])).toBe(false)
+  })
 })
 
 describe("apply", () => {
@@ -1259,6 +1280,121 @@ describe("apply", () => {
     const result = apply(input)
     expect(result).toEqual({
       name: "test"
+    })
+  })
+
+  describe("hide nodes", () => {
+    const userInfo = {
+      id: 2,
+      name: "qmap test",
+      age: 23
+    }
+    const input = {
+      other: {
+        other: {},
+        ...userInfo
+      },
+      user: userInfo
+    }
+    test("simple", () => {
+      const { apply, errors } = qmap(`{
+        ~common {
+          id, name
+        },
+        user {
+          ...common
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+
+      const result = apply(input)
+
+      expect(result).toEqual({
+        user: {
+          id: 2,
+          name: "qmap test"
+        }
+      })
+    })
+
+    test("scoped", () => {
+      const { apply, errors } = qmap(`{
+        other {
+          other {
+            ~common {
+              id, name
+            }
+          },
+          ...other.common
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+
+      const result = apply(input)
+
+      expect(result).toEqual({
+        other: {
+          other: {},
+          id: 2,
+          name: "qmap test"
+        }
+      })
+    })
+
+    test("global", () => {
+      const { apply, errors } = qmap(`{
+        other {
+          ~common {
+            id, name
+          },
+        },
+        user {
+          ...&.other.common
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+
+      const result = apply(input)
+
+      expect(result).toEqual({
+        other: {},
+        user: {
+          id: 2,
+          name: "qmap test"
+        }
+      })
+    })
+
+    test("deep global", () => {
+      const { apply, errors } = qmap(`{
+        other {
+          other {
+            ~common {
+              id, name
+            },
+          }
+        },
+        user {
+          ...other.other.common
+        }
+      }`)
+
+      expect(errors).toBeFalsy()
+
+      const result = apply(input)
+
+      expect(result).toEqual({
+        other: {
+          other: {}
+        },
+        user: {
+          id: 2,
+          name: "qmap test"
+        }
+      })
     })
   })
 })
