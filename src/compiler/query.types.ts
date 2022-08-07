@@ -143,7 +143,6 @@ export interface HideQueryNode {
   type: QueryType.HIDE
   name: string
   definitions: QueryNode[]
-  index: QMapIndex
 }
 
 export interface RootQueryNode<IType = null> {
