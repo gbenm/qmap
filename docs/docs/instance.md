@@ -105,8 +105,9 @@ en el caso de tener diferentes niveles de acceso a la información).
 Es la función que trasforma el JSON, recibe como
 primer argumento el JSON objetivo, y como segundo (opcional)
 las opciones, que es el objeto dónde se pueden agregar las
-variables y sobreescribir el `schema` (cuidado con
-sobreescribir el schema, asegúrese de hacerlo en ambos, `apply` e `includes`).
+variables, sobreescribir el `schema` (cuidado con
+sobreescribir el schema, asegúrese de hacerlo en ambos, `apply` e `includes`)
+e indicar en dónde se debe aplicar las transformaciones.
 
 :::note
 Las variables pueden tener cualquier tipo de dato.
@@ -154,3 +155,31 @@ const otherResult = apply(input, {
 // result is { id: null, name: 'test', label: '-test' }
 ```
 
+#### `over` option
+Es un arreglo de strings que indican el path para
+llegar al lugar dónde se deben aplicar las transformaciones,
+por ejemplo `["request", "data"]` se aplica a `input.request.data`
+
+```javascript
+import { qmapCreator } from "@qmap/engine"
+
+const qmap = qmapCreator()
+
+const { apply } = qmap(`{
+  id,
+  name,
+}`)
+
+const input = {
+  status: "success",
+  data: {
+    id: 1,
+    name: "test",
+    other: "other"
+  }
+}
+
+const result = apply(input, { over: ["data"] })
+// result is { data: { id: 1, name: 'test' } }
+
+```
