@@ -16,14 +16,14 @@ export function qmap(this: QMapContext<any, any>, target: Nullable<string>, opti
       root,
       context: this,
       query: findQuery(this, root.query),
-      schema: findSchema(this, options?.schema),
+      schema: findSchema(this, options?.schema ?? this.defaultSchema),
       variables: options?.variables
     }) as any,
     includes: includes.bind({
       root,
       context: this,
       query: findQuery(this, root.query),
-      schema: findSchema(this, options?.schema),
+      schema: findSchema(this, options?.schema ?? this.defaultSchema),
     }),
     errors: root.errors.length > 0 ? root.errors : undefined,
   }

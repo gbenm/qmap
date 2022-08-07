@@ -12,6 +12,7 @@ export interface QMapDescriptor<Pctx extends QMapContext<any, any> | undefined, 
   functions?: Fns
   schemas?: string
   queries?: string
+  defaultSchema?: string
 }
 
 export interface QMapQuery {
@@ -28,4 +29,5 @@ export interface QMapContext<Pctx extends QMapContext<any, any> | undefined, Fns
   functions: Fns
   schemas: QMapQueries
   queries: QMapQueries
+  defaultSchema: string | undefined
 }

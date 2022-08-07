@@ -24,7 +24,8 @@ export function qmapCreator<Pctx extends QMapContext<any, any> | undefined, Fns 
     extends: descriptor?.extends as Pctx,
     functions: descriptor?.functions ?? {} as Fns,
     schemas: fromDefinitionsToJson(schemaDefinitions, schemaDescriptor as QMapIndex),
-    queries: fromDefinitionsToJson(queryDefinitions, queryDescriptor as QMapIndex)
+    queries: fromDefinitionsToJson(queryDefinitions, queryDescriptor as QMapIndex),
+    defaultSchema: descriptor?.defaultSchema
   }
 
   const qmap = qmapFn.bind(context) as QMap<Pctx, Fns>

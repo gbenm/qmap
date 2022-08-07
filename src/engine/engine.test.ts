@@ -1236,4 +1236,29 @@ describe("apply", () => {
       product_id: 1
     })
   })
+
+  test ("default schema", () => {
+    const qmapWithDefaultSchema = qmapCreator({
+      extends: qmap,
+      schemas: `{
+        user {
+          name
+        }
+      }`,
+      defaultSchema: "user"
+    })
+
+    const input = {
+      id: 3,
+      name: "test"
+    }
+
+    const { apply, errors } = qmapWithDefaultSchema(null)
+
+    expect(errors).toBeFalsy()
+    const result = apply(input)
+    expect(result).toEqual({
+      name: "test"
+    })
+  })
 })
