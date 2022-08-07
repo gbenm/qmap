@@ -14,6 +14,7 @@ sort([
     "global-access",
     "all",
     "exclude",
+    "hide",
     "spread"
 ])
 
