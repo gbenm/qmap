@@ -1,1 +1,1 @@
-export type ComputeFn = (d: unknown) => unknown
+export type ComputeFn<A = any, R = any> = (d: A) => R

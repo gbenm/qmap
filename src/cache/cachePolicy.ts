@@ -14,7 +14,7 @@ export abstract class CachePolicy<InitialKey, Key = unknown> {
     return this.next ? this.next.lastPolicy : this
   }
 
-  public pipe(policy: CachePolicy<Key>): CachePolicy<InitialKey, Key> {
+  public pipe(policy: CachePolicy<Key>) {
     this.next = policy
     return this
   }
@@ -29,6 +29,8 @@ export abstract class CachePolicy<InitialKey, Key = unknown> {
   }
 
   abstract save(key: InitialKey, data: unknown): Key
+  abstract update(key: Key, data: unknown): void
+  abstract hasKey(key: Key): boolean
   abstract lookup(key: Key): unknown
   abstract remove(key: Key): unknown
 }
