@@ -10,6 +10,10 @@ export abstract class CacheStore<Key, ComputeFn extends _ComputeFn = _ComputeFn>
     return this.policy
   }
 
+  constructor() {
+    this.policy = <any> this.self
+  }
+
   public accept(policy: CachePolicy<string, string>): CacheStore<Key> {
     this.policy = policy
     this.policy.lastPolicy.pipe(this.self)

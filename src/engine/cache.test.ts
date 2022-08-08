@@ -8,6 +8,21 @@ import { qmapCreator } from "./creator"
 import { CacheMissError } from "./instance/errors"
 
 describe("with cache", () => {
+  test("simple", () => {
+    const qmap = qmapCreator({
+      cache: new InMemoryCache()
+    })
+
+    const query = "{ id, name }"
+
+    jest.clearAllMocks()
+    jest.spyOn(compiler, "compile")
+
+    range(5).forEach((i) => qmap(query))
+
+    expect(compiler.compile).toHaveBeenCalledTimes(1)
+  })
+
   test("cache miss error", () => {
     const qmap = qmapCreator({
       cache: setupCache()
