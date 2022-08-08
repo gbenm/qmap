@@ -12,6 +12,7 @@ Es un motor para manipulación JSON.
 ## Contenido
 - [Capacidades](#capacidades)
 - [Motivación](#motivación)
+- [Changelog](#changelog)
 
 ## Capacidades
 - Limitación por medio de `schemas`
@@ -93,3 +94,6 @@ de información por medio de HTTP, pero la librería
 no depende de nada del protocolo, por lo que puede
 usarla dónde prefiera, siempre y cuándo exista
 un JSON al cuál modificar.
+
+## Changelog
+Visite [changelog](./CHANGELOG.md)
