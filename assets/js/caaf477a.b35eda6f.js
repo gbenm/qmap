@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[723],{9155:e=>{e.exports=JSON.parse('{"title":"Queries","slug":"/category/queries","permalink":"/qmap/docs/category/queries","navigation":{"previous":{"title":"La instancia","permalink":"/qmap/docs/instance"},"next":{"title":"Select","permalink":"/qmap/docs/queries/select"}}}')}}]);
