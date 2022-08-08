@@ -2233,6 +2233,6 @@ describe("ignore index", () => {
       ignoreIndex: true
     })
 
-    expect(descriptor.index).toEqual({})
+    expect(descriptor).toEqual(null)
   })
 })
