@@ -247,7 +247,7 @@ function applyNewObjectDefinition({ context, def, result, target }: ApplyDefinit
 
 function applyWithNew(context: ExecutionContext, definitions: QueryNode[], target: any) {
   if (definitions.length === 0) {
-    return target
+    return target ?? null
   }
 
   return Array.isArray(target)
