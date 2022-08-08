@@ -1,74 +1,14 @@
 import { ASTNode } from "./ASTNode"
 import { CompilerConfig } from "./config"
-import { Json, QueryNode, QueryType } from "./query.types"
+import { NamedQueryNode, QueryNode, QueryType } from "./query.types"
 import { SymbolTable } from "./SymbolTable"
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getValue(obj: any, keys: string[], getter = (value: any, key: string) => value[key]): Json {
-  let value = obj
-
-  keys.forEach((key) => {
-    value = getter(value, key)
-  })
-
-  return value
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isNullable = (obj: any) => obj === null || obj === undefined
-
-/**
- * 1. objects have precedence over primitives, i.e. mergeObject(3, {}) == {}
- * 2. the first object has precedence, .e.g. mergeObject({a: 1}, {a: 2}) == {a: 1}
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const mergeObjects = (obj: any, obj2: any) => {
-  if (isNullable(obj)) {
-    return obj2
-  }
-
-  if (typeof obj !== "object") {
-    return obj
-  }
-
-  if (typeof obj2 !== "object") {
-    return obj
-  }
-
-  if (Array.isArray(obj) && Array.isArray(obj2)) {
-    return obj.concat(obj2)
-  }
-
-  if (Array.isArray(obj)) {
-    return obj
-  }
-
-  if (Array.isArray(obj2)) {
-    return obj
-  }
-
-  const keys = Array.from(new Set([...Object.keys(obj), ...Object.keys(obj2)]))
-
-  const result = keys.map((key) => {
-    if (isNullable(obj2[key])) {
-      return [key, obj[key]]
-    }
-
-    return [key, mergeObjects(obj[key], obj2[key])]
-  }).reduce((acc, [key, value]) => {
-    acc[key] = value
-    return acc
-  }, {})
-
-  return result
-}
 
 export function buildDefinitionsFromASTNodes ({
   config,
   nodes,
   table
 }: {
-  config: CompilerConfig, nodes: ASTNode[] | null, table: SymbolTable
+  config: CompilerConfig, nodes: ASTNode[] | undefined, table: SymbolTable
 }): QueryNode[] {
   const definitions: QueryNode[] = []
 
@@ -78,11 +18,30 @@ export function buildDefinitionsFromASTNodes ({
     if (queryNode.type == QueryType.ALL) {
       definitions.unshift(queryNode)
     } else if (queryNode.type === QueryType.SPREAD && config.mode === "compact") {
-      definitions.push(...queryNode["node"].definitions)
+      definitions.push(...queryNode.node["definitions"])
     } else {
       definitions.push(queryNode)
     }
   })
 
   return definitions
+}
+
+export function searchQueryNode<T extends NamedQueryNode>(node: T, path: string[]): QueryNode | undefined {
+  if (path.length === 0) {
+    return node
+  }
+
+  const [key, ...rest] = path
+  const children = node.definitions
+    .map(node => node as NamedQueryNode)
+    .filter(d => d.name === key || d.alias === key)
+
+  for (const child of children) {
+    const result = searchQueryNode(child, rest)
+
+    if (result) {
+      return result
+    }
+  }
 }

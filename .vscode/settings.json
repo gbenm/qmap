@@ -3,8 +3,11 @@
         "additionalParameters": "-Dlanguage=JavaScript",
         "alternativeJar": "./antlr4.jar",
         "mode": "external",
-        "outputDir": "../src/syntax",
-        "listeners": false
+        "outputDir": "../src/compiler/syntax",
+        "listeners": true
     },
-    "antlr4.referencesCodeLens.enabled": false
+    "antlr4.referencesCodeLens.enabled": false,
+    "jest.autoRun": {
+      "onStartup": ["all-tests"]
+    }
 }

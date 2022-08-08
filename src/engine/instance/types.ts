@@ -1,23 +1,15 @@
 import { Nullable } from "../../utils/types"
-import { QMapContext } from "../creator/types"
+import { OperateMode, QMapContext, QMapFunctions } from "../creator/types"
+import { ApplyOptions } from "./features/types"
 
-export type QMap = ((query: Nullable<string>, options?: Nullable<QMapOptions>) => QMapExecutors) & QMapContext
+export interface QMap<Pctx extends QMapContext<any, any> | undefined, Fns extends QMapFunctions> extends QMapContext<Pctx, Fns> {
+  (query: Nullable<string>, options?: Nullable<QMapOptions>): QMapExecutors
+}
 
 export interface QMapExecutors {
   errors: unknown[] | undefined
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  apply: (target: any, overrideOptions?: Nullable<QMapOptions>) => any
+  apply<T>(target: any, overrideOptions?: Nullable<ApplyOptions>): T
   includes: (path: string[], overrideOptions?: Nullable<QMapIncludesOptions>) => boolean
-}
-
-export interface QMapIndex {
-  index: {
-    [key: string]: QMapIndex
-  },
-  all: boolean
-  exclude?: {
-    [key: string]: boolean
-  }
 }
 
 export interface QMapVars {
@@ -27,6 +19,8 @@ export interface QMapVars {
 export interface QMapOptions {
   schema?: Nullable<string>
   variables?: QMapVars
+  ignoreIndex?: boolean
+  mode?: OperateMode
 }
 
 export interface QMapIncludesOptions {

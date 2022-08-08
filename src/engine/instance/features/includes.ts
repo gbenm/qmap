@@ -1,12 +1,12 @@
-import { RootQueryNode } from "../../../compiler"
+import { RootQueryNode, QMapIndex } from "../../../compiler"
 import { Nullable } from "../../../utils/types"
 import { QMapContext, QMapQuery } from "../../creator/types"
-import { QMapIncludesOptions, QMapIndex } from "../types"
+import { QMapIncludesOptions } from "../types"
 import { findSchema } from "../utils"
 
 type IncludesContext = {
-  root: RootQueryNode
-  context: QMapContext
+  root: RootQueryNode<QMapIndex | null>
+  context: QMapContext<any, any>
   query: Nullable<QMapQuery>
   schema: Nullable<QMapQuery>
 }
@@ -27,11 +27,15 @@ function _includes(query: QMapQuery, target: string[]) {
     }
   }
 
+  if (descriptor?.index[key]) {
+    return true
+  }
+
   if (descriptor?.all) {
     return !descriptor?.exclude?.[key]
   }
 
-  return !!descriptor?.index[key]
+  return false
 }
 
 export function includes(this: IncludesContext, target: string[], overrideOptions?: Nullable<QMapIncludesOptions>): boolean {

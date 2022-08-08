@@ -18,21 +18,32 @@ export class Function implements ASTNode {
   constructor(
     private name: string,
     private args: ASTNode[],
+    private queryList: ASTNode[],
     private clientFn: boolean,
-    private byItem: boolean = false
+    private arrayPosition?: number
   ) { }
 
   generate(config: CompilerConfig, parentTable: SymbolTable): QueryNode {
     const table = parentTable.createScope()
-    const definitions = this.args.map(arg => arg.generate(config, table))
+    const args = this.args.map(arg => arg.generate(config, table))
+    const definitionsTable = this.createDefinitionsTable(parentTable)
+    const definitions = this.queryList.map(def => def.generate(config, definitionsTable))
 
     return {
       type: this.clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
       name: this.name,
-      alias: generateNameFromNodes(definitions),
+      alias: generateNameFromNodes(args),
+      args,
       definitions,
-      byItem: this.byItem
+      arrayPosition: this.arrayPosition
     }
   }
 
+  createDefinitionsTable(parentTable: SymbolTable): SymbolTable {
+    return parentTable.createScope()
+  }
+
+  setQueryList(nodes: ASTNode[]) {
+    this.queryList = nodes
+  }
 }

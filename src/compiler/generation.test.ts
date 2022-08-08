@@ -1,5 +1,5 @@
 import { compile, QueryType } from "."
-import { AccessQueryNode, QueryNode, SelectQueryNode } from "./query.types"
+import { AccessQueryNode, FnQueryNode, QueryNode, SelectQueryNode } from "./query.types"
 
 function mustNotHaveName(node: QueryNode) {
   expect(node["name"]).toBeFalsy()
@@ -9,35 +9,77 @@ function mustNotHaveAlias(node: QueryNode) {
   expect(node["alias"]).toBeFalsy()
 }
 
+function checkPrimitiveNode(node: QueryNode, val: unknown) {
+  expect(node).toEqual({
+    type: QueryType.PRIMITIVE,
+    val,
+    name: typeof val
+  })
+}
+
+function checkOnResultNode(node: QueryNode, {
+  alias, checkNode
+}: { alias: string, checkNode: (node: QueryNode) => void, }) {
+  expect(node.type).toBe(QueryType.ON_RESULT)
+  expect(node["alias"]).toBe(alias)
+  checkNode(node["node"])
+}
+
 function checkFunctionQueryNode(node: QueryNode, {
   name,
   alias,
   consumer,
+  checkReturn,
   clientFn = false,
-  byItem = false
+  arrayPosition
 }: {
   name: string,
   alias: string,
   clientFn?: boolean,
-  byItem?: boolean,
-  consumer: (definitions: QueryNode[]) => void
+  arrayPosition?: number,
+  consumer: (args: QueryNode[]) => void,
+  checkReturn?: (definitions: QueryNode[]) => void
 }) {
   const expected = {
     type: clientFn ? QueryType.CLIENT_FUNCTION : QueryType.FUNCTION,
     name,
     alias,
-    byItem
+    arrayPosition
   }
 
   expect(node).toMatchObject(expected)
-  getDefinitions(node, consumer)
+  getArgs(node as FnQueryNode, consumer)
+
+  const defaultReturnChecker = (defs: QueryNode[]) => expect(defs).toEqual([])
+  getDefinitions(node, checkReturn ?? defaultReturnChecker)
+}
+
+
+function checkHideNode(node: QueryNode, {
+  name,
+  consumer,
+}: { name: string, consumer?: (definitions: QueryNode[]) => void }) {
+  const nodeWithoutDefs = { ...node }
+  delete nodeWithoutDefs["definitions"]
+
+  expect(nodeWithoutDefs).toEqual({
+    type: QueryType.HIDE,
+    name
+  })
+
+  if (consumer) {
+    getDefinitions(node, consumer)
+  } else {
+    getDefinitions(node, (defs) => expect(defs.length).toBe(0))
+  }
 }
 
 function checkSelectQueryNode(node: QueryNode, {
   name,
   alias,
-  consumer
-}: { name: string, alias?: string, consumer?: (definitions: QueryNode[]) => void }) {
+  consumer,
+  indexDefinitions
+}: { name: string, alias?: string, consumer?: (definitions: QueryNode[]) => void, indexDefinitions?: boolean }) {
   const expected = {
     type: QueryType.SELECT,
     name,
@@ -56,17 +98,39 @@ function checkSelectQueryNode(node: QueryNode, {
   expect(node).toMatchObject(expected)
 
   if (consumer) {
+    if (indexDefinitions) {
+      overIndexDefinitions(node, consumer)
+    } else {
+      getDefinitions(node, consumer)
+    }
+  }
+}
+
+function checkNewObjectQueryNode(node: QueryNode, {
+  alias,
+  consumer
+}: { alias: string, consumer?: (definitions: QueryNode[]) => void }) {
+  expect(node.type).toBe(QueryType.NEW_OBJECT)
+  expect(node["alias"]).toBe(alias)
+
+  if (!consumer) {
+    expect(node["definitions"]).toEqual([])
+  } else {
     getDefinitions(node, consumer)
   }
+
+  mustNotHaveName(node)
 }
 
 function checkAccessQueryNode(node: QueryNode, {
   keys,
   alias,
+  isGlobal = false,
+  indexDefinitions,
   consumer
-}: { keys: string[], alias?: string, consumer?: (definitions: QueryNode[]) => void }) {
+}: { keys: string[], alias?: string, isGlobal?: boolean, consumer?: (definitions: QueryNode[]) => void, indexDefinitions?: boolean}) {
   const expected = {
-    type: QueryType.ACCESS,
+    type: isGlobal? QueryType.GLOBAL_ACCESS : QueryType.ACCESS,
     alias: alias || keys.join("_"),
     keys,
   }
@@ -78,7 +142,11 @@ function checkAccessQueryNode(node: QueryNode, {
   expect(node).toMatchObject(expected)
 
   if (consumer) {
-    getDefinitions(node, consumer)
+    if (indexDefinitions) {
+      overIndexDefinitions(node, consumer)
+    } else {
+      getDefinitions(node, consumer)
+    }
   }
 
   mustNotHaveName(node)
@@ -87,6 +155,16 @@ function checkAccessQueryNode(node: QueryNode, {
 function getDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) => void) {
   expect(node["definitions"]).toBeTruthy()
   consumer(node["definitions"])
+}
+
+function overIndexDefinitions (node: QueryNode, consumer: (definitions: QueryNode[]) => void) {
+  expect(node["indexDefinitions"]).toBeTruthy()
+  consumer(node["indexDefinitions"])
+}
+
+function getArgs (node: FnQueryNode, consumer: (args: QueryNode[]) => void) {
+  expect(node.args).toBeTruthy()
+  consumer(node.args)
 }
 
 function forEachDefinition(node: QueryNode, visitor: (node: QueryNode, index: number, nodes: QueryNode[]) => void) {
@@ -157,13 +235,16 @@ describe("root query", () => {
 
 describe("fields", () => {
   it("simple", () => {
-    const { definitions, descriptor } = compile("{ product }")
+    const { definitions, descriptor, errors } = compile("{ product }")
 
     const productField: SelectQueryNode = {
       type: QueryType.SELECT,
       name: "product",
-      definitions: []
+      definitions: [],
+      indexDefinitions: []
     }
+
+    expect(errors).toEqual([])
 
     expect(definitions.length).toBe(1)
     expect(definitions[0]).toMatchObject(productField)
@@ -175,28 +256,32 @@ describe("fields", () => {
   })
 
   it("multiple", () => {
-    const { definitions, descriptor } = compile("{ first_name, last_name, age, image }")
+    const { definitions, descriptor } = compile("{ first_name; last_name; age; image }")
 
     const queryNodes: QueryNode[] = [
       {
         type: QueryType.SELECT,
         name: "first_name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       },
       {
         type: QueryType.SELECT,
         name: "last_name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       },
       {
         type: QueryType.SELECT,
         name: "age",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       },
       {
         type: QueryType.SELECT,
         name: "image",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       }
     ]
 
@@ -227,15 +312,17 @@ describe("fields", () => {
 
   describe("access", () => {
     it("simple", () => {
-      const { definitions, descriptor } = compile("{ transaction.product.name }")
+      const { definitions, descriptor, errors } = compile("{ transaction.product.name }")
 
+      expect(errors).toEqual([])
       expect(definitions.length).toBe(1)
 
       const expeted: AccessQueryNode = {
         type: QueryType.ACCESS,
         keys: ["transaction", "product", "name"],
         alias: "transaction_product_name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       }
 
       expect(definitions[0]).toMatchObject(expeted)
@@ -258,14 +345,16 @@ describe("fields", () => {
     })
 
     it("with query", () => {
-      const { definitions, descriptor } = compile("{ transaction.product { name } }")
+      const { definitions, descriptor, errors } = compile("{ transaction.product { name } }")
 
+      expect(errors).toEqual([])
       expect(definitions.length).toBe(1)
 
       const selectQueryNode: SelectQueryNode = {
         type: QueryType.SELECT,
         name: "name",
-        definitions: []
+        definitions: [],
+        indexDefinitions: []
       }
 
       const result = definitions[0] as AccessQueryNode
@@ -294,11 +383,11 @@ describe("fields", () => {
 
     it("multiple", () => {
       const query = `cartitem {
-        id,
-        transaction.product { id, name },
+        id;
+        transaction.product { id, name };
         transaction {
           id
-        },
+        };
         user.account { email }
       }`
 
@@ -410,6 +499,55 @@ describe("fields", () => {
         }
       })
     })
+
+    it("global", () => {
+      const query = `/*qmap*/{
+        product {
+          id: &.product_id,
+          name: &.product_name
+        }
+      }`
+
+      const { descriptor, definitions, errors } = compile(query)
+
+      expect(errors).toEqual([])
+
+      expect(definitions.length).toBe(1)
+      checkSelectQueryNode(definitions[0], {
+        name: "product",
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+
+          checkAccessQueryNode(definitions[0], {
+            keys: ["product_id"],
+            alias: "id",
+            isGlobal: true
+          })
+
+          checkAccessQueryNode(definitions[1], {
+            keys: ["product_name"],
+            alias: "name",
+            isGlobal: true
+          })
+        }
+      })
+
+      expect(descriptor).toEqual({
+        index: {
+          product: {
+            index: {},
+          },
+          product_id: {
+            index: {},
+            all: true
+          },
+          product_name: {
+            index: {},
+            all: true
+          }
+        }
+      })
+    })
   })
 
   it("nested", () => {
@@ -477,8 +615,7 @@ describe("exclude", () => {
     })
 
     expect(descriptor).toMatchObject({
-      index: { },
-      exclude: { name: true }
+      index: { }
     })
 
     numberOfKeysMustBe(descriptor.index, 0)
@@ -498,11 +635,7 @@ describe("exclude", () => {
     })
 
     expect(descriptor).toMatchObject({
-      index: {},
-      exclude: {
-        name: true,
-        id: true
-      }
+      index: {}
     })
 
     numberOfKeysMustBe(descriptor.index, 0)
@@ -535,17 +668,33 @@ describe("exclude", () => {
     expect(descriptor).toMatchObject({
       index: {
         transaction: {
-          index: {},
-          exclude: {
-            product: true,
-            provider: true
-          }
+          index: {}
         }
       }
     })
 
     numberOfKeysMustBe(descriptor.index, 1)
     numberOfKeysMustBe(descriptor.index.transaction.index, 0)
+  })
+})
+
+test("hide node", () => {
+  const { descriptor, definitions, errors } = compile("/*qmap*/{ ~common { id, name } }")
+
+  expect(errors).toEqual([])
+  expect(definitions.length).toBe(1)
+
+  checkHideNode(definitions[0], {
+    name: "common",
+    consumer(defs) {
+      expect(defs.length).toBe(2)
+      checkSelectQueryNode(defs[0], { name: "id" })
+      checkSelectQueryNode(defs[1], { name: "name" })
+    }
+  })
+
+  expect(descriptor).toEqual({
+    index: {}
   })
 })
 
@@ -947,11 +1096,15 @@ describe("spread", () => {
     })
   })
 
-  it ("extended", () => {
+  it ("extended mode", () => {
     const query = `{
-      target { name },
+      another {
+        target {
+          name
+        }
+      },
       dst {
-        ...target
+        ...another.target
       }
     }`
 
@@ -962,10 +1115,16 @@ describe("spread", () => {
     const [ targetNode, dstNode ] = definitions
 
     checkSelectQueryNode(targetNode, {
-      name: "target",
+      name: "another",
       consumer(definitions) {
         expect(definitions.length).toBe(1)
-        checkSelectQueryNode(definitions[0], { name: "name" })
+        checkSelectQueryNode(definitions[0], {
+          name: "target",
+          consumer(definitions) {
+            expect(definitions.length).toBe(1)
+            checkSelectQueryNode(definitions[0], { name: "name" })
+          }
+        })
       }
     })
 
@@ -975,7 +1134,7 @@ describe("spread", () => {
         expect(definitions.length).toBe(1)
         expect(definitions[0]).toMatchObject({
           type: QueryType.SPREAD,
-          keys: ["target"],
+          keys: ["another", "target"],
         })
         checkSelectQueryNode(definitions[0]["node"], {
           name: "target",
@@ -987,16 +1146,66 @@ describe("spread", () => {
       }
     })
 
-    expect(descriptor).toMatchObject({
+    expect(descriptor).toEqual({
       index: {
-        target: {
+        another: {
           index: {
-            name: { index: {} }
+            target: {
+              index: {
+                name: { index: {}, all: true }
+              }
+            }
           }
         },
         dst: {
           index: {
-            name: {}
+            name: {
+              index: {},
+              all: true
+            }
+          }
+        }
+      }
+    })
+  })
+
+  test("hide nodes", () => {
+    const { errors, descriptor, definitions } = compile(`/*qmap*/{
+      ~common {
+        id, name
+      },
+      user {
+        ...common
+      }
+    }`)
+
+    expect(errors).toEqual([])
+
+    expect(definitions.length).toBe(2)
+    checkHideNode(definitions[0], {
+      name: "common",
+      consumer(defs) {
+        expect(defs.length).toBe(2)
+        checkSelectQueryNode(defs[0], { name: "id" })
+        checkSelectQueryNode(defs[1], { name: "name" })
+      }
+    })
+
+    checkSelectQueryNode(definitions[1], {
+      name: "user",
+      consumer(defs) {
+        expect(defs.length).toBe(2)
+        checkSelectQueryNode(defs[0], { name: "id" })
+        checkSelectQueryNode(defs[1], { name: "name" })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        user: {
+          index: {
+            id: { index: {}, all: true },
+            name: { index: {}, all: true }
           }
         }
       }
@@ -1004,19 +1213,118 @@ describe("spread", () => {
   })
 })
 
+describe("all with exclude (index)", () => {
+  it("multiple", () => {
+    const { descriptor, errors } = compile("{ ..., !name, !id }")
+
+    expect(errors).toEqual([])
+    expect(descriptor).toEqual({
+      index: {},
+      all: true,
+      exclude: {
+        name: true,
+        id: true
+      }
+    })
+
+    numberOfKeysMustBe(descriptor.index, 0)
+  })
+
+  it ("nested", () => {
+    const { descriptor, errors } = compile("{ transaction { ..., !product, !provider } }")
+
+    expect(errors).toEqual([])
+    expect(descriptor).toEqual({
+      index: {
+        transaction: {
+          index: {},
+          all: true,
+          exclude: {
+            product: true,
+            provider: true
+          }
+        }
+      }
+    })
+
+    numberOfKeysMustBe(descriptor.index, 1)
+    numberOfKeysMustBe(descriptor.index.transaction.index, 0)
+  })
+})
+
 describe("functions", () => {
+  describe("query", () => {
+    function checkGen(definitions: QueryNode[], errors: unknown[]) {
+      expect(errors).toEqual([])
+
+      expect(definitions.length).toBe(1)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "take",
+        alias: "products_number",
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
+            name: "products",
+          })
+          checkPrimitiveNode(args[1], 3)
+        },
+        checkReturn(defs) {
+          expect(defs.length).toBe(2)
+          expect(defs[0]).toEqual({
+            type: QueryType.ALL
+          })
+          checkFunctionQueryNode(defs[1], {
+            name: "toUpperCase",
+            alias: "name",
+            consumer(args) {
+              expect(args.length).toBe(1)
+              checkSelectQueryNode(args[0], {
+                name: "name",
+              })
+            },
+          })
+        }
+      })
+    }
+
+    it ("without index", () => {
+      const query = `/*qmap*/{
+        take(products, @{3}) {
+          ...,
+          toUpperCase(name)
+        }
+      }`
+
+      const { definitions, descriptor, errors } = compile(query)
+
+      checkGen(definitions, errors)
+
+      expect(descriptor).toEqual({
+        index: {
+          products: {
+            index: {},
+            all: true
+          }
+        }
+      })
+    })
+  })
+
   describe("normal", () => {
     it("simple", () => {
       const query = "{ upperCase(name) }"
-      const { definitions, descriptor } = compile(query)
+      const { definitions, descriptor, errors } = compile(query)
+
+      expect(errors).toEqual([])
 
       expect(definitions.length).toBe(1)
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "name",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "name" })
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "name" })
         }
       })
 
@@ -1035,9 +1343,9 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "person_name",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkAccessQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkAccessQueryNode(args[0], {
             keys: ["person", "name"],
           })
         }
@@ -1061,9 +1369,9 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "person",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
             name: "person",
             consumer(definitions) {
               expect(definitions.length).toBe(1)
@@ -1091,14 +1399,14 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "person",
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkFunctionQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkFunctionQueryNode(args[0], {
             name: "getName",
             alias: "person",
-            consumer(definitions) {
-              expect(definitions.length).toBe(1)
-              checkSelectQueryNode(definitions[0], { name: "person" })
+            consumer(args) {
+              expect(args.length).toBe(1)
+              checkSelectQueryNode(args[0], { name: "person" })
             }
           })
         }
@@ -1119,10 +1427,84 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "students",
-        byItem: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "students" })
+        arrayPosition: 0,
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "students" })
+        }
+      })
+    })
+
+    it ("enhancement by item", () => {
+      const query = `{
+        upperCase(@[students]),
+        concat(@[students], salt),
+        concat(salt, @[students]),
+        concat(salt, @[students], salt)
+      }`
+
+      const { definitions, errors } = compile(query)
+      expect(errors).toEqual([])
+
+      expect(definitions.length).toBe(4)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "students",
+        arrayPosition: 0,
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
+            name: "students"
+          })
+        },
+      })
+
+      checkFunctionQueryNode(definitions[1], {
+        name: "concat",
+        alias: "students_salt",
+        arrayPosition: 0,
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
+            name: "students"
+          })
+          checkSelectQueryNode(args[1], {
+            name: "salt"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[2], {
+        name: "concat",
+        alias: "salt_students",
+        arrayPosition: 1,
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(args[1], {
+            name: "students"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[3], {
+        name: "concat",
+        alias: "salt_students_salt",
+        arrayPosition: 1,
+        consumer(args) {
+          expect(args.length).toBe(3)
+          checkSelectQueryNode(args[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(args[1], {
+            name: "students"
+          })
+          checkSelectQueryNode(args[2], {
+            name: "salt"
+          })
         }
       })
     })
@@ -1135,10 +1517,10 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "take",
         alias: "students_count",
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], { name: "students" })
-          expect(definitions[1]).toMatchObject({
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], { name: "students" })
+          expect(args[1]).toMatchObject({
             type: QueryType.VAR,
             name: "count"
           })
@@ -1158,9 +1540,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "name",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "name" })
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "name" })
         }
       })
 
@@ -1180,9 +1562,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "person_name",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkAccessQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkAccessQueryNode(args[0], {
             keys: ["person", "name"],
           })
         }
@@ -1207,9 +1589,9 @@ describe("functions", () => {
         name: "upperCase",
         alias: "person",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
             name: "person",
             consumer(definitions) {
               expect(definitions.length).toBe(1)
@@ -1238,15 +1620,15 @@ describe("functions", () => {
         name: "upperCase",
         alias: "person",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkFunctionQueryNode(definitions[0], {
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkFunctionQueryNode(args[0], {
             name: "getName",
             alias: "person",
             clientFn: true,
-            consumer(definitions) {
-              expect(definitions.length).toBe(1)
-              checkSelectQueryNode(definitions[0], { name: "person" })
+            consumer(args) {
+              expect(args.length).toBe(1)
+              checkSelectQueryNode(args[0], { name: "person" })
             }
           })
         }
@@ -1267,11 +1649,89 @@ describe("functions", () => {
       checkFunctionQueryNode(definitions[0], {
         name: "upperCase",
         alias: "students",
-        byItem: true,
+        arrayPosition: 0,
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(1)
-          checkSelectQueryNode(definitions[0], { name: "students" })
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], { name: "students" })
+        }
+      })
+    })
+
+    it ("enhancement by item", () => {
+      const query = `{
+        upperCase!(@[students]),
+        concat!(@[students], salt),
+        concat!(salt, @[students]),
+        concat!(salt, @[students], salt)
+      }`
+
+      const { definitions, errors } = compile(query)
+      expect(errors).toEqual([])
+
+      expect(definitions.length).toBe(4)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "upperCase",
+        alias: "students",
+        clientFn: true,
+        arrayPosition: 0,
+        consumer(args) {
+          expect(args.length).toBe(1)
+          checkSelectQueryNode(args[0], {
+            name: "students"
+          })
+        },
+      })
+
+      checkFunctionQueryNode(definitions[1], {
+        name: "concat",
+        alias: "students_salt",
+        clientFn: true,
+        arrayPosition: 0,
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
+            name: "students"
+          })
+          checkSelectQueryNode(args[1], {
+            name: "salt"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[2], {
+        name: "concat",
+        alias: "salt_students",
+        clientFn: true,
+        arrayPosition: 1,
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(args[1], {
+            name: "students"
+          })
+        }
+      })
+
+      checkFunctionQueryNode(definitions[3], {
+        name: "concat",
+        alias: "salt_students_salt",
+        clientFn: true,
+        arrayPosition: 1,
+        consumer(args) {
+          expect(args.length).toBe(3)
+          checkSelectQueryNode(args[0], {
+            name: "salt"
+          })
+          checkSelectQueryNode(args[1], {
+            name: "students"
+          })
+          checkSelectQueryNode(args[2], {
+            name: "salt"
+          })
         }
       })
     })
@@ -1285,14 +1745,42 @@ describe("functions", () => {
         name: "take",
         alias: "students_count",
         clientFn: true,
-        consumer(definitions) {
-          expect(definitions.length).toBe(2)
-          checkSelectQueryNode(definitions[0], { name: "students" })
-          expect(definitions[1]).toMatchObject({
+        consumer(args) {
+          expect(args.length).toBe(2)
+          checkSelectQueryNode(args[0], { name: "students" })
+          expect(args[1]).toMatchObject({
             type: QueryType.VAR,
             name: "count"
           })
         }
+      })
+    })
+
+    it("primitive variables", () => {
+      const query = `{
+        foo(@{"text"}, @{20}, @{3.5}, @{true}, @{false})
+      }`
+
+      const { definitions, errors, descriptor } = compile(query)
+
+      expect(errors).toEqual([])
+      expect(definitions.length).toBe(1)
+
+      checkFunctionQueryNode(definitions[0], {
+        name: "foo",
+        alias: "string_number_number_boolean_boolean",
+        consumer(args) {
+          expect(args.length).toBe(5)
+          checkPrimitiveNode(args[0], "text")
+          checkPrimitiveNode(args[1], 20)
+          checkPrimitiveNode(args[2], 3.5)
+          checkPrimitiveNode(args[3], true)
+          checkPrimitiveNode(args[4], false)
+        }
+      })
+
+      expect(descriptor).toEqual({
+        index: {}
       })
     })
   })
@@ -1375,9 +1863,9 @@ describe("rename", () => {
     checkFunctionQueryNode(definitions[0], {
       name: "concat",
       alias: "full_name",
-      consumer(definitions) {
-        expect(definitions.length).toBe(2)
-        const [first_name, last_name] = definitions
+      consumer(args) {
+        expect(args.length).toBe(2)
+        const [first_name, last_name] = args
         checkSelectQueryNode(first_name, { name: "fist_name" })
         checkSelectQueryNode(last_name, { name: "last_name" })
       }
@@ -1400,9 +1888,9 @@ describe("rename", () => {
       name: "concat",
       alias: "full_name",
       clientFn: true,
-      consumer(definitions) {
-        expect(definitions.length).toBe(2)
-        const [first_name, last_name] = definitions
+      consumer(args) {
+        expect(args.length).toBe(2)
+        const [first_name, last_name] = args
         checkSelectQueryNode(first_name, { name: "fist_name" })
         checkSelectQueryNode(last_name, { name: "last_name" })
       }
@@ -1414,7 +1902,7 @@ describe("rename", () => {
     })
   })
 
-  it("extended", () => {
+  it("extended mode", () => {
     const query = "{ id: access_number }"
 
     const { definitions, descriptor } = compile(query, {
@@ -1431,6 +1919,291 @@ describe("rename", () => {
 
     expect(descriptor.index).toMatchObject({
       access_number: { index: {} },
+    })
+  })
+})
+
+describe("new object", () => {
+  it ("simple", () => {
+    const { errors, descriptor, definitions } = compile(`/*qmap*/{
+      product: {
+        product_id,
+        product_name
+      }
+    }`)
+
+    expect(errors).toEqual([])
+
+    expect(definitions.length).toBe(1)
+
+    checkNewObjectQueryNode(definitions[0], {
+      alias: "product",
+      consumer(definitions) {
+        expect(definitions.length).toBe(2)
+        checkSelectQueryNode(definitions[0], { name: "product_id" })
+        checkSelectQueryNode(definitions[1], { name: "product_name" })
+      },
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        product_id: { index: {}, all: true },
+        product_name: { index: {}, all: true },
+      }
+    })
+  })
+
+  it ("with global access", () => {
+    const { errors, descriptor, definitions } = compile(`/*qmap*/{
+      transaction {
+        product: {
+          &.provider,
+          product_id,
+          product_name
+        }
+      }
+    }`)
+
+    expect(errors).toEqual([])
+
+    expect(definitions.length).toBe(1)
+
+    checkSelectQueryNode(definitions[0], {
+      name: "transaction",
+      consumer(definitions) {
+        expect(definitions.length).toBe(1)
+        checkNewObjectQueryNode(definitions[0], {
+          alias: "product",
+          consumer(definitions) {
+            expect(definitions.length).toBe(3)
+            checkAccessQueryNode(definitions[0], {
+              isGlobal: true,
+              keys: ["provider"],
+            })
+            checkSelectQueryNode(definitions[1], { name: "product_id" })
+            checkSelectQueryNode(definitions[2], { name: "product_name" })
+          },
+        })
+      },
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        provider: { index: {}, all: true },
+        transaction: {
+          index: {
+            product_id: { index: {}, all: true },
+            product_name: { index: {}, all: true },
+          }
+        }
+      }
+    })
+  })
+})
+
+test("On Result", () => {
+  const { errors, definitions, descriptor } = compile(`/*qmap*/{
+    products: take(products, @{5}),
+    %{products.name},
+    compact_product: %{
+      products { id, name }
+    },
+    labels: createLabels(%{products})
+  }`)
+
+  expect(errors).toEqual([])
+  expect(definitions.length).toBe(4)
+
+  const [
+    takeFn,
+    onresultAccess,
+    onresultWithRename,
+    createLabelsWithProductsFromResult
+  ] = definitions
+
+  checkFunctionQueryNode(takeFn, {
+    name: "take",
+    alias: "products",
+    consumer(args) {
+      expect(args.length).toBe(2)
+      checkSelectQueryNode(args[0], { name: "products" })
+      checkPrimitiveNode(args[1], 5)
+    },
+  })
+
+  checkOnResultNode(onresultAccess, {
+    alias: "products_name",
+    checkNode(node) {
+      checkAccessQueryNode(node, {
+        keys: ["products", "name"]
+      })
+    },
+  })
+
+  checkOnResultNode(onresultWithRename, {
+    alias: "compact_product",
+    checkNode(node) {
+      checkSelectQueryNode(node, {
+        name: "products",
+        consumer(definitions) {
+          expect(definitions.length).toBe(2)
+          checkSelectQueryNode(definitions[0], { name: "id" })
+          checkSelectQueryNode(definitions[1], { name: "name" })
+        },
+      })
+    },
+  })
+
+  checkFunctionQueryNode(createLabelsWithProductsFromResult, {
+    alias: "labels",
+    name: "createLabels",
+    consumer(args) {
+      expect(args.length).toBe(1)
+      checkOnResultNode(args[0], {
+        alias: "products",
+        checkNode(node) {
+          checkSelectQueryNode(node, { name: "products" })
+        },
+      })
+    },
+  })
+
+  expect(descriptor).toEqual({
+    index: {
+      products: {
+        index: {},
+        all: true
+      }
+    }
+  })
+})
+
+
+describe("index definitions", () => {
+  test("select", () => {
+    const query = `/*qmap*/{
+      products #{
+        name
+      };
+      take(%{products}, @{3})
+    }`
+
+    const { definitions, descriptor, errors } = compile(query)
+
+    expect(errors).toEqual([])
+
+    checkSelectQueryNode(definitions[0], {
+      name: "products",
+      indexDefinitions: true,
+      consumer(defs) {
+        expect(defs.length).toBe(1)
+        checkSelectQueryNode(defs[0], { name: "name" })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        products: {
+          index: {
+            name: {
+              index: {},
+              all: true
+            }
+          },
+        }
+      }
+    })
+  })
+
+  test("access", () => {
+    const query = `/*qmap*/{
+      products: transaction.products #{
+        name
+      };
+      take(%{products}, @{3})
+    }`
+
+    const { definitions, descriptor, errors } = compile(query)
+
+    expect(errors).toEqual([])
+
+    checkAccessQueryNode(definitions[0], {
+      keys: ["transaction", "products"],
+      alias: "products",
+      indexDefinitions: true,
+      consumer(defs) {
+        expect(defs.length).toBe(1)
+        checkSelectQueryNode(defs[0], { name: "name" })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        transaction: {
+          index: {
+            products: {
+              index: {
+                name: {
+                  index: {},
+                  all: true
+                }
+              },
+            }
+          }
+        }
+      }
+    })
+  })
+
+  test("global access", () => {
+    const query = `/*qmap*/{
+      info {
+        products: &.transaction.products #{
+          name
+        };
+        take(%{products}, @{3})
+      }
+    }`
+
+    const { definitions, descriptor, errors } = compile(query)
+
+    expect(errors).toEqual([])
+
+    checkSelectQueryNode(definitions[0], {
+      name: "info",
+      consumer(defs) {
+        expect(defs.length).toBe(2)
+        checkAccessQueryNode(defs[0], {
+          keys: ["transaction", "products"],
+          alias: "products",
+          indexDefinitions: true,
+          isGlobal: true,
+          consumer(defs) {
+            expect(defs.length).toBe(1)
+            checkSelectQueryNode(defs[0], { name: "name" })
+          }
+        })
+      }
+    })
+
+    expect(descriptor).toEqual({
+      index: {
+        transaction: {
+          index: {
+            products: {
+              index: {
+                name: {
+                  index: {},
+                  all: true
+                }
+              },
+            }
+          }
+        },
+        info: {
+          index: {},
+        }
+      }
     })
   })
 })
@@ -1460,6 +2233,6 @@ describe("ignore index", () => {
       ignoreIndex: true
     })
 
-    expect(descriptor.index).toEqual({})
+    expect(descriptor).toEqual(null)
   })
 })
