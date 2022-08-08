@@ -40,7 +40,7 @@ describe("with cache", () => {
     })
 
     const query = "{ id, name }"
-    const hash = (<HashCache> qmap.cache?.mainPolicy).getHash(query)
+    const hash = qmap.cache?.getMainPolicy<HashCache>()?.getHash(query)
 
     jest.clearAllMocks()
     jest.spyOn(compiler, "compile")
@@ -89,7 +89,7 @@ test("force recompile", () => {
   expect(compiler.compile).toHaveBeenCalledTimes(3)
 })
 
-const getHash = (cache: CacheStore<any> | undefined, value: string) => (<HashCache> cache?.mainPolicy).getHash(value)
+const getHash = (cache: CacheStore<any> | undefined, value: string) => (<HashCache> cache?.getMainPolicy()).getHash(value)
 
 const setupCache = (withHashCache = true) => {
     const fifo = new FIFOCache(2)

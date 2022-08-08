@@ -6,12 +6,12 @@ export abstract class CacheStore<Key, ComputeFn extends _ComputeFn = _ComputeFn>
 
   private readonly self: CachePolicy<Key, Key> = new CacheStoreWrapper(this)
 
-  get mainPolicy(): CachePolicy<string, string> {
-    return this.policy
-  }
-
   constructor() {
     this.policy = <any> this.self
+  }
+
+  public getMainPolicy<P extends CachePolicy<string, string>>(): P {
+    return <any> this.policy
   }
 
   public accept(policy: CachePolicy<string, string>): CacheStore<Key> {
