@@ -31,7 +31,6 @@ function writeSideBarPosition(filename, i) {
     if (basename === "_category_.json") {
         re = /("position":)\s*[1-9]\d/
     }
-    console.log(re)
     const content = fs.readFileSync(filename).toString()
     const newContent = content.replace(re, `$1 ${i+1}`)
     fs.writeFileSync(filename, newContent)
