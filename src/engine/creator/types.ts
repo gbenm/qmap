@@ -1,11 +1,18 @@
-import { QueryNode, QMapIndex } from "../../compiler"
+import { QueryNode, QMapIndex, RootQueryNode, CompilerConfig } from "../../compiler"
+import { CacheStore as _CacheStore } from "../../cache"
+import { ComputeFn } from "../../cache/types"
+import { Nullable } from "../../utils/types"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type QMapFunction = (...args: any[]) => any
 
+export type CacheStore = _CacheStore<any, ComputeFn<{ query: Nullable<string>, options?: CompilerConfig }, RootQueryNode>>
+
 export interface QMapFunctions {
   [key: string]: QMapFunction
 }
+
+export type OperateMode = "only-cache" | "normal" | "compiler"
 
 export interface QMapDescriptor<Pctx extends QMapContext<any, any> | undefined, Fns extends QMapFunctions> {
   extends?: Pctx
@@ -13,6 +20,8 @@ export interface QMapDescriptor<Pctx extends QMapContext<any, any> | undefined, 
   schemas?: string
   queries?: string
   defaultSchema?: string
+  cache?: CacheStore
+  mode?: OperateMode
 }
 
 export interface QMapQuery {
@@ -30,4 +39,6 @@ export interface QMapContext<Pctx extends QMapContext<any, any> | undefined, Fns
   schemas: QMapQueries
   queries: QMapQueries
   defaultSchema: string | undefined
+  cache?: CacheStore
+  mode?: OperateMode
 }
