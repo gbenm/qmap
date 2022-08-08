@@ -26,7 +26,7 @@ export function qmapCreator<Pctx extends QMapContext<any, any> | undefined, Fns 
     schemas: fromDefinitionsToJson(schemaDefinitions, schemaDescriptor as QMapIndex),
     queries: fromDefinitionsToJson(queryDefinitions, queryDescriptor as QMapIndex),
     defaultSchema: descriptor?.defaultSchema,
-    mode: descriptor?.mode ?? "normal",
+    mode: descriptor?.mode ?? descriptor?.extends?.mode ?? "normal",
     cache: descriptor?.cache ?? descriptor?.extends?.cache
   }
 
