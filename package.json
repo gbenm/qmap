@@ -1,7 +1,7 @@
 {
   "name": "@qmap/engine",
   "packageManager": "yarn@3.2.0",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "JSON manipulation engine",
   "author": "Josué Galeano",
   "license": "MIT",
@@ -36,7 +36,11 @@
     "test-junit": "JEST_JUNIT_OUTPUT_DIR='junit' jest --reporters='jest-junit'",
     "prebuild": "yarn lint && yarn test",
     "build": "yarn prebuild && tsc && yarn postbuild",
-    "postbuild": "yarn del dist/compiler/syntax/*.d.ts"
+    "postbuild": "yarn del dist/compiler/syntax/*.d.ts",
+    "release": "standard-version -s",
+    "release:minor": "yarn release --release-as minor",
+    "release:patch": "yarn release --release-as patch",
+    "release:major": "yarn-release --release-as major"
   },
   "devDependencies": {
     "@types/eslint": "^8.4.1",
@@ -48,6 +52,7 @@
     "eslint": "^8.13.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.2.0",
+    "standard-version": "^9.5.0",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
