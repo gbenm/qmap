@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/gbenm/qmap/compare/v1.0.0...v1.1.0) (2022-08-08)
+
+
+### Features
+
+* 🎸 Add On Result query node type ([f545b81](https://github.com/gbenm/qmap/commit/f545b815fab4ee6d08b449f23debe36e4ff1ad10))
+* 🎸 add syntax to over result queries ([890d488](https://github.com/gbenm/qmap/commit/890d488675f4e1a5ac5fb3731c5efd47a3eef0dc))
+* 🎸 allow ; and whitespaces as separators ([e9da3fb](https://github.com/gbenm/qmap/commit/e9da3fb5180ba234dbf6470a1b0c7464d7b9f71e))
+* 🎸 allow change return type ([26acaac](https://github.com/gbenm/qmap/commit/26acaac5d2133a96242b196025693372e53e8ec0))
+* 🎸 better typing ([08f3181](https://github.com/gbenm/qmap/commit/08f3181cd15aba0757eabab00f7344a4bb2b92b5))
+* 🎸 can set default schema ([e6c21b0](https://github.com/gbenm/qmap/commit/e6c21b03dc0618dea480273e731fa74414736799))
+* 🎸 can use global access ([a45596e](https://github.com/gbenm/qmap/commit/a45596ec7459291e3b65778586db49a1ae06ac48))
+* 🎸 can use primitives ([1db1517](https://github.com/gbenm/qmap/commit/1db15171c173af17d609ef2caf06bd7fce541577))
+* 🎸 create new object in json ([a78d967](https://github.com/gbenm/qmap/commit/a78d967a3635dfd2aaab3617c7984e5f7c06175c))
+* 🎸 function can select and modify index ([8fb6f24](https://github.com/gbenm/qmap/commit/8fb6f240c5a106d78833b91ebf1913b16491a727))
+* 🎸 generate global access ([7d9c323](https://github.com/gbenm/qmap/commit/7d9c323f569103f7fd9a0b9bacf74ccc76d4c320))
+* 🎸 generate new object query ([94afa70](https://github.com/gbenm/qmap/commit/94afa700d27252000277881063d01ddacdbc58f3))
+* 🎸 generate on result node ([2eb77f2](https://github.com/gbenm/qmap/commit/2eb77f28f73247fb019483cdc02411fe458cf8e3))
+* 🎸 on result queries ([7f6b702](https://github.com/gbenm/qmap/commit/7f6b702117ebd6d96dbc8628f4f223a8fde98f7f))
+* 🎸 OnResultQueryNode class ([433b82b](https://github.com/gbenm/qmap/commit/433b82b0340d3f0af169e016cdfa3f5ec26198a5))
+* 🎸 optional dot ([bc70c9b](https://github.com/gbenm/qmap/commit/bc70c9b47bd4939109c64bf66d1f2f2a9faace4c))
+* 🎸 remove undefined if the parent exists ([1925050](https://github.com/gbenm/qmap/commit/19250506532ef4e26fe59ee7832a092d0ecad33a))
+* 🎸 select what arg is the array in by item function ([ca290aa](https://github.com/gbenm/qmap/commit/ca290aa0d98b67fcf3480342f26d46e77700e3bb))
+* 🎸 select where apply the query ([64a3693](https://github.com/gbenm/qmap/commit/64a3693c9e737a93e219258e22e332ab5c4a9838))
+* compiler cache ([#26](https://github.com/gbenm/qmap/issues/26)) ([c054972](https://github.com/gbenm/qmap/commit/c05497231033f046b71101a7bd4500907da50a4d))
+* **compiler:** 🎸 primitives ([86034fd](https://github.com/gbenm/qmap/commit/86034fd1f29b5a0c2c10f8b7c8baa3863395aeb5))
+* hide nodes ([#25](https://github.com/gbenm/qmap/issues/25)) ([1e656c8](https://github.com/gbenm/qmap/commit/1e656c8c43f972f2eed5d1c43acb3c857339cc5f))
+
+
+### Bug Fixes
+
+* 🐛 bad index ([457e134](https://github.com/gbenm/qmap/commit/457e134c4e6e48afe7f8292e8091e4858f8b64c2))
+* 🐛 doesn't exclude if it was included explicitly ([d72724f](https://github.com/gbenm/qmap/commit/d72724f1307d09006f36d549f654d056db73da27))
+* 🐛 don't pass array as function scoped result ([2fe8ba0](https://github.com/gbenm/qmap/commit/2fe8ba026ba388686e1f9f036c8f2cc5642a86b5))
+* 🐛 reconize onresult as field ([eb9e1ff](https://github.com/gbenm/qmap/commit/eb9e1ffe57064436828eb7b6330b3d262a6e8096))
+* 🐛 separator is necessary (spread and all) ([d407158](https://github.com/gbenm/qmap/commit/d40715877e191cbbf73c9d7f2f147569c7171ac8))
+* 🐛 typo ([ed0d610](https://github.com/gbenm/qmap/commit/ed0d610c633c47cabcc2ffc25c0878692609192c))
+* 🐛 typo ([5af7a02](https://github.com/gbenm/qmap/commit/5af7a0254f3e46bbae76afcfdcf7ea1b638da0d2))
+* 🐛 undefined value in select ([fc32cbc](https://github.com/gbenm/qmap/commit/fc32cbc803840fe6c7be99550a89545dda7b5eee))
+
+
+* 💍 improve spread test ([35810f2](https://github.com/gbenm/qmap/commit/35810f2cc354db19e4a3ca2f8f24c9d46dcadb6f))
+
 ## 1.0.0 (2022-08-08)
 
 
