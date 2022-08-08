@@ -18,7 +18,7 @@ describe("with cache", () => {
     jest.clearAllMocks()
     jest.spyOn(compiler, "compile")
 
-    range(5).forEach((i) => qmap(query))
+    range(5).forEach(() => qmap(query))
 
     expect(compiler.compile).toHaveBeenCalledTimes(1)
   })
