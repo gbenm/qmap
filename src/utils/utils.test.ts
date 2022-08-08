@@ -1,4 +1,4 @@
-import { mergeObjects, getValue } from "."
+import { mergeObjects, getValue, range } from "."
 
 describe("utils", () => {
   it ("get values", () => {
@@ -65,6 +65,12 @@ describe("utils", () => {
       name: "Pete"
     }
     expect(mergeObjects(arg1, arg2)).toEqual(arg1)
+  })
+
+  test("range", () => {
+    const expected = [0, 1, 2, 3, 4]
+    expect(range(5)).toEqual(expected)
+    expect(range(0, 4)).toEqual(expected)
   })
 })
 

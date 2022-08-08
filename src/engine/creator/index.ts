@@ -25,8 +25,14 @@ export function qmapCreator<Pctx extends QMapContext<any, any> | undefined, Fns 
     functions: descriptor?.functions ?? {} as Fns,
     schemas: fromDefinitionsToJson(schemaDefinitions, schemaDescriptor as QMapIndex),
     queries: fromDefinitionsToJson(queryDefinitions, queryDescriptor as QMapIndex),
-    defaultSchema: descriptor?.defaultSchema
+    defaultSchema: descriptor?.defaultSchema,
+    mode: descriptor?.mode ?? descriptor?.extends?.mode ?? "normal",
+    cache: descriptor?.cache ?? descriptor?.extends?.cache
   }
+
+  context.cache?.setComputeFn(({ query, options }) => {
+    return compile(query, options)
+  })
 
   const qmap = qmapFn.bind(context) as QMap<Pctx, Fns>
 

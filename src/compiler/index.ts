@@ -29,7 +29,7 @@ const defaultConfig: CompilerConfig = {
   ignoreIndex: false
 }
 
-export function compile (query: string | undefined | null, config: Partial<CompilerConfig> = defaultConfig): RootQueryNode<QMapIndex> {
+export function compile<Index=QMapIndex> (query: string | undefined | null, config: Partial<CompilerConfig> = defaultConfig): RootQueryNode<Index> {
   config = mergeObjects(config, defaultConfig)
 
   const errors: unknown[] = []
@@ -61,11 +61,11 @@ export function compile (query: string | undefined | null, config: Partial<Compi
       if (!config.ignoreIndex) {
         root.descriptor = gen.createIndexFrom(root)
       } else {
-        root.descriptor = { index: {} }
+        root.descriptor = null
       }
     }
 
-    return root as RootQueryNode<QMapIndex>
+    return root as any
   } catch (error: unknown) {
     errors.push(error)
   }
@@ -75,7 +75,7 @@ export function compile (query: string | undefined | null, config: Partial<Compi
     definitions: [],
     descriptor: {
       index: {}
-    },
+    } as any,
     errors
   }
 }

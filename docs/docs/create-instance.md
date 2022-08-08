@@ -14,7 +14,9 @@ const qmap = qmapCreator({
     extends: undefined,
     functions: undefined,
     schemas: undefined,
-    queries: undefined
+    queries: undefined,
+    cache: undefined,
+    mode: undefined
 })
 ```
 
@@ -219,3 +221,14 @@ por lo que dejar la llamada a `qmapCreator` en
 dónde no se vuelva a ejecutar será una buena elección.
 :::
 
+### `mode`
+Se refiere a como debe operar la instancia y sus hijos (si no es sobreescrito)
+- `"only-cache"` al usar `apply` si el valor no existe en el cache, se lanzará
+una excepción
+- `"normal"` **(por defecto)** utiliza el cache si el valor se encuentra, en otro
+ caso compila y guarda, si existe un cache, de otro modo funciona al igual que `compiler`
+- `"compiler"` siempre compila la query
+
+### `cache`
+Recibe el cache (de tipo `CacheStore`) que se va utilizar en la instancia actual y sus
+hijos (si no es sobreescrito) véase [compiler cache](./cache)

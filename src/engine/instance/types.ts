@@ -1,5 +1,5 @@
 import { Nullable } from "../../utils/types"
-import { QMapContext, QMapFunctions } from "../creator/types"
+import { OperateMode, QMapContext, QMapFunctions } from "../creator/types"
 import { ApplyOptions } from "./features/types"
 
 export interface QMap<Pctx extends QMapContext<any, any> | undefined, Fns extends QMapFunctions> extends QMapContext<Pctx, Fns> {
@@ -19,6 +19,8 @@ export interface QMapVars {
 export interface QMapOptions {
   schema?: Nullable<string>
   variables?: QMapVars
+  ignoreIndex?: boolean
+  mode?: OperateMode
 }
 
 export interface QMapIncludesOptions {

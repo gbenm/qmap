@@ -551,6 +551,14 @@ describe("includes", () => {
     expect(includes(["user", "name"])).toBe(true)
     expect(includes(["user", "any"])).toBe(false)
   })
+
+  test("ignore index", () => {
+    const qmap = qmapCreator()
+    const { includes, errors } = qmap("{ id, name }", { ignoreIndex: true })
+    expect(errors).toBeFalsy()
+    expect(includes(["id"])).toBe(false)
+    expect(includes(["name"])).toBe(false)
+  })
 })
 
 describe("apply", () => {

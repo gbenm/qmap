@@ -58,3 +58,9 @@ export const mergeObjects = (obj: any, obj2: any) => {
 export function intersect<T>(arr1: T[], arr2: T[]): T[] {
   return arr1.filter(a => arr2.includes(a))
 }
+
+export const identity = <T>(v: T) => v
+
+export const range = (startOrCount: number, end?: number) => end === undefined
+  ? new Array(startOrCount).fill(0).map((_, i) => i)
+  : new Array(end - startOrCount + 1).fill(0).map((_, i) => i + startOrCount)

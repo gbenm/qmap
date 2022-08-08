@@ -26,8 +26,13 @@ function sort(entries) {
 }
 
 function writeSideBarPosition(filename, i) {
+    const basename = path.basename(filename)
+    let re = /(sidebar_position:)\s*[1-9]\d*/
+    if (basename === "_category_.json") {
+        re = /(\s*"position":)\s*[1-9]\d*/
+    }
     const content = fs.readFileSync(filename).toString()
-    const newContent = content.replace(/(sidebar_position:)\s*[1-9]\d*/, `$1 ${i+1}`)
+    const newContent = content.replace(re, `$1 ${i+1}`)
     fs.writeFileSync(filename, newContent)
 }
 
