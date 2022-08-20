@@ -164,7 +164,6 @@ Se puede volver más legible utilizando [on result](./onresult)
 const query = `{
     producs #{ name },
     products: take(%{products}, @{2}) {
-        !provider
         name
     }
 }`
@@ -179,8 +178,7 @@ utilizar [exclude](./exclude) para removerlo.
 ```javascript
 const query = `{
     temp: producs #{ name },
-    take(%{products}, @{2}) #{
-        !provider
+    take(%{products}, @{2}) {
         name
     },
     !temp // eliminado después del uso
