@@ -7,7 +7,7 @@ import { ApplyContext, ApplyDefinitionContext, ApplyOptions, ExecutionContext } 
 export function apply<R = any>(this: ApplyContext, initialTarget: any, options?: Nullable<ApplyOptions>): R {
   overrideOptions(this, options)
 
-  const { target, key: targetKey, parentTarget } = getTarget(initialTarget, options)
+  const { target, hasParent, parentWithResult } = getTargetContext(initialTarget, options)
 
   const executionContext = createExecutionContext(this, target)
 
@@ -18,10 +18,8 @@ export function apply<R = any>(this: ApplyContext, initialTarget: any, options?:
   const overQuery = getResult(overSchema, getApplyFn(this.query))
   const result = getResult(overQuery, getApplyFn(this.root))
 
-  if (parentTarget && targetKey) {
-    parentTarget[targetKey] = result
-    return parentTarget
-  }
+  if (hasParent)
+    return parentWithResult(result)
 
   return result
 }
@@ -56,19 +54,37 @@ function createExecutionContext(applyContext: ApplyContext, globalTarget: unknow
   }
 }
 
-function getTarget(target: any, options: Nullable<ApplyOptions>) {
+function getTargetContext(target: any, options: Nullable<ApplyOptions>) {
+  let targetInnerContext = {
+    parentTarget: <any> null,
+    key: <any> null
+  }
+
   if (options && options.over && options.over.length > 0) {
     const keys = options.over.slice(0, -1)
     const [key] = options.over.slice(-1)
     const parentTarget = getValue(target, keys)
-    return {
-      target: parentTarget[key],
-      parentTarget,
-      key
+
+    targetInnerContext = {
+      parentTarget, key
     }
+
+    target = parentTarget[key]
   }
 
-  return { target }
+  const hasParent = Boolean(targetInnerContext.parentTarget)
+  return {
+    target,
+    hasParent,
+    parentWithResult(result: unknown) {
+      if (hasParent) {
+        targetInnerContext.parentTarget[targetInnerContext.key] = result
+        return targetInnerContext.parentTarget
+      } else {
+        throw new Error("This target doesn't have parent")
+      }
+    }
+  }
 }
 
 function setupApply(context: ExecutionContext, definitions: QueryNode[], result: any, target: any): any {
