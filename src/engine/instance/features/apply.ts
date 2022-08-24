@@ -1,6 +1,7 @@
 import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, OnResultQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
 import { getValue, isNullable, mergeObjects } from "../../../utils"
 import { Nullable } from "../../../utils/types"
+import { QMapQuery } from "../../creator/types"
 import { findFunction, findSchema } from "../utils"
 import { ApplyContext, ApplyDefinitionContext, ApplyOptions, ExecutionContext } from "./types"
 
@@ -11,12 +12,13 @@ export function apply<R = any>(this: ApplyContext, initialTarget: any, options?:
 
   const executionContext = createExecutionContext(this, target)
 
-  const getApplyFn = (query: any) => query?  setupApply.bind(null, executionContext, query.definitions) : (_, target) => target
-  const getResult = (target: any, apply: any) => Array.isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
+  const buildApplyFn = (query: Nullable<Pick<QMapQuery, "definitions">>) => query
+    ? setupApply.bind(null, executionContext, query.definitions)
+    : (_: unknown, target: unknown) => target
 
-  const overSchema = getResult(target, getApplyFn(this.schema))
-  const overQuery = getResult(overSchema, getApplyFn(this.query))
-  const result = getResult(overQuery, getApplyFn(this.root))
+  const overSchema = executeApply(target, buildApplyFn(this.schema))
+  const overQuery = executeApply(overSchema, buildApplyFn(this.query))
+  const result = executeApply(overQuery, buildApplyFn(this.root))
 
   if (hasParent)
     return parentWithResult(result)
@@ -52,6 +54,12 @@ function createExecutionContext(applyContext: ApplyContext, globalTarget: unknow
     globalTarget,
     currentResult: {}
   }
+}
+
+function executeApply(target: any, apply: any) {
+  return Array.isArray(target)
+    ? target.map(item => apply({}, item))
+    : apply({}, target)
 }
 
 function getTargetContext(target: any, options: Nullable<ApplyOptions>) {
