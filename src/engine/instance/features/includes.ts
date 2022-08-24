@@ -43,7 +43,6 @@ export function includes(this: IncludesContext, target: string[], overrideOption
     if (overrideOptions.schema) {
       this.schema = findSchema(this.context, overrideOptions.schema)
     }
-    return includes.call(this, target)
   }
 
   const root: QMapQuery = {

@@ -4,15 +4,14 @@ import { Nullable } from "../../../utils/types"
 import { findFunction, findSchema } from "../utils"
 import { ApplyContext, ApplyDefinitionContext, ApplyOptions, ExecutionContext } from "./types"
 
-export function apply<R = any>(this: ApplyContext, initialTarget: any, overrideOptions?: Nullable<ApplyOptions>, first = true): R {
-  if (overrideOptions && first) {
+export function apply<R = any>(this: ApplyContext, initialTarget: any, overrideOptions?: Nullable<ApplyOptions>): R {
+  if (overrideOptions) {
     if (overrideOptions.schema) {
       this.schema = findSchema(this.context, overrideOptions.schema)
     }
     if (overrideOptions.variables) {
       this.variables = mergeObjects(overrideOptions.variables, this.variables)
     }
-    return apply.call(this, initialTarget, overrideOptions, false) as R
   }
 
   const { target, key: targetKey, parentTarget } = getTarget(initialTarget, overrideOptions)
