@@ -4,34 +4,12 @@ import { Nullable } from "../../../utils/types"
 import { findFunction, findSchema } from "../utils"
 import { ApplyContext, ApplyDefinitionContext, ApplyOptions, ExecutionContext } from "./types"
 
-export function apply<R = any>(this: ApplyContext, initialTarget: any, overrideOptions?: Nullable<ApplyOptions>): R {
-  if (overrideOptions) {
-    if (overrideOptions.schema) {
-      this.schema = findSchema(this.context, overrideOptions.schema)
-    }
-    if (overrideOptions.variables) {
-      this.variables = mergeObjects(overrideOptions.variables, this.variables)
-    }
-  }
+export function apply<R = any>(this: ApplyContext, initialTarget: any, options?: Nullable<ApplyOptions>): R {
+  overrideOptions(this, options)
 
-  const { target, key: targetKey, parentTarget } = getTarget(initialTarget, overrideOptions)
+  const { target, key: targetKey, parentTarget } = getTarget(initialTarget, options)
 
-  const executionContext: ExecutionContext = {
-    getVar: (name: string) => {
-      return this.variables?.[name]
-    },
-    getFn: (name: string) => {
-      const fn = findFunction(this.context, name)
-
-      if (!fn) {
-        throw new Error(`Function ${name} not found`)
-      }
-
-      return fn
-    },
-    globalTarget: target,
-    currentResult: {}
-  }
+  const executionContext = createExecutionContext(this, target)
 
   const getApplyFn = (query: any) => query?  setupApply.bind(null, executionContext, query.definitions) : (_, target) => target
   const getResult = (target: any, apply: any) => Array.isArray(target) ? target.map(item => apply({}, item)) : apply({}, target)
@@ -46,6 +24,36 @@ export function apply<R = any>(this: ApplyContext, initialTarget: any, overrideO
   }
 
   return result
+}
+
+function overrideOptions(applyContext: ApplyContext, options: Nullable<ApplyOptions>) {
+  if (options) {
+    if (options.schema) {
+      applyContext.schema = findSchema(applyContext.context, options.schema)
+    }
+    if (options.variables) {
+      applyContext.variables = mergeObjects(options.variables, applyContext.variables)
+    }
+  }
+}
+
+function createExecutionContext(applyContext: ApplyContext, globalTarget: unknown): ExecutionContext {
+  return {
+    getVar: (name: string) => {
+      return applyContext.variables?.[name]
+    },
+    getFn: (name: string) => {
+      const fn = findFunction(applyContext.context, name)
+
+      if (!fn) {
+        throw new Error(`Function ${name} not found`)
+      }
+
+      return fn
+    },
+    globalTarget,
+    currentResult: {}
+  }
 }
 
 function getTarget(target: any, options: Nullable<ApplyOptions>) {
