@@ -1,5 +1,5 @@
-import { compile, QMapIndex, RootQueryNode } from "../../compiler"
-import { Nullable } from "../../utils/types"
+import { compile, QMapIndex, RootQueryNode } from "@qmap/compiler"
+import { Nullable } from "@qmap/utils/types"
 import { QMapContext } from "../creator/types"
 import { CacheMissError } from "./errors"
 import { includes, apply } from "./features"

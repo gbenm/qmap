@@ -1,8 +1,8 @@
-import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, OnResultQueryNode, QueryNode, QueryType, SelectQueryNode } from "../../../compiler"
-import { getValue, isNullable, mergeObjects } from "../../../utils"
-import { Nullable } from "../../../utils/types"
-import { QMapQuery } from "../../creator/types"
-import { findFunction, findSchema } from "../utils"
+import { CommonAccessQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, OnResultQueryNode, QueryNode, QueryType, SelectQueryNode } from "@qmap/compiler"
+import { getValue, isNullable, mergeObjects } from "@qmap/utils"
+import { Nullable } from "@qmap/utils/types"
+import { QMapQuery } from "@qmap/engine/creator/types"
+import { findFunction, findSchema } from "@qmap/engine/instance/utils"
 import { ApplyContext, ApplyDefinitionContext, ApplyOptions, ExecutionContext } from "./types"
 
 export function apply<R = any>(this: ApplyContext, initialTarget: any, options?: Nullable<ApplyOptions>): R {

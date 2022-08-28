@@ -1,5 +1,5 @@
-import { RootQueryNode, QMapIndex } from "../../../compiler"
-import { Nullable } from "../../../utils/types"
+import { RootQueryNode, QMapIndex } from "@qmap/compiler"
+import { Nullable } from "@qmap/utils/types"
 import { QMapContext, QMapQuery } from "../../creator/types"
 import { QMapIncludesOptions } from "../types"
 import { findSchema } from "../utils"

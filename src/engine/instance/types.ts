@@ -1,4 +1,4 @@
-import { Nullable } from "../../utils/types"
+import { Nullable } from "@qmap/utils/types"
 import { OperateMode, QMapContext, QMapFunctions } from "../creator/types"
 import { ApplyOptions } from "./features/types"
 

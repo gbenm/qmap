@@ -1,7 +1,7 @@
-import { QueryNode, QMapIndex, RootQueryNode, CompilerConfig } from "../../compiler"
-import { CacheStore as _CacheStore } from "../../cache"
-import { ComputeFn } from "../../cache/types"
-import { Nullable } from "../../utils/types"
+import { QueryNode, QMapIndex, RootQueryNode, CompilerConfig } from "@qmap/compiler"
+import { CacheStore as _CacheStore } from "@qmap/cache"
+import { ComputeFn } from "@qmap/cache/types"
+import { Nullable } from "@qmap/utils/types"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type QMapFunction = (...args: any[]) => any

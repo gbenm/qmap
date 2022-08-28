@@ -1,5 +1,5 @@
-import { compile, QMapIndex, QueryNode, QueryType } from "../../compiler"
-import { qmap as qmapFn, QMap } from "../instance"
+import { compile, QMapIndex, QueryNode, QueryType } from "@qmap/compiler"
+import { qmap as qmapFn, QMap } from "@qmap/engine/instance"
 import { QMapContext, QMapDescriptor, QMapFunctions, QMapQueries } from "./types"
 
 function fromDefinitionsToJson(definitions: QueryNode[], descriptor: QMapIndex) {
