@@ -39,6 +39,7 @@
     "build": "yarn prebuild && webpack && yarn postbuild",
     "paths:dts": "tscpaths --project tsconfig.json --src ./src -o ./dist",
     "postbuild": "yarn del dist/compiler/syntax/*.d.ts && yarn paths:dts",
+    "npm:dist": "yarn build && .tools/npm-pack",
     "release": "standard-version -s",
     "release:minor": "yarn release --release-as minor",
     "release:patch": "yarn release --release-as patch",
@@ -52,6 +53,7 @@
     "@typescript-eslint/parser": "^5.19.0",
     "del-cli": "^4.0.1",
     "eslint": "^8.13.0",
+    "fs-extra": "^10.1.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.2.0",
     "rimraf": "^3.0.2",
@@ -74,5 +76,11 @@
         "./dist/compiler/index.d.ts"
       ]
     }
-  }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ]
 }
