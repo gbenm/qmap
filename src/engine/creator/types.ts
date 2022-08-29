@@ -1,7 +1,8 @@
-import { QueryNode, QMapIndex, RootQueryNode, CompilerConfig } from "@qmap/compiler"
+import { RootQueryNode, CompilerConfig } from "@qmap/compiler"
 import { CacheStore as _CacheStore } from "@qmap/cache"
 import { ComputeFn } from "@qmap/cache/types"
 import { Nullable } from "@qmap/utils/types"
+import { QMapQuery } from "../types"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type QMapFunction = (...args: any[]) => any
@@ -22,11 +23,6 @@ export interface QMapDescriptor<Pctx extends QMapContext<any, any> | undefined, 
   defaultSchema?: string
   cache?: CacheStore
   mode?: OperateMode
-}
-
-export interface QMapQuery {
-  definitions: QueryNode[]
-  descriptor: QMapIndex
 }
 
 export interface QMapQueries {

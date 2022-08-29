@@ -1,6 +1,7 @@
 import { RootQueryNode, QMapIndex } from "@qmap/compiler"
+import { QMapQuery } from "@qmap/engine/types"
 import { Nullable } from "@qmap/utils/types"
-import { QMapContext, QMapQuery } from "../../creator/types"
+import { QMapContext } from "../../creator/types"
 import { QMapIncludesOptions } from "../types"
 import { findSchema } from "../utils"
 
@@ -11,7 +12,7 @@ type IncludesContext = {
   schema: Nullable<QMapQuery>
 }
 
-function _includes(query: QMapQuery, target: string[]) {
+function _includes(query: Pick<QMapQuery, "descriptor">, target: string[]) {
   let key: string
   let descriptor: QMapIndex | undefined = query.descriptor
   const path = [...target]
@@ -45,8 +46,7 @@ export function includes(this: IncludesContext, target: string[], overrideOption
     }
   }
 
-  const root: QMapQuery = {
-    definitions: this.root.definitions,
+  const root: Pick<QMapQuery, "descriptor"> = {
     descriptor: this.root.descriptor as QMapIndex,
   }
 

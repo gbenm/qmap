@@ -1368,7 +1368,7 @@ describe("apply", () => {
       const result = apply(input)
 
       expect(result).toEqual({
-        other: {},
+        other: input.other,
         user: {
           id: 2,
           name: "qmap test"

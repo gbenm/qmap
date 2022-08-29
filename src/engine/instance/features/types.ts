@@ -1,11 +1,13 @@
-import { QMapIndex, QueryNode, RootQueryNode } from "@qmap/compiler"
+import { DefinitionNode } from "@qmap/engine/definition"
+import RootDefinition from "@qmap/engine/definition/Root"
+import { QMapQuery } from "@qmap/engine/types"
 import { Nullable } from "@qmap/utils/types"
-import { QMapContext, QMapFunction, QMapQuery } from "../../creator/types"
+import { QMapContext, QMapFunction } from "../../creator/types"
 import { QMapVars } from "../types"
 import { QMapOptions } from "../types"
 
 export interface ApplyContext {
-  root: RootQueryNode<QMapIndex | null>
+  root: RootDefinition
   context: QMapContext<any, any>
   query: Nullable<QMapQuery>
   schema: Nullable<QMapQuery>
@@ -20,7 +22,7 @@ export interface ExecutionContext {
   functionScopedResult?: any
 }
 
-export interface ApplyDefinitionContext<T extends QueryNode> {
+export interface ApplyDefinitionContext<T extends DefinitionNode> {
   context: ExecutionContext
   result: any
   def: T
