@@ -25,7 +25,7 @@ describe("Include all", () => {
 
     expect(definitions.length).toBe(2)
 
-    const [ allQuery, productQuery ] = definitions
+    const [ productQuery, allQuery ] = definitions
 
     expect(allQuery).toMatchObject({
       type: QueryType.ALL,
@@ -43,6 +43,15 @@ describe("Include all", () => {
     })
 
     numberOfKeysMustBe(descriptor.index, 1)
+  })
+
+  test("exclude before all", () => {
+    const { descriptor } = compile("{ !name, ... }")
+
+    expect(descriptor).toEqual({
+      index: {},
+      all: true,
+    })
   })
 })
 

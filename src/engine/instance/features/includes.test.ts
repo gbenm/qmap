@@ -158,6 +158,17 @@ test("exclude", () => {
   expect(includes(["other"])).toBe(true)
 })
 
+test("exclude before all", () => {
+  const qmap = qmapCreator()
+
+  const { includes, errors } = qmap("{ !name, ... }")
+
+  expect(errors).toBeFalsy()
+
+  expect(includes(["name"])).toBe(true)
+  expect(includes(["other"])).toBe(true)
+})
+
 test("spread", () => {
   const qmap = qmapCreator()
 

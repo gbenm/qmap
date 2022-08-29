@@ -15,9 +15,7 @@ export function buildDefinitionsFromASTNodes ({
   nodes?.forEach((child) => {
     const queryNode = child.generate(config, table)
 
-    if (queryNode.type == QueryType.ALL) {
-      definitions.unshift(queryNode)
-    } else if (queryNode.type === QueryType.SPREAD && config.mode === "compact") {
+    if (queryNode.type === QueryType.SPREAD && config.mode === "compact") {
       definitions.push(...queryNode.node["definitions"])
     } else {
       definitions.push(queryNode)

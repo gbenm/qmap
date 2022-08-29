@@ -198,6 +198,48 @@ test ("select with all and exclude", () => {
   })
 })
 
+describe("all after queries", () => {
+  test("override", () => {
+    const { apply, errors } = qmap(`{
+      name: upperCase(name),
+      ...
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const input = { name: "test", value: 2 }
+    const result = apply(input)
+    expect(result).toEqual(input)
+  })
+
+  test("keep others", () => {
+    const { apply, errors } = qmap(`{
+      NAME: upperCase(name),
+      ...
+    }`)
+
+    expect(errors).toBeFalsy()
+
+    const input = { name: "test", value: 2 }
+    const result = apply(input)
+    expect(result).toEqual({
+      ...input,
+      NAME: "TEST"
+    })
+  })
+})
+
+test("exclude before all", () => {
+  const { apply, errors } = qmap("{ !name, ... }")
+
+  expect(errors).toBeFalsy()
+
+  const input = { name: "qmap lib" }
+  const result = apply(input)
+
+  expect(result).toEqual(input)
+})
+
 test ("access", () => {
   const { apply, errors } = qmap(`{
     id: primary.transaction.id,
