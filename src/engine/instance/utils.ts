@@ -1,5 +1,6 @@
-import { Nullable } from "../../utils/types"
-import { QMapContext, QMapFunction, QMapQuery } from "../creator/types"
+import { Nullable } from "@qmap/utils/types"
+import { QMapContext, QMapFunction } from "../creator/types"
+import { QMapQuery } from "../types"
 
 export function findInContext<T>(context: Nullable<QMapContext<any, any>>, type: string, target: Nullable<string>): Nullable<T> {
   if (!context || !target) {

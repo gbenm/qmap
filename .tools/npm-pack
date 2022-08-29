@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+/* eslint-disable */
+
+const fs = require("node:fs")
+const rimraf = require("rimraf")
+const fse = require("fs-extra")
+const path = require("node:path")
+const package = require("../package.json")
+
+const workdir = "./.npm-dist"
+
+rimraf.sync(workdir)
+fs.mkdirSync(workdir)
+
+package.files.forEach((file) => {
+    fse.copySync(file, path.join(workdir, file))
+})
+
+delete package["dependencies"]
+
+fse.writeJSONSync(path.join(workdir, "package.json"), package, {
+    spaces: 2
+})

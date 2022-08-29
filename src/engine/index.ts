@@ -1,2 +1,2 @@
 export { qmapCreator } from "./creator"
-export * from "../cache"
+export * from "@qmap/cache"

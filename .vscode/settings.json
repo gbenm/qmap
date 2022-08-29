@@ -7,7 +7,5 @@
         "listeners": true
     },
     "antlr4.referencesCodeLens.enabled": false,
-    "jest.autoRun": {
-      "onStartup": ["all-tests"]
-    }
+    "jest.autoRun": {}
 }

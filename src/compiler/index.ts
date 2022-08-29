@@ -4,7 +4,7 @@ import QMapListener from "./listener"
 import antlr from "antlr4"
 import { QMapIndex, QueryType, RootQueryNode } from "./query.types"
 import { CompilerConfig } from "./config"
-import { mergeObjects } from "../utils"
+import { mergeObjects } from "@qmap/utils"
 import { Root } from "./astn"
 import { IndexGenerator } from "./indexGenerator"
 

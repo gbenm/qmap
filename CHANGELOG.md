@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/gbenm/qmap/compare/v1.1.0...v1.1.2) (2022-08-29)
+
+
+### Bug Fixes
+
+* 🐛 don't change the order of "all query" ([bc02624](https://github.com/gbenm/qmap/commit/bc02624b9b3f1ed94371ad9e0841f939f892e68e))
+
 ### [1.1.1](https://github.com/gbenm/qmap/compare/v1.1.0...v1.1.1) (2022-08-08)
 
 ## [1.1.0](https://github.com/gbenm/qmap/compare/v1.0.0...v1.1.0) (2022-08-08)

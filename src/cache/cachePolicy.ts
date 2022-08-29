@@ -1,4 +1,4 @@
-import { identity } from "../utils"
+import { identity } from "@qmap/utils"
 import { ComputeFn } from "./types"
 
 export abstract class CachePolicy<InitialKey, Key = unknown> {
