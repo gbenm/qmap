@@ -15,9 +15,3 @@ fs.mkdirSync(workdir)
 package.files.forEach((file) => {
     fse.copySync(file, path.join(workdir, file))
 })
-
-delete package["dependencies"]
-
-fse.writeJSONSync(path.join(workdir, "package.json"), package, {
-    spaces: 2
-})
