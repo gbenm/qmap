@@ -1,6 +1,6 @@
-import { getValue, intersect } from "../../utils"
+import { getValue, intersect } from "@qmap/utils"
 import { AccessQueryNode, ClientFunctionQueryNode, ExcludeQueryNode, FunctionQueryNode, GlobalAccessQueryNode, NewObjectQueryNode, ParentIndexQueryNode, ParentQueryNode, QMapIndex, QueryNode, QueryType, RenameQueryNode, RootQueryNode, SelectQueryNode, SpreadQueryNode } from "../query.types"
-import { QueryNodeVisitor } from "../queryNodeVisitor"
+import { QueryNodeVisitor } from "@qmap/compiler/queryNodeVisitor"
 import { IndexStoreScope } from "./types"
 
 export class IndexGenerator extends QueryNodeVisitor {

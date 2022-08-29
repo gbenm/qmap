@@ -12,6 +12,7 @@
 
 node_modules/
 dist/
+.npm-dist
 *.ignore.*
 antlr4/.antlr
 junit
